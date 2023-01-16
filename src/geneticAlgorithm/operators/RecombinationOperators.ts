@@ -290,7 +290,7 @@ ChromosomePair.prototype.crossoverWithReducedSurrogate =
       return this.multiPointCrossover(...filteredBoundaryPoints);
     };
 
-const getRandomNumber = (min: number, max: number) : number =>
+export const getRandomNumber = (min: number, max: number) : number =>
   Math.random() * (max - min) + min;
 
 /**
@@ -301,6 +301,23 @@ const getRandomNumber = (min: number, max: number) : number =>
  */
 export function getRandomElementFrom<T>(array: Array<T>) : T {
   return array[getRandomIndex(array)];
+}
+
+/**
+ * Applies the {@link onPass} function to an array and
+ * returns a new filtered array
+ * @param {Array<T>} array array based on which filtering
+ * will be performed
+ * @param {Function} onPass function for filtering
+ * @return {Array<T>} a new array containing only elements that
+ * have passed the {@link onPass} check
+ * @template T
+ */
+export function getFilteredArray<T>(
+    array: Array<T>,
+    onPass: (element: T) => boolean,
+) : Array<T> {
+  return array.filter(onPass);
 }
 
 /**
