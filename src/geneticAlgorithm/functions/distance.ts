@@ -3,9 +3,22 @@ import {Chromosome} from '../domain/Chromosome';
 declare module '../domain/Chromosome' {
     // eslint-disable-next-line no-unused-vars
     interface Chromosome<T> {
+        /**
+         * Calculates the {@link https://en.wikipedia.org/wiki/Hamming_distance| hamming distance} for
+         * chromosomes with boolean values
+         * @param {Chromosome<T>} chromosome
+         * @template T
+         */
         hammingDistance(
             this: Chromosome<boolean>, chromosome: Chromosome<boolean>
         ) : number
+
+        /**
+         * Calculates the {@link https://en.wikipedia.org/wiki/Euclidean_distance| Euclidean distance} for
+         * chromosomes with real values
+         * @param {Chromosome<T>} chromosome
+         * @template T
+         */
         euclideanDistance(
             this: Chromosome<number>, chromosome: Chromosome<number>
         ) : number

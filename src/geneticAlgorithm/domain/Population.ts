@@ -12,7 +12,8 @@ export class Population<T> {
 
   /**
    * Constructor of the Population object
-   * @param {Array} entities chromosomes of the appropriate type
+   * @param {Array<T>} entities chromosomes of the appropriate type
+   * @template T
    */
   constructor(...entities: Chromosome<T>[]) {
     this.entities = entities;
@@ -20,8 +21,9 @@ export class Population<T> {
 
   /**
    * Adds one individual to the Population
-   * @param {Chromosome} chromosome an individual represented
+   * @param {Chromosome<T>} chromosome an individual represented
    * as a chromosome
+   * @template T
    */
   addChromosome(chromosome: Chromosome<T>) {
     this.entities.push(chromosome);
@@ -29,8 +31,9 @@ export class Population<T> {
 
   /**
    * Adds several individuals to the population
-   * @param {Chromosome[]} chromosomes a set of individuals
+   * @param {Chromosome<T>[]} chromosomes a set of individuals
    * represented as chromosomes
+   * @template T
    */
   addAllChromosomes(...chromosomes: Chromosome<T>[]) {
     chromosomes.forEach((chromosome) =>
@@ -66,8 +69,9 @@ export class Population<T> {
    * Returns one individual from the selected population for which the
    * condition passed in the predicate parameter is met
    * @param {Function} predicate condition for selection
-   * @return {Chromosome} -- the first individual for which the
+   * @return {Chromosome<T>} - the first individual for which the
    * transmitted condition is true
+   * @template T
    */
   getChromosomeBy(
       predicate: (chromosome: Chromosome<T>) => boolean,
@@ -79,8 +83,9 @@ export class Population<T> {
    * Returns from the selected population all individuals for
    * which the condition passed in the predicate parameter is met
    * @param {Function} predicate condition for selection
-   * @return {Array<Chromosome>} -- all individuals for which the
+   * @return {Array<Chromosome<T>>} - all individuals for which the
    * transmitted condition is true
+   * @template T
    */
   getChromosomesBy(
       predicate: (chromosome: Chromosome<T>) => boolean,

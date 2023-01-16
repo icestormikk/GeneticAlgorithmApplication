@@ -9,9 +9,10 @@ export class Chromosome<T> {
   private static entityCounter = 0;
 
   /**
-     * Chromosome constructor
-     * @param {Array} gens array of gens
-     */
+   * Chromosome constructor
+   * @param {Array<T>} gens array of gens
+   * @template T
+   */
   constructor(...gens: T[]) {
     if (gens.length === 0) {
       throw new Error('You cant create chromosome without genes!');
