@@ -14,6 +14,10 @@
         @apply
         flex justify-center items-center
     }
+    .bordered {
+        @apply
+        border-[1px] border-gray-300
+    }
     .action-button {
         @apply
         flex justify-center items-center gap-2
@@ -21,5 +25,33 @@
     .action-button:hover .action-text {
         @apply
         flex
+    }
+    .menu-container {
+        @apply
+        flex flex-col gap-2 bordered rounded-md
+        h-min shadow-lg bg-gray-100 overflow-hidden
+        shadow-md
+    }
+    .menu-list {
+        @apply
+        flex justify-start items-start flex-col rounded-md w-1/2
+        overflow-hidden w-full bordered shadow-md
+    }
+    .menu-list .header {
+        @apply
+        centered gap-1 w-full border-b-[1px]
+        border-b-gray-300 px-1
+    }
+    .menu-list ul {
+        @apply
+        w-full px-2
+    }
+    .menu-list h1 {
+        @apply
+        p-1 w-full
+    }
+    .menu-container ul {
+        @apply
+        overflow-x-hidden overflow-y-scroll h-80
     }
 }

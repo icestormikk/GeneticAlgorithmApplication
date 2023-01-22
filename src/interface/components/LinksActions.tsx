@@ -1,12 +1,10 @@
 import React from 'react';
 import {MdAddLink, MdLinkOff} from 'react-icons/md';
-import {useDispatch, useSelector} from 'react-redux';
 import {createNewLink} from './Graph';
-import {
-  clearSelectedNodes,
-  setLinks,
-  setNodes,
-} from '../redux/slicers/graphSlice';
+import {clearSelectedNodes, setLinks} from '../redux/slicers/graphSlice';
+import {ReduxLinkObject} from '../redux/extensions/ReduxLinkObject';
+import {ReduxNodeObject} from '../redux/extensions/ReduxNodeObject';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
 
 /**
  * Check if the current link already exists
@@ -14,9 +12,12 @@ import {
  * @param {array} newLink new link object
  * @return {boolean} true if the link exists, otherwise false
  */
-const isLinkExists = (links, newLink) => {
+const isLinkExists = (
+    links: Array<ReduxLinkObject>,
+    newLink: Array<ReduxNodeObject>,
+) => {
   return newLink.every((el) => el) && links.map((el) =>
-    `${[el.source, el.target]}`).includes(`${newLink[0]},${newLink[1]}`,
+    `${[el.source, el.target]}`).includes(`${newLink[0].id},${newLink[1].id}`,
   );
 };
 
@@ -26,33 +27,28 @@ const isLinkExists = (links, newLink) => {
  * @constructor
  */
 function LinksActions() {
-  const dispatch = useDispatch();
-  const graph = useSelector((state) => state.graph);
-  const selectedNodes = useSelector((state) => state.graph.selectedNodes);
+  const dispatch = useAppDispatch();
+  const graph = useAppSelector((state) => state.graph);
+  const selectedNodes = useAppSelector((state) => state.graph.selectedNodes);
 
   const handleLinkCreation = React.useCallback(() => {
     const {links} = graph;
-    const nodes = graph.nodes.map((el) => Object.assign({}, el));
-    if (!isLinkExists(links, [selectedNodes[1], selectedNodes[0]])) {
+    if (!isLinkExists(links, selectedNodes)) {
       const newLinks = [
-        ...links, createNewLink(selectedNodes[1], selectedNodes[0]),
+        ...links, createNewLink(selectedNodes[0], selectedNodes[1]),
       ];
       dispatch(setLinks(newLinks));
-
-      dispatch(setNodes(
-          nodes.map((el) => {
-            el.selected = false; return el;
-          }),
-      ));
       dispatch(clearSelectedNodes());
     }
   }, [selectedNodes]);
 
   const handleLinkDeleting = () => {
-    if (isLinkExists(graph.links, [selectedNodes[1], selectedNodes[0]])) {
+    if (isLinkExists(graph.links, selectedNodes)) {
       dispatch(
-          setLinks(graph.links.filter((el) => el.source !== selectedNodes[1] ||
-          el.target !== selectedNodes[0])),
+          setLinks(graph.links.filter((el) =>
+            el.source !== selectedNodes[0].id ||
+                  el.target !== selectedNodes[1].id,
+          )),
       );
       dispatch(clearSelectedNodes());
     }
@@ -60,17 +56,11 @@ function LinksActions() {
 
   const isDeletingPossible = () => {
     return selectedNodes.length > 1 &&
-      isLinkExists(
-          graph.links,
-          [selectedNodes[1], selectedNodes[0]],
-      );
+      isLinkExists(graph.links, selectedNodes);
   };
   const isAddingPossible = () => {
     return selectedNodes.length > 1 &&
-      !isLinkExists(
-          graph.links,
-          [selectedNodes[1], selectedNodes[0]],
-      );
+      !isLinkExists(graph.links, selectedNodes);
   };
 
   return (

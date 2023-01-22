@@ -7,13 +7,17 @@ import {backToInitialState, clearLinks} from '../redux/slicers/graphSlice';
 import {ImLoop2} from 'react-icons/im';
 import {MdReadMore} from 'react-icons/md';
 
+interface ActionsMenuProps {
+  setIsFullInfoShown: React.Dispatch<React.SetStateAction<boolean>>
+}
+
 /**
  * A component that displays buttons for actions on graph elements
- * @param {function} setIsFullInfoShown
+ * @param {ActionsMenuProps} props
  * @return {JSX.Element}
  * @constructor
  */
-function ActionsMenu({setIsFullInfoShown}) {
+function ActionsMenu(props: ActionsMenuProps) {
   const dispatch = useDispatch();
   const [isShown, setShown] = React.useState(false);
   const buttons = React.useMemo(() => [
@@ -38,7 +42,7 @@ function ActionsMenu({setIsFullInfoShown}) {
       title: 'Показать подробную инфорацию',
       icon: <MdReadMore/>,
       action: () => {
-        setIsFullInfoShown((prevState) => !prevState);
+        props.setIsFullInfoShown((prevState) => !prevState);
       },
     },
   ], []);
