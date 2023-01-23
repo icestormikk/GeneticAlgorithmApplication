@@ -13,11 +13,13 @@ interface ActionsMenuProps {
 
 /**
  * A component that displays buttons for actions on graph elements
- * @param {ActionsMenuProps} props
+ * @param {React.Dispatch<React.SetStateAction<boolean>>} setIsFullInfoShown
+ * the function responsible for navigating to the menu with full information
+ * about the objects in the graph
  * @return {JSX.Element}
  * @constructor
  */
-function ActionsMenu(props: ActionsMenuProps) {
+function ActionsMenu({setIsFullInfoShown}: ActionsMenuProps): JSX.Element {
   const dispatch = useDispatch();
   const [isShown, setShown] = React.useState(false);
   const buttons = React.useMemo(() => [
@@ -42,7 +44,7 @@ function ActionsMenu(props: ActionsMenuProps) {
       title: 'Показать подробную инфорацию',
       icon: <MdReadMore/>,
       action: () => {
-        props.setIsFullInfoShown((prevState) => !prevState);
+        setIsFullInfoShown((prevState) => !prevState);
       },
     },
   ], []);

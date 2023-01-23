@@ -10,10 +10,14 @@ interface NodePanelProps {
 }
 
 /**
- * Node panel
+ * A component that displays information about a specific node from an
+ * existing graph
+ * @param {boolean} isActionsShown a parameter that determines whether
+ * to show components to interact with a specific node or not
+ * @param {ReduxNodeObject} node the need for which information needs
+ * to be displayed
  * @return {JSX.Element}
  * @constructor
- * @param {NodePanelProps} props
  */
 function NodePanel(
     {isActionsShown = false, node}: NodePanelProps,
