@@ -4,15 +4,19 @@ import {ReduxLinkObject} from '../extensions/ReduxLinkObject';
 import {ReduxNodeObject} from '../extensions/ReduxNodeObject';
 
 interface GraphState {
+  path: Array<{id: string}>,
   selectedNodes: Array<{id: string}>,
   nodes: Array<{id: string}>,
-  links: Array<ReduxLinkObject>
+  links: Array<ReduxLinkObject>,
+  isAdditionalElementsShow: boolean
 }
 
 const initialState: GraphState = {
+  path: [],
   selectedNodes: [],
   nodes: [{id: generateUUID()}],
   links: [],
+  isAdditionalElementsShow: false,
 };
 
 const graphSlice = createSlice({
@@ -26,6 +30,9 @@ const graphSlice = createSlice({
         target: action.payload.target,
         value: action.payload.value,
       });
+      if (action.payload.value.isPath) {
+        state.path.push({id: action.payload.id});
+      }
     },
     addNode: (state, action: PayloadAction<ReduxNodeObject>) => {
       const {id} = action.payload;
@@ -50,7 +57,9 @@ const graphSlice = createSlice({
       if (state.selectedNodes.length === 2) {
         state.selectedNodes.splice(0, state.selectedNodes.length);
       }
-      state.selectedNodes.push({id});
+      if (!state.selectedNodes.find((el) => el.id === id)) {
+        state.selectedNodes.push({id});
+      }
     },
     setLinks: (state, action: PayloadAction<Array<ReduxLinkObject>>) => {
       const updatedLinks = action.payload.map((el) => {
@@ -69,6 +78,9 @@ const graphSlice = createSlice({
       });
       state.nodes.splice(0, state.nodes.length, ...updatedNodes);
     },
+    switchElementsVisibility: (state) => {
+      state.isAdditionalElementsShow = !state.isAdditionalElementsShow;
+    },
   },
 });
 
@@ -77,6 +89,7 @@ export const {
   addNode,
   addLink,
   backToInitialState,
+  switchElementsVisibility,
   clearLinks,
   clearSelectedNodes,
   select,
