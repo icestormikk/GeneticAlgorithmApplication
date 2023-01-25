@@ -1,10 +1,11 @@
 import React from 'react';
 import {MdAddLink, MdLinkOff} from 'react-icons/md';
 import {createNewLink} from './Graph';
-import {clearSelectedNodes, setLinks} from '../redux/slicers/graphSlice';
 import {ReduxLinkObject} from '../redux/extensions/ReduxLinkObject';
 import {ReduxNodeObject} from '../redux/extensions/ReduxNodeObject';
 import {useAppDispatch, useAppSelector} from '../redux/hooks';
+import {addLink, removeLink} from '../redux/slicers/linkSlice';
+import {setSelectedNodes} from '../redux/slicers/nodeSlice';
 
 /**
  * Check if the current link already exists
@@ -28,48 +29,46 @@ const isLinkExists = (
  */
 function LinksActions() {
   const dispatch = useAppDispatch();
-  const graph = useAppSelector((state) => state.graph);
-  const selectedNodes = useAppSelector((state) => state.graph.selectedNodes);
+  const links = useAppSelector((state) => state.links.items);
+  const selectedNodes = useAppSelector((state) => state.nodes.selectedItems);
 
   const handleLinkCreation = React.useCallback(() => {
-    const {links} = graph;
     if (!isLinkExists(links, selectedNodes)) {
-      const newLinks = [
-        ...links, createNewLink(selectedNodes[0], selectedNodes[1]),
-      ];
-      dispatch(setLinks(newLinks));
-      dispatch(clearSelectedNodes());
+      const newLink = createNewLink(selectedNodes[0], selectedNodes[1]);
+      dispatch(addLink(newLink));
+      dispatch(setSelectedNodes([]));
     }
   }, [selectedNodes]);
 
   const handleLinkDeleting = () => {
-    if (isLinkExists(graph.links, selectedNodes)) {
-      dispatch(
-          setLinks(graph.links.filter((el) =>
-            el.source !== selectedNodes[0].id ||
-                  el.target !== selectedNodes[1].id,
-          )),
+    if (isLinkExists(links, selectedNodes)) {
+      links.filter((el) =>
+        el.source !== selectedNodes[0].id || el.target !== selectedNodes[1].id,
+      ).forEach((el) =>
+        dispatch(removeLink(el.id)),
       );
-      dispatch(clearSelectedNodes());
+
+      dispatch(setSelectedNodes([]));
     }
   };
 
-  const isDeletingPossible = () => {
+  const isDeletingPossible = React.useCallback(() => {
     return selectedNodes.length > 1 &&
-      isLinkExists(graph.links, selectedNodes);
-  };
-  const isAddingPossible = () => {
+        isLinkExists(links, selectedNodes);
+  }, [selectedNodes]);
+  const isAddingPossible = React.useCallback(() => {
     return selectedNodes.length > 1 &&
-      !isLinkExists(graph.links, selectedNodes);
-  };
+        !isLinkExists(links, selectedNodes);
+  }, [selectedNodes]);
 
   return (
-    <div className="centered text-2xl gap-2">
+    <div className="centered text-2xl gap-2 mx-4">
       <button
         type="button"
         title="Связать точки"
         disabled={!isAddingPossible()}
         onClick={() => handleLinkCreation()}
+        className={isAddingPossible() ? 'text-green-500' : 'text-red-500'}
       >
         <MdAddLink/>
       </button>
@@ -78,6 +77,7 @@ function LinksActions() {
         title="Удалить связь"
         disabled={!isDeletingPossible()}
         onClick={() => handleLinkDeleting()}
+        className={isDeletingPossible() ? 'text-green-500' : 'text-red-500'}
       >
         <MdLinkOff/>
       </button>
