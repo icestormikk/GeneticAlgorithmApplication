@@ -15,9 +15,7 @@ interface FullInfoMenuProps {
  */
 function FullInfoMenu({isShown}: FullInfoMenuProps): JSX.Element {
   return (
-    <div className={`absolute top-0 ${isShown ? 'right-0' :
-    '-right-full'} h-screen w-[25rem] bg-[#efefef]/80 z-10 duration-200
-    transition-all ease-in-out rounded-l-md flex flex-col gap-2 px-2 py-2`}>
+    <div className={`${isShown ? 'right-0' : '-right-full'} full-info-panel`}>
       <h1>ПАНЕЛЬ УПРАВЛЕНИЯ</h1>
       <ChosenNodesPanel/>
       <EntitiesList/>
