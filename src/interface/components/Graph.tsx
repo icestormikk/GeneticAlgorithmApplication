@@ -1,6 +1,5 @@
 import React from 'react';
 import ForceGraph from 'react-force-graph-3d';
-import {addLink, addNode, select} from '../redux/slicers/graphSlice';
 import {generateUUID} from 'three/src/math/MathUtils';
 import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import {ReduxNodeObject} from '../redux/extensions/ReduxNodeObject';
@@ -11,19 +10,9 @@ import {
 import SpriteText from 'three-spritetext';
 import {ExtendedNodeObject} from '../redux/extensions/ExtendedNodeObject';
 import {ExtendedLinkObject} from '../redux/extensions/ExtendedLinkObject';
-
-/**
- * Accepts an object and returns a human-readable representation of its values
- * @param {T} object the object whose values need to be translated
- * @return {string} human-readable representation of object values
- * @template T
- */
-function beautify<T>(object: T) : string {
-  return JSON.stringify(object)
-      .replace(/["{}\s]/ig, '')
-      .replace(/,/ig, '\n')
-      .replace(/:/ig, ': ');
-}
+import {beautify, buildNameFromUUID} from '../utils/helpers';
+import {addNode, select} from '../redux/slicers/nodeSlice';
+import {addLink} from '../redux/slicers/linkSlice';
 
 export const createNewLink = (
     fromNode: ReduxNodeObject, toNode: ReduxNodeObject,
@@ -32,6 +21,7 @@ export const createNewLink = (
     id: generateUUID(),
     source: fromNode.id,
     target: toNode.id,
+    label: `${fromNode.label} -> ${toNode.label}`,
     value: {
       distance: getRandomNumber(0, 100),
       cost: getRandomNumber(50, 100),
@@ -51,22 +41,29 @@ function Graph() {
   const dispatch = useAppDispatch();
   const [width, setWidth] = React.useState(window.innerWidth);
   const [height, setHeight] = React.useState(window.innerHeight);
-  const {
-    nodes,
-    links,
-    selectedNodes,
-    path,
-    isAdditionalElementsShow,
-  } = useAppSelector((state) => state.graph);
-  const initData = React.useMemo(() => {
-    const refactoredNodes = nodes.map((el) => JSON.parse(JSON.stringify(el)));
-    const refactoredLinks = links.map((el) => JSON.parse(JSON.stringify(el)));
+  const {isAdditionalElementsShow} = useAppSelector((state) => state.graph);
+  const links = useAppSelector((state) => state.links.items);
+  const nodes = useAppSelector((state) => state.nodes.items);
+  const selectedNodes = useAppSelector((state) => state.nodes.selectedItems
+      .map((el) => JSON.parse(JSON.stringify(el))),
+  );
 
+  const initData = React.useMemo(() => {
+    const refactoredNodes = nodes.map((el) =>
+      JSON.parse(JSON.stringify(el)),
+    );
+    const refactoredLinks = links.map((el) =>
+      JSON.parse(JSON.stringify(el)),
+    );
     return {nodes: refactoredNodes, links: refactoredLinks};
   }, [nodes, links]);
 
   const handleNodeRightClick = async (node: ReduxNodeObject) => {
-    const newNode = {id: generateUUID()};
+    const uuid = generateUUID();
+    const newNode = {
+      id: uuid,
+      label: `node-${buildNameFromUUID(uuid)}`,
+    };
     const newLink = createNewLink(node, newNode);
 
     await Promise.all(
@@ -125,16 +122,11 @@ function Graph() {
 
       Object.assign(sprite.position, middlePos);
     }}
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    linkColor={(link: ExtendedLinkObject) =>
-      path.find((el) => el.id === link.id) ? 'lime' : 'red'
-    }
     linkDirectionalParticles={1}
     linkDirectionalArrowLength={3.5}
     linkDirectionalArrowRelPos={1}
     linkCurvature={0.2}
-    linkWidth={1}
+    linkWidth={0.5}
   />;
 }
 
