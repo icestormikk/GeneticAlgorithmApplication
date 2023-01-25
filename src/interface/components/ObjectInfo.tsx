@@ -5,8 +5,8 @@ interface ObjectInfoProps {
 }
 
 /**
- * Object Info
- * @param {any} obj object
+ * A component to display all the properties of an object
+ * @param {any} obj the object whose properties should be displayed
  * @constructor
  */
 function ObjectInfo({obj}: ObjectInfoProps) {
