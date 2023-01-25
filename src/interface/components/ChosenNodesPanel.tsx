@@ -9,14 +9,14 @@ import {useAppSelector} from '../redux/hooks';
  * @constructor
  */
 function ChosenNodesPanel() {
-  const selectedNodes = useAppSelector((state) => state.graph.selectedNodes);
+  const selectedNodes = useAppSelector((state) => state.nodes.selectedItems);
 
   return (
     <div className="menu-container bg-[#efefef]">
       <div className="w-full bg-gray-200 p-1">
         <h1>Выбранные ноды:</h1>
       </div>
-      <div className="centered flex-col w-full gap-1">
+      <div className="centered flex-row w-full gap-1 min-h-max">
         {
             selectedNodes[0] ? (
               <>

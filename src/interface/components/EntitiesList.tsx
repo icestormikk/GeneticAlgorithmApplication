@@ -10,7 +10,9 @@ import {useAppSelector} from '../redux/hooks';
  * @constructor
  */
 function EntitiesList() {
-  const {links, nodes} = useAppSelector((state) => state.graph);
+  const nodes = useAppSelector((state) => state.nodes.items);
+  const links = useAppSelector((state) => state.links.items);
+
   return (
     <div className="menu-container">
       <div className="w-full bg-gray-200 p-1">
@@ -28,7 +30,7 @@ function EntitiesList() {
                 <li
                   key={link.id}
                 >
-                  <p>{link.id}</p>
+                  <p>{link.label}</p>
                 </li>
               ))
             }
@@ -44,6 +46,8 @@ function EntitiesList() {
               nodes.map((node) => (
                 <li
                   key={node.id}
+                  className="node-actions-container duration-100
+                  transition-all p-1"
                 >
                   <NodePanel node={node} isActionsShown={true}/>
                 </li>
