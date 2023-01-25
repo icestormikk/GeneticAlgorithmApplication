@@ -1,11 +1,14 @@
 import React from 'react';
 import {GiHamburgerMenu} from 'react-icons/gi';
-import {AiOutlineClose} from 'react-icons/ai';
-import {useDispatch} from 'react-redux';
+import {AiFillEye, AiFillEyeInvisible, AiOutlineClose} from 'react-icons/ai';
 import {HiOutlineArrowsPointingOut} from 'react-icons/hi2';
-import {backToInitialState, clearLinks} from '../redux/slicers/graphSlice';
+import {
+  backToInitialState,
+  clearLinks, switchElementsVisibility,
+} from '../redux/slicers/graphSlice';
 import {ImLoop2} from 'react-icons/im';
 import {MdReadMore} from 'react-icons/md';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
 
 interface ActionsMenuProps {
   setIsFullInfoShown: React.Dispatch<React.SetStateAction<boolean>>
@@ -20,7 +23,10 @@ interface ActionsMenuProps {
  * @constructor
  */
 function ActionsMenu({setIsFullInfoShown}: ActionsMenuProps): JSX.Element {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+  const elementVisibility = useAppSelector(
+      (state) => state.graph.isAdditionalElementsShow,
+  );
   const [isShown, setShown] = React.useState(false);
   const buttons = React.useMemo(() => [
     {
@@ -85,6 +91,15 @@ function ActionsMenu({setIsFullInfoShown}: ActionsMenuProps): JSX.Element {
                   </button>
                 ))
               }
+              <button
+                type="button"
+                className="action-button"
+                onClick={() => dispatch(switchElementsVisibility())}
+                title={`${elementVisibility ?
+                    'Скрыть' : 'Показать'} дополнительные элементы`}
+              >
+                {elementVisibility ? <AiFillEyeInvisible/> : <AiFillEye/>}
+              </button>
             </div>
           </div>
         )
