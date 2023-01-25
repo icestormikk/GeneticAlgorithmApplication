@@ -2,13 +2,12 @@ import React from 'react';
 import {GiHamburgerMenu} from 'react-icons/gi';
 import {AiFillEye, AiFillEyeInvisible, AiOutlineClose} from 'react-icons/ai';
 import {HiOutlineArrowsPointingOut} from 'react-icons/hi2';
-import {
-  backToInitialState,
-  clearLinks, switchElementsVisibility,
-} from '../redux/slicers/graphSlice';
+import {dropState, switchElementsVisibility} from '../redux/slicers/graphSlice';
 import {ImLoop2} from 'react-icons/im';
 import {MdReadMore} from 'react-icons/md';
 import {useAppDispatch, useAppSelector} from '../redux/hooks';
+import {dropLinks, setLinks} from '../redux/slicers/linkSlice';
+import {dropNodes} from '../redux/slicers/nodeSlice';
 
 interface ActionsMenuProps {
   setIsFullInfoShown: React.Dispatch<React.SetStateAction<boolean>>
@@ -34,7 +33,7 @@ function ActionsMenu({setIsFullInfoShown}: ActionsMenuProps): JSX.Element {
       title: 'Удалить все связи',
       icon: <HiOutlineArrowsPointingOut/>,
       action: () => {
-        dispatch(clearLinks());
+        dispatch(setLinks([]));
       },
     },
     {
@@ -42,7 +41,9 @@ function ActionsMenu({setIsFullInfoShown}: ActionsMenuProps): JSX.Element {
       title: 'Сбросить состояние',
       icon: <ImLoop2/>,
       action: () => {
-        dispatch(backToInitialState());
+        dispatch(dropNodes());
+        dispatch(dropLinks());
+        dispatch(dropState());
       },
     },
     {
