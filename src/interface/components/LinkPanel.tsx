@@ -19,9 +19,12 @@ interface LinkPanelProps {
 }
 
 /**
- * Link Panel
- * @param {ReduxLinkObject} link
- * @param {boolean} isActionsShown
+ * A component that displays information about a specific link that exists
+ * in a graph and provides tools for changing some of its components
+ * @param {ReduxLinkObject} link an object containing information about
+ * the link to be displayed
+ * @param {boolean} isActionsShown a property that determines whether to
+ * show buttons for deleting and editing links or not
  * @constructor
  */
 function LinkPanel({link, isActionsShown = false}: LinkPanelProps) {
