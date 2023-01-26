@@ -1,5 +1,5 @@
 import React from 'react';
-import {GiHamburgerMenu} from 'react-icons/gi';
+import {GiHamburgerMenu, GiPathDistance} from 'react-icons/gi';
 import {AiFillEye, AiFillEyeInvisible, AiOutlineClose} from 'react-icons/ai';
 import {HiOutlineArrowsPointingOut} from 'react-icons/hi2';
 import {dropState, switchElementsVisibility} from '../redux/slicers/graphSlice';
@@ -8,6 +8,7 @@ import {MdReadMore} from 'react-icons/md';
 import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import {dropLinks, setLinks} from '../redux/slicers/linkSlice';
 import {dropNodes} from '../redux/slicers/nodeSlice';
+import GeneticAlgorithmWindow from './GeneticAlgorithmWindow';
 
 interface ActionsMenuProps {
   setIsFullInfoShown: React.Dispatch<React.SetStateAction<boolean>>
@@ -27,6 +28,10 @@ function ActionsMenu({setIsFullInfoShown}: ActionsMenuProps): JSX.Element {
       (state) => state.graph.isAdditionalElementsShow,
   );
   const [isShown, setShown] = React.useState(false);
+  const [
+    isAlgorithmWindowOpen,
+    setIsAlgorithmWindowOpen,
+  ] = React.useState(false);
   const buttons = React.useMemo(() => [
     {
       id: 0,
@@ -54,10 +59,22 @@ function ActionsMenu({setIsFullInfoShown}: ActionsMenuProps): JSX.Element {
         setIsFullInfoShown((prevState) => !prevState);
       },
     },
+    {
+      id: 3,
+      title: 'Найти путь',
+      icon: <GiPathDistance/>,
+      action: () => {
+        setIsAlgorithmWindowOpen(true);
+      },
+    },
   ], []);
 
   return (
     <>
+      <GeneticAlgorithmWindow
+        isOpen={isAlgorithmWindowOpen}
+        setIsOpen={setIsAlgorithmWindowOpen}
+      />
       <button
         type="button"
         className={`absolute bottom-0 left-0 z-10 text-xl p-2
