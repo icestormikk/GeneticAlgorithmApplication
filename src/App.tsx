@@ -6,6 +6,9 @@ import './geneticAlgorithm/operators/ParentsSelectionOperators';
 import Graph from './interface/components/Graph';
 import ActionsMenu from './interface/components/ActionsMenu';
 import FullInfoMenu from './interface/components/FullInfoMenu';
+import ReactModal from 'react-modal';
+
+ReactModal.setAppElement('#root');
 
 // const genRandomTree = (N = 10, reverse = true) => {
 //   return {
