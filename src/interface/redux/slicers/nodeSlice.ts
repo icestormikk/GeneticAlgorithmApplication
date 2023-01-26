@@ -25,7 +25,9 @@ const graphSlice = createSlice({
       if (state.selectedItems.length === 2) {
         state.selectedItems.splice(0, state.selectedItems.length);
       }
-      state.selectedItems.push({id, label});
+      if (!state.selectedItems.find((el) => el.id === id)) {
+        state.selectedItems.push({id, label});
+      }
     },
     setSelectedNodes: (
         state,
@@ -58,8 +60,12 @@ const graphSlice = createSlice({
     removeNode: (state, action: PayloadAction<string>) => {
       const id = action.payload;
       const index = state.items.findIndex((el) => el.id === id);
+      const indexSelected = state.selectedItems.findIndex((el) => el.id === id);
       if (index > -1) {
         state.items.splice(index, 1);
+      }
+      if (indexSelected > -1) {
+        state.selectedItems.splice(index, 1);
       }
     },
     updateNode: (
