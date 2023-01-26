@@ -16,7 +16,13 @@ function ObjectInfo({obj}: ObjectInfoProps) {
         Object.entries(obj).map(([key, value], index) => (
           <li key={index} className="flex gap-2">
             <b>{`${key}: `}</b>
-            <span>{`${value}`}</span>
+            {
+              typeof value === 'object' ? (
+                <ObjectInfo obj={value}/>
+              ) : (
+                <span>{`${value}`}</span>
+              )
+            }
           </li>
         ))
       }
