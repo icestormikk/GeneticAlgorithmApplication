@@ -89,7 +89,9 @@ function Graph() {
     nodeColor={(node) =>
       selectedNodes.find((el) => el.id === node.id) ? 'white' : 'yellow'
     }
-    nodeLabel={(node) => `node-${node.id}`}
+    /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
+    // @ts-ignore
+    nodeLabel={(node: ExtendedNodeObject) => node.label }
     /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
     // @ts-ignore
     onNodeRightClick={(node: ExtendedNodeObject) =>
