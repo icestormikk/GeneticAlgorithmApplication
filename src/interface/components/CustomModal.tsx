@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactModal from 'react-modal';
+import {AiOutlineClose} from 'react-icons/ai';
 
 interface CustomModalProps {
   content: JSX.Element
@@ -27,12 +28,12 @@ function CustomModal({content, isOpen, setIsOpen}: CustomModalProps) {
       overlayClassName="Overlay"
     >
       <div className="flex flex-row justify-end items-center bg-white px-1
-      ">
+      py-0.5">
         <button
           type="button"
           onClick={() => setIsOpen(false)}
         >
-          Close
+          <AiOutlineClose className="text-xl"/>
         </button>
       </div>
       <div className="p-2 flex flex-col w-full h-full">
