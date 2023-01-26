@@ -5,7 +5,7 @@
  * @template T
  */
 export function beautify<T>(object: T) : string {
-  return JSON.stringify(object)
+  return JSON.stringify(object, undefined, 2)
       .replace(/["{}\s]/ig, '')
       .replace(/,/ig, '\n')
       .replace(/:/ig, ': ');
