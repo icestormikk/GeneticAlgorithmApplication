@@ -3,6 +3,7 @@ import NodePanel from './NodePanel';
 import {CgEditBlackPoint} from 'react-icons/cg';
 import {VscActivateBreakpoints} from 'react-icons/vsc';
 import {useAppSelector} from '../redux/hooks';
+import LinkPanel from './LinkPanel';
 
 /**
  * Entities list
@@ -29,8 +30,10 @@ function EntitiesList() {
               links.map((link) => (
                 <li
                   key={link.id}
+                  className="node-actions-container duration-100
+                  transition-all p-1"
                 >
-                  <p>{link.label}</p>
+                  <LinkPanel link={link} isActionsShown={true}/>
                 </li>
               ))
             }
