@@ -22,6 +22,15 @@
         @apply
         border-[1px] border-gray-300
     }
+    .Overlay {
+        @apply
+        fixed top-0 left-0 w-screen h-screen bg-black/80 z-20
+        centered
+    }
+    .Modal {
+        @apply
+        z-30 min-w-[32rem] min-h-[24rem] rounded-sm bg-[#efefef] overflow-hidden
+    }
     .action-button {
         @apply
         flex justify-center items-center gap-2
@@ -87,7 +96,7 @@
     }
     .show-more-node-button {
         @apply
-        hidden centered
+        hidden centered text-base
     }
     .node-actions-container:hover {
         @apply
