@@ -105,7 +105,7 @@ function NodePanel(
                       <label htmlFor="label">
                         Название:
                         <input type="text" name="label" id="label"
-                          defaultValue={node.label} />
+                          defaultValue={node.label} required/>
                       </label>,
                     ]}
                     onSubmit={handleEntityEditing}
