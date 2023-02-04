@@ -14,4 +14,13 @@ export class ChromosomePair<T> extends Pair<Chromosome<T>, Chromosome<T>> {
   constructor(chr1: Chromosome<T>, chr2: Chromosome<T>) {
     super(chr1, chr2);
   }
+
+  /**
+   * Translates a pair of chromosomes from the current representation
+   * into an array of two elements
+   * @return {Array<Chromosome<T>>} an array of two chromosomes
+   */
+  toArray(): Chromosome<T>[] {
+    return [this.first, this.second];
+  }
 }

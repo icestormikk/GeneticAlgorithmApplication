@@ -1,12 +1,12 @@
+import {generateUUID} from 'three/src/math/MathUtils';
+
 /**
  * The basis for creating classes of chromosomes containing
  * genes of a certain type
  */
 export class Chromosome<T> {
-  readonly id: number = Chromosome.entityCounter++;
+  readonly id: string = generateUUID();
   gens: Array<T>;
-
-  private static entityCounter = 0;
 
   /**
    * Chromosome constructor
