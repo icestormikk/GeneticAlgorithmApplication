@@ -3,40 +3,26 @@ import './geneticAlgorithm/operators/MutationOperators';
 import './geneticAlgorithm/operators/RecombinationOperators';
 import './geneticAlgorithm/operators/NewPopulationSelectionOperators';
 import './geneticAlgorithm/operators/ParentsSelectionOperators';
+import ActionsMenu from './interface/components/ActionsMenu/ActionsMenu.lazy';
 import Graph from './interface/components/Graph';
-import ActionsMenu from './interface/components/ActionsMenu';
-import FullInfoMenu from './interface/components/FullInfoMenu';
-import ReactModal from 'react-modal';
-
-ReactModal.setAppElement('#root');
-
-// const genRandomTree = (N = 10, reverse = true) => {
-//   return {
-//     nodes: [...Array.from(Array(N).keys())].map((i) =>
-//       ({id: i, name: `node-${i}`}),
-//     ),
-//     links: [...Array.from(Array(N).keys())]
-//         .filter((id) => id)
-//         .map((id) => ({
-//           [reverse ? 'target' : 'source']: id,
-//           [reverse ? 'source' : 'target']: Math.round(Math.random()
-//           * (id-1)),
-//         })),
-//   };
-// };
+import JoinNodesWindow
+  from './interface/components/JoinNodesWindow/JoinNodesWindow.lazy';
+import AllEntitiesInfo
+  from './interface/components/AllEntitiesInfo/AllEntitiesInfo.lazy';
 
 /**
  * The root component of the React application
  * @constructor
  */
 function App() {
-  const [isFullInfoShown, setIsFullShown] = React.useState(false);
+  const [isFullInfoOpen, setIsFullInfoOpen] = React.useState(false);
 
   return (
     <>
-      <ActionsMenu setIsFullInfoShown={setIsFullShown} />
-      <FullInfoMenu isShown={isFullInfoShown}/>
+      <ActionsMenu setIsFullInfoOpen={setIsFullInfoOpen} />
       <Graph />
+      <JoinNodesWindow/>
+      <AllEntitiesInfo isOpen={isFullInfoOpen}/>
     </>
   );
 }

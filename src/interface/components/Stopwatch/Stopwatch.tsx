@@ -10,7 +10,7 @@ function Stopwatch() {
   const [isLaunched, setIsLaunched] = React.useState(false);
 
   React.useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: number;
     if (isLaunched) {
       interval = setInterval(() => {
         setTime((prevState) => prevState + 10);
