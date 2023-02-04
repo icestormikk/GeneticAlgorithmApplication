@@ -1,14 +1,13 @@
 import {Chromosome} from './Chromosome';
+import {generateUUID} from 'three/src/math/MathUtils';
 
 /**
  * A typed Population class containing "individuals" represented
  * as Chromosome objects with the corresponding type
  */
 export class Population<T> {
-  readonly id : number = Population.entityCounter++;
+  readonly id : string = generateUUID();
   entities : Array<Chromosome<T>>;
-
-  private static entityCounter = 0;
 
   /**
    * Constructor of the Population object
