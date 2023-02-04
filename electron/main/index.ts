@@ -35,6 +35,7 @@ const indexHtml = join(process.env.DIST, 'index.html');
  */
 async function createWindow() {
   win = new BrowserWindow({
+    autoHideMenuBar: true,
     title: 'Main window',
     icon: join(process.env.PUBLIC as string, 'favicon.ico'),
     webPreferences: {
