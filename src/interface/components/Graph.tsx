@@ -6,7 +6,7 @@ import {ReduxNodeObject} from '../redux/extensions/ReduxNodeObject';
 import {ReduxLinkObject} from '../redux/extensions/ReduxLinkObject';
 import {
   getRandomNumber,
-} from '../../geneticAlgorithm/operators/RecombinationOperators';
+} from '../../geneticAlgorithm/operators';
 import SpriteText from 'three-spritetext';
 import {ExtendedNodeObject} from '../redux/extensions/ExtendedNodeObject';
 import {ExtendedLinkObject} from '../redux/extensions/ExtendedLinkObject';
