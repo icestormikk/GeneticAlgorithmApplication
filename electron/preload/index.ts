@@ -39,21 +39,8 @@ const safeDOM = {
  * @return {void}
  */
 function useLoading() {
-  const className = `loaders-css__square-spin`;
+  const className = `loaders-css`;
   const styleContent = `
-@keyframes square-spin {
-  25% { transform: perspective(100px) rotateX(180deg) rotateY(0); }
-  50% { transform: perspective(100px) rotateX(180deg) rotateY(180deg); }
-  75% { transform: perspective(100px) rotateX(0) rotateY(180deg); }
-  100% { transform: perspective(100px) rotateX(0) rotateY(0); }
-}
-.${className} > div {
-  animation-fill-mode: both;
-  width: 50px;
-  height: 50px;
-  background: #fff;
-  animation: square-spin 3s 0s cubic-bezier(0.09, 0.57, 0.49, 0.9) infinite;
-}
 .app-loading-wrap {
   position: fixed;
   top: 0;
@@ -65,6 +52,8 @@ function useLoading() {
   justify-content: center;
   background: #282c34;
   z-index: 9;
+  color: white;
+  font-size: 2em;
 }
     `;
   const oStyle = document.createElement('style');
@@ -73,7 +62,7 @@ function useLoading() {
   oStyle.id = 'app-loading-style';
   oStyle.innerHTML = styleContent;
   oDiv.className = 'app-loading-wrap';
-  oDiv.innerHTML = `<div class="${className}"><div></div></div>`;
+  oDiv.innerHTML = `<div class="${className}"><p>Загружаем данные...</p></div>`;
 
   return {
     appendLoading() {
