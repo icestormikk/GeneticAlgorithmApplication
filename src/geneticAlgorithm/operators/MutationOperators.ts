@@ -64,7 +64,7 @@ declare module '../domain/Chromosome' {
  * @return {number} random index
  */
 export function getRandomIndex(array: Array<unknown>) : number {
-  return Math.floor(Math.random() * array.length);
+  return Math.round(Math.random() * (array.length - 1));
 }
 
 Chromosome.prototype.insertionMutation =

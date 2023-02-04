@@ -36,10 +36,12 @@ declare module '../domain/Population' {
          * @param {Function} fitnessFunction a function that allows you to
          * measure the "fitness" of an individual (how suitable is the
          * proposed option)
+         * @param {boolean} isAscending TEST FUNCTION
          */
         eliteSelection(
             passingEntitiesPercentage: number,
-            fitnessFunction: (chromosome: Chromosome<T>) => number
+            fitnessFunction: (chromosome: Chromosome<T>) => number,
+            isAscending: boolean
         ) : Population<T>
         /**
          * In this selection, the choice of an individual in a new
@@ -53,10 +55,12 @@ declare module '../domain/Population' {
          * @param {Function} fitnessFunction a function that allows you to
          * measure the "fitness" of an individual (how suitable is the
          * proposed option)
+         * @param {boolean} isAscending TEST FUNCTION
          */
         exclusionSelection(
             passingEntitiesPercentage: number,
-            fitnessFunction: (chromosome: Chromosome<T>) => number
+            fitnessFunction: (chromosome: Chromosome<T>) => number,
+            isAscending: boolean
         ) : Population<T>
         /**
          * In this method the probability of selection to a new
@@ -107,6 +111,7 @@ Population.prototype.eliteSelection =
     function<T>(
         passingEntitiesPercentage: number,
         fitnessFunction: (chromosome: Chromosome<T>) => number,
+        isAscending = true,
     ) : Population<T> {
       const count = Math.ceil(this.entities.length * passingEntitiesPercentage);
       const isValid = isPassingCountSuitable(this, count);
@@ -117,7 +122,9 @@ Population.prototype.eliteSelection =
       return new Population(
           ...this.entities
               .sort((a, b) =>
-                fitnessFunction(b) - fitnessFunction(a),
+                isAscending ?
+                  fitnessFunction(a) - fitnessFunction(b) :
+                  fitnessFunction(b) - fitnessFunction(a),
               )
               .slice(0, count),
       );
@@ -127,6 +134,7 @@ Population.prototype.exclusionSelection =
     function<T>(
         passingEntitiesPercentage: number,
         fitnessFunction: (chromosome: Chromosome<T>) => number,
+        isAscending = true,
     ) : Population<T> {
       const count = Math.ceil(this.entities.length * passingEntitiesPercentage);
       const isValid = isPassingCountSuitable(this, count);
@@ -136,7 +144,9 @@ Population.prototype.exclusionSelection =
 
       const newPopulationEntities = this.entities
           .sort((a, b) =>
-            fitnessFunction(b) - fitnessFunction(a),
+            isAscending ?
+              fitnessFunction(a) - fitnessFunction(b) :
+              fitnessFunction(b) - fitnessFunction(a),
           )
           .filter((chromosome, index, self) =>
             index === self.findIndex((t) => (
