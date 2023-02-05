@@ -5,7 +5,9 @@ import LinkActions from '../LinkActions/LinkActions.lazy';
 
 
 /**
- * Join nodes window
+ * A component displaying a small modal window containing
+ * information and available actions on the selected nodes
+ * of the graph
  * @constructor
  */
 function JoinNodesWindow() {

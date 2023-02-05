@@ -16,7 +16,8 @@ const isLinkExist = (
 };
 
 /**
- * Link Actions
+ * A component that directly contains the actions
+ * available over the selected nodes
  * @constructor
  */
 function LinkActions() {
