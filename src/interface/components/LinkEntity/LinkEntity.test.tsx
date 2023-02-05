@@ -5,7 +5,7 @@ import LinkEntity from './LinkEntity';
 
 describe('<LinkEntity />', () => {
   test('it should mount', () => {
-    render(<LinkEntity id={'1'} />);
+    render(<LinkEntity id={'0'} />);
 
     const linkEntity = screen.getByTestId('LinkEntity');
 

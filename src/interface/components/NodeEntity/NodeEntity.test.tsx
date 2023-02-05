@@ -5,7 +5,7 @@ import NodeEntity from './NodeEntity';
 
 describe('<NodeEntity />', () => {
   test('it should mount', () => {
-    render(<NodeEntity id={'1'}/>);
+    render(<NodeEntity id={'0'}/>);
 
     const nodeEntity = screen.getByTestId('NodeEntity');
 
