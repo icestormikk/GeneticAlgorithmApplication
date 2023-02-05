@@ -1,8 +1,7 @@
 import React from 'react';
 
 /**
- * A stopwatch that allows you to measure the
- * duration of an action
+ * A stopwatch that allows you to measure the duration of an action
  * @constructor
  */
 function Stopwatch() {
