@@ -1,5 +1,9 @@
 import React from 'react';
 import {motion} from 'framer-motion';
+import {TbPoint} from 'react-icons/tb';
+import {VscActivateBreakpoints} from 'react-icons/vsc';
+import {useAppSelector} from '../../redux/hooks';
+import NodeEntity from '../NodeEntity/NodeEntity.lazy';
 
 interface AllEntitiesInfoProps {
   isOpen: boolean,
@@ -11,23 +15,65 @@ interface AllEntitiesInfoProps {
  * @constructor
  */
 function AllEntitiesInfo({isOpen}: AllEntitiesInfoProps) {
+  const nodes = useAppSelector((state) => state.nodes.items);
+  const links = useAppSelector((state) => state.links.items);
+  const lists = React.useMemo(() => {
+    return [
+      {
+        id: 0,
+        title: 'Пункты',
+        icon: <TbPoint/>,
+        entities: nodes,
+      },
+      {
+        id: 1,
+        title: 'Связи',
+        icon: <VscActivateBreakpoints/>,
+        entities: links,
+      },
+    ];
+  }, [nodes, links]);
+
   return (
-    <motion.div
-      initial={{
-        x: '150%',
-      }}
-      animate={{
-        x: isOpen ? '0' : '150%',
-      }}
-      transition={{
-        duration: 0.5,
-      }}
-      className="absolute right-2 top-2"
+    <div
+      className="absolute right-2 top-2 flex flex-col gap-2"
     >
-      <div className="bg-white p-2">
-        <h1>Test</h1>
-      </div>
-    </motion.div>
+      {
+        lists.map((list, index) => (
+          <motion.div
+            key={list.id}
+            className="bg-white rounded-md w-80 overflow-hidden"
+            initial={{
+              x: '150%',
+            }}
+            animate={{
+              x: isOpen ? '0' : '150%',
+            }}
+            transition={{
+              duration: 0.5,
+              delay: index * 0.1,
+            }}
+          >
+            <div
+              className="flex flex-row gap-2 justify-start items-center
+              border-b-[1px] border-b-gray-300 px-2 py-1"
+            >
+              {list.icon}
+              {list.title}
+            </div>
+            <div>
+              {
+                list.id === 0 && (
+                  list.entities.map((el) => (
+                    <NodeEntity key={el.id} id={el.id}/>
+                  ))
+                )
+              }
+            </div>
+          </motion.div>
+        ))
+      }
+    </div>
   );
 }
 
