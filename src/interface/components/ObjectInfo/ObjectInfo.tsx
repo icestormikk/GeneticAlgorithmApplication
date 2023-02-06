@@ -15,9 +15,17 @@ function ObjectInfo({obj}: ObjectInfoProps) {
       {
         Object.entries(obj).map(([key, value], index) => (
           <div key={index} className="flex flex-row justify-start items-center
-      text-sm centered">
+          text-sm centered">
             <b className="px-1">{`${key}: `}</b>
-            <span>{`${value}`}</span>
+            {
+              typeof value === 'object' ? (
+                <pre className="text-[0.8rem]">
+                  {JSON.stringify(value, undefined, 1)}
+                </pre>
+              ) : (
+                <span>{`${value}`}</span>
+              )
+            }
           </div>
         ))
       }
