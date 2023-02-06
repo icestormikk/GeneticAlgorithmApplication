@@ -12,10 +12,12 @@ import {
 } from '../../redux/slicers/graphSlice';
 import {ImLoop2} from 'react-icons/im';
 import {MdReadMore} from 'react-icons/md';
-import {useAppDispatch, useAppSelector} from '../../redux/hooks';
+import {useAppDispatch} from '../../redux/hooks';
 import {dropLinks, setLinks} from '../../redux/slicers/linkSlice';
 import {dropNodes} from '../../redux/slicers/nodeSlice';
 import {motion, AnimatePresence} from 'framer-motion';
+import GeneticAlgorithmWindow
+  from '../GeneticAlgorithmWindow/GeneticAlgorithmWindow.lazy';
 
 interface ActionsMenuProps {
   setIsFullInfoOpen: React.Dispatch<React.SetStateAction<boolean>>
@@ -31,10 +33,8 @@ interface ActionsMenuProps {
  */
 function ActionsMenu({setIsFullInfoOpen}: ActionsMenuProps): JSX.Element {
   const dispatch = useAppDispatch();
-  const elementVisibility = useAppSelector(
-      (state) => state.graph.isAdditionalElementsShow,
-  );
   const [isShown, setShown] = React.useState(false);
+  const [isWindowShown, setIsWindowShown] = React.useState(false);
   const buttons = React.useMemo(() => [
     {
       id: 0,
@@ -67,7 +67,7 @@ function ActionsMenu({setIsFullInfoOpen}: ActionsMenuProps): JSX.Element {
       title: 'Найти путь',
       icon: <GiPathDistance/>,
       action: () => {
-        return 0;
+        setIsWindowShown(true);
       },
     },
     {
@@ -81,38 +81,44 @@ function ActionsMenu({setIsFullInfoOpen}: ActionsMenuProps): JSX.Element {
   ], []);
 
   return (
-    <AnimatePresence>
-      <div className="absolute left-0 bottom-0 z-10 text-white flex
+    <>
+      <GeneticAlgorithmWindow
+        isOpen={isWindowShown}
+        setIsOpen={setIsWindowShown}
+      />
+      <AnimatePresence>
+        <div className="absolute left-0 bottom-0 z-10 text-white flex
       flex-row gap-2 p-2 text-xl">
-        <button
-          type="button"
-          onClick={() => setShown((prevState) => !prevState)}
-        >
+          <button
+            type="button"
+            onClick={() => setShown((prevState) => !prevState)}
+          >
+            {
+              isShown ? (
+                <AiOutlineClose/>
+              ) : (
+                <GiHamburgerMenu/>
+              )
+            }
+          </button>
           {
-            isShown ? (
-              <AiOutlineClose/>
-            ) : (
-              <GiHamburgerMenu/>
-            )
+            buttons.map((el, index) => (
+              <motion.button
+                key={el.id}
+                type="button"
+                title={el.title}
+                onClick={el.action}
+                transition={{delay: index * 0.1}}
+                initial={{opacity: 0}}
+                animate={{opacity: isShown ? 1 : 0}}
+              >
+                {el.icon}
+              </motion.button>
+            ))
           }
-        </button>
-        {
-          buttons.map((el, index) => (
-            <motion.button
-              key={el.id}
-              type="button"
-              title={el.title}
-              onClick={el.action}
-              transition={{delay: index * 0.1}}
-              initial={{opacity: 0}}
-              animate={{opacity: isShown ? 1 : 0}}
-            >
-              {el.icon}
-            </motion.button>
-          ))
-        }
-      </div>
-    </AnimatePresence>
+        </div>
+      </AnimatePresence>
+    </>
   );
 }
 
