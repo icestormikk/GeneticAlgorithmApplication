@@ -29,7 +29,7 @@ export class Graph<T> {
    */
   getTotalDistance(
       onDistance: (link: LinkEntity<T>) => number,
-      ...nodeIDs: Readonly<Array<number>>
+      ...nodeIDs: Readonly<Array<string>>
   ) : number {
     let res = 0;
 
@@ -50,17 +50,17 @@ export class Graph<T> {
 
   /**
    * Returns a random set of note ids representing a path in the graph
-   * @param {number|undefined} startNodeId id of the node that the path
+   * @param {string|undefined} startNodeId id of the node that the path
    * should start from
-   * @param {number|undefined} endNodeId id of the node where the path
+   * @param {string|undefined} endNodeId id of the node where the path
    * should end
    * @param {boolean} isRepeatable will the IDs be repeated in the path
-   * @return {Array<number>} a random path in the graph is an array of
+   * @return {Array<string>} a random path in the graph is an array of
    * node ids
    */
   createRandomPath(
-      startNodeId?: number, endNodeId?: number, isRepeatable = false,
-  ) : Array<number> {
+      startNodeId?: string, endNodeId?: string, isRepeatable = false,
+  ) : Array<string> {
     const startNode = this.nodes.find((el) => el.id === startNodeId);
     const endNode = this.nodes.find((el) => el.id === endNodeId);
     if (startNodeId && !startNode) {
@@ -76,12 +76,18 @@ export class Graph<T> {
       path.push(startNode);
     }
 
-    for (let i = 0; path.length < this.nodes.length; i++) {
+    for (let i = startNode ? 1 : 0; path.length < this.nodes.length; i++) {
       const availableNodes = isRepeatable ?
         this.nodes : this.nodes.filter((el) =>
           path.find((nd) => nd.id === el.id) === undefined,
         );
+
       const element = getRandomElementFrom(availableNodes);
+      if (i > 0 && !this.links.find((el) =>
+        el.source === path[i - 1].id && el.target === element.id)
+      ) {
+        continue;
+      }
       path.push(element);
     }
 
@@ -93,12 +99,12 @@ export class Graph<T> {
   /**
    * Checks whether it is possible to get from one node of
    * the graph to another
-   * @param {number} startNodeId id of the node where the path begins
-   * @param {number} endNodeId id of the node where the path ends
+   * @param {string} startNodeId id of the node where the path begins
+   * @param {string} endNodeId id of the node where the path ends
    * @return {boolean} true if there is at least one path between
    * the knives, otherwise false
    */
-  isReachable(startNodeId: number, endNodeId: number) : boolean {
+  isReachable(startNodeId: string, endNodeId: string) : boolean {
     const startNode = this.nodes.find((el) => el.id === startNodeId);
     if (!startNode) {
       throw Error(`Node with id ${startNodeId} doesn't exist in graph`);
