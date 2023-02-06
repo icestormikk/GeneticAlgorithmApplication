@@ -51,7 +51,7 @@ function ModalWindow(
         data-testid="ModalWindow"
       >
         <div className="bg-[#efefef] rounded-md text-black sm:max-w-[50vw]
-        lg:w-[40rem] max-w-[90vw] w-full">
+        lg:max-w-[60rem] max-w-[90vw]">
           <ModalHeader
             content={title}
             setIsOpen={setIsOpen}

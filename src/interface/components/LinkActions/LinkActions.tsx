@@ -42,8 +42,8 @@ function LinkActions() {
           id: generateUUID(),
           source: startNodeId,
           target: endNodeId,
-          label: `${startNodeId} -> ${endNodeId}`,
-          value: {},
+          label: `${selectedNodes[0].label} -> ${selectedNodes[1].label}`,
+          value: {distance: Math.round(Math.random() * 100)},
         };
 
         dispatch(addLink(newLink));
@@ -62,7 +62,6 @@ function LinkActions() {
           return;
         }
 
-        console.log(link);
         dispatch(removeLink(link.id));
         dispatch(setSelectedNodes([]));
       },

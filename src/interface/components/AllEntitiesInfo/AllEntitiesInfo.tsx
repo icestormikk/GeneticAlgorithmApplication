@@ -4,6 +4,7 @@ import {TbPoint} from 'react-icons/tb';
 import {VscActivateBreakpoints} from 'react-icons/vsc';
 import {useAppSelector} from '../../redux/hooks';
 import NodeEntity from '../NodeEntity/NodeEntity.lazy';
+import LinkEntity from '../LinkEntity/LinkEntity.lazy';
 
 interface AllEntitiesInfoProps {
   isOpen: boolean,
@@ -21,7 +22,7 @@ function AllEntitiesInfo({isOpen}: AllEntitiesInfoProps) {
     return [
       {
         id: 0,
-        title: 'Пункты',
+        title: 'Вершины',
         icon: <TbPoint/>,
         entities: nodes,
       },
@@ -36,13 +37,13 @@ function AllEntitiesInfo({isOpen}: AllEntitiesInfoProps) {
 
   return (
     <div
-      className="absolute right-2 top-2 flex flex-col gap-2"
+      className="all-entities-list"
     >
       {
         lists.map((list, index) => (
           <motion.div
             key={list.id}
-            className="bg-white rounded-md w-80 overflow-hidden"
+            className="bg-white rounded-md w-80 overflow-hidden h-fit"
             initial={{
               x: '150%',
             }}
@@ -61,11 +62,19 @@ function AllEntitiesInfo({isOpen}: AllEntitiesInfoProps) {
               {list.icon}
               {list.title}
             </div>
-            <div>
+            <div className="overflow-x-hidden overflow-y-scroll h-full
+            entities-list">
               {
                 list.id === 0 && (
                   list.entities.map((el) => (
                     <NodeEntity key={el.id} id={el.id}/>
+                  ))
+                )
+              }
+              {
+                list.id === 1 && (
+                  list.entities.map((el) => (
+                    <LinkEntity key={el.id} id={el.id}/>
                   ))
                 )
               }

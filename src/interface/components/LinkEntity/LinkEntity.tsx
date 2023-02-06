@@ -7,7 +7,8 @@ import {motion} from 'framer-motion';
 import {AiOutlineCaretDown, AiOutlineClose} from 'react-icons/ai';
 import ObjectInfo from '../ObjectInfo/ObjectInfo.lazy';
 import {MdModeEdit} from 'react-icons/md';
-import {removeLink} from '../../redux/slicers/linkSlice';
+import {removeLink, updateLink} from '../../redux/slicers/linkSlice';
+
 interface LinkEntityProps {
   id: string,
 }
@@ -27,6 +28,7 @@ function LinkEntity({id}: LinkEntityProps) {
   const [isShown, setIsShown] = React.useState(false);
   const [isEditing, setIsEditing] = React.useState(false);
   const [isDeleting, setIsDeleting] = React.useState(false);
+  const [error, setError] = React.useState<string|undefined>(undefined);
   const fields = React.useMemo(
       () => {
         return [
@@ -40,9 +42,9 @@ function LinkEntity({id}: LinkEntityProps) {
           {
             id: 1,
             title: 'Информация',
-            fieldId: 'value',
+            fieldId: 'info',
             type: 'textarea',
-            defaultValue: link?.value,
+            defaultValue: JSON.stringify(link?.value, undefined, 4),
           },
         ];
       },
@@ -51,7 +53,28 @@ function LinkEntity({id}: LinkEntityProps) {
 
   const handleLinkEditing = React.useCallback(
       (event: React.SyntheticEvent) => {
-        // TODO
+        event.preventDefault();
+        const target = event.target as typeof event.target & {
+          label: {value: string},
+          info: {value: any}
+        };
+
+        try {
+          const updatedLink = Object.assign(
+              {},
+              link,
+              {
+                label: target.label.value,
+                value: JSON.parse(target.info.value),
+              },
+          );
+          dispatch(updateLink(updatedLink));
+        } catch (e) {
+          setError('Ошибка во время парсинга объекта');
+          return;
+        }
+        setError(undefined);
+        setIsEditing(false);
       },
       [links],
   );
@@ -92,7 +115,7 @@ function LinkEntity({id}: LinkEntityProps) {
               content={(
                 <div>
                   <p className="text-gray-500 mb-2">
-                    {`Объект: Node - ${id}`}
+                    {`Объект: Link - ${id}`}
                   </p>
                   <p>
                     Доступные для изменения параметры:
@@ -108,20 +131,34 @@ function LinkEntity({id}: LinkEntityProps) {
                         <label
                           key={field.id}
                           htmlFor={field.fieldId}
-                          className="ml-3 text-md"
+                          className="ml-3 mt-2 text-md"
                         >
-                          <span>Название: </span>
-                          <input
-                            type={field.type}
-                            name={field.fieldId}
-                            id={field.fieldId}
-                            required
-                            defaultValue={field.defaultValue}
-                            className="input-field-style"
-                          />
+                          <span>{field.title}</span>
+                          {
+                            field.type === 'textarea' ? (
+                              <textarea
+                                name={field.fieldId}
+                                id={field.fieldId}
+                                defaultValue={field.defaultValue}
+                                className="w-96 p-1 text-gray-500 h-60"
+                              />
+                            ) : (
+                              <input
+                                type={field.type}
+                                name={field.fieldId}
+                                id={field.fieldId}
+                                required
+                                defaultValue={field.defaultValue}
+                                className="input-field-style"
+                              />
+                            )
+                          }
                         </label>
                       ))
                     }
+                    <span className="text-red-500 font-bold">
+                      {error}
+                    </span>
                     <input type="submit" value="Применить"
                       className="submit-button"/>
                   </form>

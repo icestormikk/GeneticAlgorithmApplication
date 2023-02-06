@@ -116,7 +116,7 @@ function NodeEntity({id}: NodeEntityProps) {
                           htmlFor={field.fieldId}
                           className="ml-3 text-md"
                         >
-                          <span>Название: </span>
+                          <span>{field.title}</span>
                           <input
                             type={field.type}
                             name={field.fieldId}

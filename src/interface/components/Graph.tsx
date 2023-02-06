@@ -64,10 +64,17 @@ function Graph() {
       id: uuid,
       label: `node-${buildNameFromUUID(uuid)}`,
     };
-    const newLink = createNewLink(node, newNode);
+    const newLinks = [
+      createNewLink(node, newNode),
+      createNewLink(newNode, node),
+    ];
 
     await Promise.all(
-        [dispatch(addNode(newNode)), dispatch(addLink(newLink))],
+        [
+          dispatch(addNode(newNode)),
+          dispatch(addLink(newLinks[0])),
+          dispatch(addLink(newLinks[1])),
+        ],
     );
   };
 
