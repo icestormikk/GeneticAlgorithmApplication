@@ -16,7 +16,7 @@ function JoinNodesWindow() {
   return (
     <motion.div
       className="absolute bottom-2 right-2 bg-white rounded-md
-      block w-96"
+      block w-96 z-40"
       data-testid="JoinNodesWindow"
       initial={{y: '150%'}}
       animate={{y: selectedNodes.length > 1 ? 0 : '150%'}}
