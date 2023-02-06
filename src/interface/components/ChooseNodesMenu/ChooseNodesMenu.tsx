@@ -20,8 +20,9 @@ const itemVariants: Variants = {
 };
 
 /**
- * ChooseNodesMenu
- * @param {Array<ReduxNodeObject>} nodesCollector
+ * A component displaying a list of all available graph nodes
+ * available for selection (does not affect the algorithm yet)
+ * @param {Array<ReduxNodeObject>} nodesCollector list of selected nodes
  * @constructor
  */
 function ChooseNodesMenu({nodesCollector}: ChooseNodesMenuProps) {

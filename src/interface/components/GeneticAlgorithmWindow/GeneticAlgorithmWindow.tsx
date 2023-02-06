@@ -14,9 +14,12 @@ interface GeneticAlgorithmWindowProps {
 }
 
 /**
- * GeneticAlgorithmWindow
- * @param {boolean} isOpen
+ * A component that displays a window with tools for configuring
+ * and running the search algorithm
+ * @param {boolean} isOpen a property that determines whether a modal
+ * window is open or not
  * @param {React.Dispatch<React.SetStateAction<boolean>>} setIsOpen
+ * a function that changes the value of the {@link isOpen} property
  * @constructor
  */
 function GeneticAlgorithmWindow(
@@ -36,12 +39,9 @@ function GeneticAlgorithmWindow(
       [nodes, links],
   );
 
-  const start = React.useCallback(
-      () => {
-        startAlgorithm(nodes, links);
-      },
-      [nodes, links],
-  );
+  const start = async () => {
+    startAlgorithm(nodes, links);
+  };
 
   return (
     <ModalWindow
