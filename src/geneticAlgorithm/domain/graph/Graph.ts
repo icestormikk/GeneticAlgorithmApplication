@@ -1,6 +1,6 @@
 import {NodeEntity} from './NodeEntity';
 import {LinkEntity} from './LinkEntity';
-import {getRandomElementFrom} from '../../operators';
+import {getRandomIndex} from '../../operators';
 import {generateUUID} from 'three/src/math/MathUtils';
 
 /**
@@ -58,42 +58,65 @@ export class Graph<T> {
    * @return {Array<string>} a random path in the graph is an array of
    * node ids
    */
-  createRandomPath(
+  async createRandomPath(
       startNodeId?: string, endNodeId?: string, isRepeatable = false,
-  ) : Array<string> {
+  ) : Promise<Array<string>> {
     const startNode = this.nodes.find((el) => el.id === startNodeId);
     const endNode = this.nodes.find((el) => el.id === endNodeId);
     if (startNodeId && !startNode) {
-      throw Error(`Node with id ${startNodeId} doesn't exist in graph`);
+      throw new Error(`Node with id ${startNodeId} doesn't exist in graph`);
     }
     if (endNodeId && !endNode) {
-      throw Error(`Node with id ${endNodeId} doesn't exist in graph`);
+      throw new Error(`Node with id ${endNodeId} doesn't exist in graph`);
     }
 
-    const path: Array<NodeEntity> = [];
 
-    if (startNode) {
-      path.push(startNode);
-    }
+    const initialState = {
+      path: startNodeId ? [startNodeId] : [],
+      availableNodes: this.nodes
+          .filter((el) => el.id !== startNodeId && el.id !== endNodeId)
+          .map((el) => el.id),
+      limit: 10000,
+    };
+    const path: Array<string> = [...initialState.path];
+    const availableNodes = [...initialState.availableNodes];
+    let times = 0;
 
-    for (let i = startNode ? 1 : 0; path.length < this.nodes.length; i++) {
-      const availableNodes = isRepeatable ?
-        this.nodes : this.nodes.filter((el) =>
-          path.find((nd) => nd.id === el.id) === undefined,
-        );
-
-      const element = getRandomElementFrom(availableNodes);
-      if (i > 0 && !this.links.find((el) =>
-        el.source === path[i - 1].id && el.target === element.id)
-      ) {
-        continue;
+    while (path.length < this.nodes.length - Number(endNode !== undefined) +
+    Number(endNodeId === startNodeId && endNodeId !== undefined)) {
+      if (times++ > initialState.limit) {
+        throw new Error('Wrong graph configuration');
       }
+
+      const index = getRandomIndex(availableNodes);
+      const element = availableNodes[index];
+
+      if (path.length > 0) {
+        const isLinkExist = this.links.find((el) =>
+          el.source === path[path.length - 1] && el.target === element,
+        );
+        if (!isLinkExist) {
+          path.splice(0, path.length, ...initialState.path);
+          availableNodes.splice(
+              0,
+              availableNodes.length,
+              ...initialState.availableNodes,
+          );
+          continue;
+        }
+      }
+
       path.push(element);
+      if (!isRepeatable) {
+        availableNodes.splice(index, 1);
+      }
     }
 
-    // path.push(endNode ? endNode : getRandomElementFrom(this.nodes))
+    if (endNode) {
+      path.push(endNodeId!);
+    }
 
-    return path.map((el) => el.id);
+    return path;
   }
 
   /**

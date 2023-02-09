@@ -7,6 +7,9 @@ import {Graph} from './domain/graph/Graph';
 import {geneticAlgorithm} from './algorithm';
 import {Chromosome} from './domain/Chromosome';
 import {Population} from './domain/Population';
+import {addAction, updateAction} from '../interface/redux/slicers/actionsSlice';
+import store from '../interface/redux/store';
+import {Action, ActionStatus} from '../interface/redux/extensions/Action';
 
 
 /**
@@ -17,9 +20,12 @@ import {Population} from './domain/Population';
  * @param {Array<ReduxLinkObject>} linksList list of available
  * links in the column
  */
-export function startAlgorithm(
+export async function startAlgorithm(
     nodesList: Array<ReduxNodeObject>, linksList: Array<ReduxLinkObject>,
 ) {
+  await store.dispatch(addAction([{title: 'Запускаем алгоритм'}]));
+
+  // functions initialization
   const finishCondition = (population: Population<string>) =>
     population.entities
         .map((el) => 1.0 / graph.getTotalDistance(onDistance, ...el.gens))
@@ -31,6 +37,7 @@ export function startAlgorithm(
   const fitnessFunction = (chromosome: Chromosome<string>) =>
     1.0 / graph.getTotalDistance(onDistance, ...chromosome.gens);
 
+  // graph components initialization
   const nodes = nodesList.map((el) =>
     new NodeEntity(el.label, el.id),
   );
@@ -38,10 +45,14 @@ export function startAlgorithm(
     new LinkEntity(el.source, el.target, el.value, el.id),
   );
   const graph = new Graph(nodes, links);
-  const paths = [...Array(500).keys()]
-      .map(() =>
-        new Chromosome(...graph.createRandomPath()),
-      );
+  const paths = await Promise.all(
+      [...Array(1000).keys()]
+          .map(async () => {
+            const path = await graph.createRandomPath();
+
+            return new Chromosome(...path);
+          }),
+  );
   const population = new Population(...paths);
 
   console.log(
@@ -68,4 +79,13 @@ export function startAlgorithm(
   }).catch((err) => {
     console.log(err);
   });
+  const actions = store.getState().actions.items;
+  const act: Action = JSON.parse(
+      JSON.stringify(
+          actions[actions.length - 1],
+      ),
+  );
+  act.status = ActionStatus.SUCCESS;
+  act.title = 'Готово';
+  store.dispatch(updateAction(act));
 }
