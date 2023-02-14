@@ -17,7 +17,7 @@ import {dropLinks, setLinks} from '../../redux/slicers/linkSlice';
 import {dropNodes} from '../../redux/slicers/nodeSlice';
 import {motion, AnimatePresence} from 'framer-motion';
 import GeneticAlgorithmWindow
-  from '../GeneticAlgorithmWindow/GeneticAlgorithmWindow.lazy';
+  from '../GenAlgWindow/GeneticAlgorithmWindow/GeneticAlgorithmWindow.lazy';
 
 interface ActionsMenuProps {
   setIsFullInfoOpen: React.Dispatch<React.SetStateAction<boolean>>
