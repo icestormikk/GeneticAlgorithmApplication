@@ -1,7 +1,6 @@
 import {Population} from './domain/Population';
 import {Chromosome} from './domain/Chromosome';
 import {getRandomNumber} from './functions/arrayhelper';
-import {Graph} from './domain/graph/Graph';
 import {LinkEntity} from './domain/graph/LinkEntity';
 
 // /**
@@ -62,8 +61,6 @@ async function modifiedCrossover<T>(parent1: Array<T>, parent2: Array<T>) {
  * @param {Function} onDistance a function that calculates the length
  * of a path in a graph
  * @param {Population<number>} population initial population
- * @param {Graph<R>} graph <i>(temporary parameter)</i> the graph to which
- * the algorithm is applied
  * @return {Population<number>} a population with supposedly the most
  * suitable "individuals"
  * @template T
@@ -77,7 +74,6 @@ export async function geneticAlgorithm<T>(
     fitnessFunction: (chromosome: Chromosome<string>) => number,
     onDistance: (link: LinkEntity<T>) => number,
     population: Population<string>,
-    graph: Graph<T>,
 ) {
   let counter = 0;
   population.entities.sort((a, b) =>
