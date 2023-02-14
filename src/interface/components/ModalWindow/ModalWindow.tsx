@@ -50,8 +50,8 @@ function ModalWindow(
         flex-col"
         data-testid="ModalWindow"
       >
-        <div className="bg-[#efefef] rounded-md text-black sm:max-w-[50vw]
-        lg:max-w-[60rem] max-w-[90vw]">
+        <div className="bg-[#efefef] rounded-md text-black sm:max-w-[90vw]
+        lg:max-w-[80rem] max-w-[90vw]">
           <ModalHeader
             content={title}
             setIsOpen={setIsOpen}
