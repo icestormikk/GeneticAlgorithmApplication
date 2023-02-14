@@ -2,12 +2,14 @@ import {configureStore} from '@reduxjs/toolkit';
 import {graphReducer} from './slicers/graphSlice';
 import {linksReducer} from './slicers/linkSlice';
 import {nodesReducer} from './slicers/nodeSlice';
+import {actionsReducer} from './slicers/actionsSlice';
 
 const store = configureStore({
   reducer: {
     graph: graphReducer,
     links: linksReducer,
     nodes: nodesReducer,
+    actions: actionsReducer,
   },
   middleware: (getDefaultMiddleware) => [
     ...getDefaultMiddleware({
@@ -18,6 +20,7 @@ const store = configureStore({
           'nodesSlice/select',
           'nodesSlice/setNodes',
           'nodesSlice/updateNode',
+          'actionsSlice/addAction',
         ],
       },
     }),
