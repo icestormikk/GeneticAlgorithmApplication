@@ -1,7 +1,8 @@
 import {NodeEntity} from './NodeEntity';
 import {LinkEntity} from './LinkEntity';
-import {getRandomIndex} from '../../operators';
+import {getRandomElementFrom} from '../../functions/arrayhelper';
 import {generateUUID} from 'three/src/math/MathUtils';
+import {shuffle} from '../../functions/arrayhelper';
 
 /**
  * A class representing a graph that stores nodes and connections between them
@@ -63,6 +64,43 @@ export class Graph<T> {
   ) : Promise<Array<string>> {
     const startNode = this.nodes.find((el) => el.id === startNodeId);
     const endNode = this.nodes.find((el) => el.id === endNodeId);
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const self = this;
+    let finished = false;
+
+    /**
+     * Auxiliary recursive function for constructing a path in a graph
+     * @param {string} nodeId id of the current node
+     * @param {Array<string>} result the resulting array describing the path
+     * @param {string|undefined} endId id of the final node
+     */
+    async function dfsHelper(
+        nodeId: string, result: Array<string>, endId?: string,
+    ) {
+      if (endId && nodeId === endId && result.length > 1) {
+        finished = true;
+      }
+
+      result.push(nodeId);
+      const suitableLinks = self.links.filter((el) => el.source === nodeId);
+
+      shuffle(suitableLinks).forEach((el) => {
+        if (finished) {
+          return;
+        }
+
+        if (isRepeatable) {
+          if (result.length < self.nodes.length) {
+            dfsHelper(el.target, result, endId);
+          }
+        } else {
+          if (!result.includes(el.target)) {
+            dfsHelper(el.target, result, endId);
+          }
+        }
+      });
+    }
+
     if (startNodeId && !startNode) {
       throw new Error(`Node with id ${startNodeId} doesn't exist in graph`);
     }
@@ -70,53 +108,15 @@ export class Graph<T> {
       throw new Error(`Node with id ${endNodeId} doesn't exist in graph`);
     }
 
+    const result: Array<string> = [];
+    await dfsHelper(
+        startNodeId !== undefined ?
+          startNodeId : getRandomElementFrom(this.nodes).id,
+        result,
+        endNodeId,
+    );
 
-    const initialState = {
-      path: startNodeId ? [startNodeId] : [],
-      availableNodes: this.nodes
-          .filter((el) => el.id !== startNodeId && el.id !== endNodeId)
-          .map((el) => el.id),
-      limit: 10000,
-    };
-    const path: Array<string> = [...initialState.path];
-    const availableNodes = [...initialState.availableNodes];
-    let times = 0;
-
-    while (path.length < this.nodes.length - Number(endNode !== undefined) +
-    Number(endNodeId === startNodeId && endNodeId !== undefined)) {
-      if (times++ > initialState.limit) {
-        throw new Error('Wrong graph configuration');
-      }
-
-      const index = getRandomIndex(availableNodes);
-      const element = availableNodes[index];
-
-      if (path.length > 0) {
-        const isLinkExist = this.links.find((el) =>
-          el.source === path[path.length - 1] && el.target === element,
-        );
-        if (!isLinkExist) {
-          path.splice(0, path.length, ...initialState.path);
-          availableNodes.splice(
-              0,
-              availableNodes.length,
-              ...initialState.availableNodes,
-          );
-          continue;
-        }
-      }
-
-      path.push(element);
-      if (!isRepeatable) {
-        availableNodes.splice(index, 1);
-      }
-    }
-
-    if (endNode) {
-      path.push(endNodeId!);
-    }
-
-    return path;
+    return result;
   }
 
   /**
