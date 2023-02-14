@@ -7,9 +7,9 @@ import {Graph} from './domain/graph/Graph';
 import {geneticAlgorithm} from './algorithm';
 import {Chromosome} from './domain/Chromosome';
 import {Population} from './domain/Population';
-import {addAction, updateAction} from '../interface/redux/slicers/actionsSlice';
+import {addAction} from '../interface/redux/slicers/actionsSlice';
 import store from '../interface/redux/store';
-import {Action, ActionStatus} from '../interface/redux/extensions/Action';
+import {setPath} from '../interface/redux/slicers/graphSlice';
 
 
 /**
@@ -23,9 +23,18 @@ import {Action, ActionStatus} from '../interface/redux/extensions/Action';
 export async function startAlgorithm(
     nodesList: Array<ReduxNodeObject>, linksList: Array<ReduxLinkObject>,
 ) {
-  await store.dispatch(addAction([{title: 'Запускаем алгоритм'}]));
+  const startDate = new Date();
+  store.dispatch(
+      addAction(
+          [{title: 'Запускаем алгоритм', startDate}],
+      ),
+  );
 
-  // functions initialization
+  store.dispatch(
+      addAction(
+          [{title: 'Инициализируем функции', startDate}],
+      ),
+  );
   const finishCondition = (population: Population<string>) =>
     population.entities
         .map((el) => 1.0 / graph.getTotalDistance(onDistance, ...el.gens))
@@ -37,7 +46,11 @@ export async function startAlgorithm(
   const fitnessFunction = (chromosome: Chromosome<string>) =>
     1.0 / graph.getTotalDistance(onDistance, ...chromosome.gens);
 
-  // graph components initialization
+  store.dispatch(
+      addAction(
+          [{title: 'Конвертируем элементы графа', startDate}],
+      ),
+  );
   const nodes = nodesList.map((el) =>
     new NodeEntity(el.label, el.id),
   );
@@ -45,6 +58,12 @@ export async function startAlgorithm(
     new LinkEntity(el.source, el.target, el.value, el.id),
   );
   const graph = new Graph(nodes, links);
+
+  store.dispatch(
+      addAction(
+          [{title: 'Создаём начальную популяцию', startDate}],
+      ),
+  );
   const paths = await Promise.all(
       [...Array(1000).keys()]
           .map(async () => {
@@ -60,6 +79,7 @@ export async function startAlgorithm(
           onDistance, ...population.entities[0].gens,
       ),
   );
+  store.dispatch(addAction([{title: 'Запускаем алгоритм', startDate}]));
   geneticAlgorithm(
       5000,
       0.8,
@@ -68,7 +88,6 @@ export async function startAlgorithm(
       fitnessFunction,
       onDistance,
       population,
-      graph,
   ).then((res) => {
     console.log(graph.getTotalDistance(onDistance, ...res.entities[0].gens));
     console.log(
@@ -76,16 +95,13 @@ export async function startAlgorithm(
             .map((el) => nodes.find((node) => node.id === el))
             .map((el) => el?.label),
     );
+    store.dispatch(
+        addAction(
+            [{title: 'Алгоритм успешно завершил работу', startDate}],
+        ),
+    );
+    store.dispatch(setPath(res.entities[0].gens));
   }).catch((err) => {
     console.log(err);
   });
-  const actions = store.getState().actions.items;
-  const act: Action = JSON.parse(
-      JSON.stringify(
-          actions[actions.length - 1],
-      ),
-  );
-  act.status = ActionStatus.SUCCESS;
-  act.title = 'Готово';
-  store.dispatch(updateAction(act));
 }
