@@ -1,5 +1,5 @@
 import React, {lazy, Suspense} from 'react';
-import {ReduxNodeObject} from '../../redux/extensions/ReduxNodeObject';
+import {ReduxNodeObject} from '../../../redux/extensions/ReduxNodeObject';
 
 const LazyChooseNodesMenu = lazy(() => import('./ChooseNodesMenu'));
 

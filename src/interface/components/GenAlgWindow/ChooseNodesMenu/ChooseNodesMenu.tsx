@@ -1,7 +1,7 @@
 import React from 'react';
 import {motion, Variants} from 'framer-motion';
-import {ReduxNodeObject} from '../../redux/extensions/ReduxNodeObject';
-import {useAppSelector} from '../../redux/hooks';
+import {ReduxNodeObject} from '../../../redux/extensions/ReduxNodeObject';
+import {useAppSelector} from '../../../redux/hooks';
 import {AiOutlineClose} from 'react-icons/ai';
 
 interface ChooseNodesMenuProps {

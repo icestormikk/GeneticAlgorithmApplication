@@ -1,12 +1,14 @@
 import React from 'react';
-import {useAppSelector} from '../../redux/hooks';
-import ModalWindow from '../ModalWindow/ModalWindow.lazy';
+import {useAppSelector} from '../../../redux/hooks';
+import ModalWindow from '../../ModalWindow/ModalWindow.lazy';
 import AdditionalCondition
   from '../AdditionalCondition/AdditionalCondition.lazy';
 import {BiLockAlt} from 'react-icons/bi';
-import {ReduxNodeObject} from '../../redux/extensions/ReduxNodeObject';
+import {ReduxNodeObject} from '../../../redux/extensions/ReduxNodeObject';
 import ChooseNodesMenu from '../ChooseNodesMenu/ChooseNodesMenu.lazy';
-import {startAlgorithm} from '../../../geneticAlgorithm';
+import {startAlgorithm} from '../../../../geneticAlgorithm';
+import AlgorithmActionStatus
+  from '../AlgorithmActionStatus/AlgorithmActionStatus.lazy';
 
 interface GeneticAlgorithmWindowProps {
   isOpen: boolean,
@@ -40,7 +42,7 @@ function GeneticAlgorithmWindow(
   );
 
   const start = async () => {
-    startAlgorithm(nodes, links);
+    startAlgorithm(nodes, links).then(() => console.log('finished'));
   };
 
   return (
@@ -84,13 +86,7 @@ function GeneticAlgorithmWindow(
               )
             }
           </div>
-          <div className="bordered rounded-md w-1/2 p-1 shadow-xl">
-            <b>Статус</b>
-            <p className="font-light text-gray-500">
-              Здесь будут отображаться текущие действия и их
-              прогресс
-            </p>
-          </div>
+          <AlgorithmActionStatus/>
         </div>
       )}
     />
