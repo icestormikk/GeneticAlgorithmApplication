@@ -1,6 +1,6 @@
 import {Chromosome} from '../domain/Chromosome';
 import {Population} from '../domain/Population';
-import {getRandomElementFrom} from './RecombinationOperators';
+import {getRandomElementFrom} from '../functions/arrayhelper';
 import {Pair} from '../domain/Pair';
 
 const TEMPERATURE = 20.0;
@@ -42,7 +42,7 @@ declare module '../domain/Population' {
             passingEntitiesPercentage: number,
             fitnessFunction: (chromosome: Chromosome<T>) => number,
             isAscending: boolean
-        ) : Population<T>
+        ) : Promise<Population<T>>
         /**
          * In this selection, the choice of an individual in a new
          * population depends not only on the size of its suitability,
@@ -108,11 +108,11 @@ Population.prototype.truncationSelection =
     };
 
 Population.prototype.eliteSelection =
-    function<T>(
+    async function<T>(
         passingEntitiesPercentage: number,
         fitnessFunction: (chromosome: Chromosome<T>) => number,
         isAscending = true,
-    ) : Population<T> {
+    ) : Promise<Population<T> > {
       const count = Math.ceil(this.entities.length * passingEntitiesPercentage);
       const isValid = isPassingCountSuitable(this, count);
       if (!isValid.first) {

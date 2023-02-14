@@ -3,7 +3,7 @@ import {ChromosomePair} from '../domain/ChromosomePair';
 import {
   getRandomElementFrom,
   getRandomNumber,
-} from './RecombinationOperators';
+} from '../functions/arrayhelper';
 import {Pair} from '../domain/Pair';
 import {Chromosome} from '../domain/Chromosome';
 
@@ -64,7 +64,7 @@ declare module '../domain/Population' {
          */
         rouletteWheelSelection(
             fitnessFunction: (chromosome: Chromosome<T>) => number
-        ) : Population<T>
+        ) : Promise<Population<T>>
     }
 }
 
@@ -123,13 +123,14 @@ Population.prototype.tournamentSelection =
     };
 
 Population.prototype.rouletteWheelSelection =
-    function<T>(
+    async function<T>(
         fitnessFunction: (chromosome: Chromosome<T>) => number,
-    ) : Population<T> {
+    ) : Promise<Population<T>> {
       const newPopulation = new Population<T>();
-      const totalFitness = this.entities
-          .map((chromosome) => fitnessFunction(chromosome))
-          .reduce((a, b) => a + b, 0);
+      const totalFitness = (await Promise.all(
+          this.entities
+              .map(async (el) => fitnessFunction(el)),
+      )).reduce((a, b) => a + b, 0);
 
       for (let i = 0; i < this.entities.length; i++) {
         const wheelRandomValue = getRandomNumber(0, Math.abs(totalFitness));
@@ -147,7 +148,7 @@ Population.prototype.rouletteWheelSelection =
     };
 
 /**
- * dasdsadasdsadsad
+ * DOC IN DEV
  * @param {Population<T>} population asdasdas
  * @param {Function} distanceFunction sadasds
  * @param {boolean} isInbreeding asdasd

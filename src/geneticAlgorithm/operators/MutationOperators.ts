@@ -1,4 +1,5 @@
 import {Chromosome} from '../domain/Chromosome';
+import {getRandomIndex} from '../functions/arrayhelper';
 
 declare module '../domain/Chromosome' {
     interface Chromosome<T> {
@@ -56,15 +57,6 @@ declare module '../domain/Chromosome' {
             this: Chromosome<boolean>
         ) : Chromosome<boolean>
     }
-}
-
-/**
- * Get a random index from an array of elements
- * @param {Array} array array of elements
- * @return {number} random index
- */
-export function getRandomIndex(array: Array<unknown>) : number {
-  return Math.round(Math.random() * (array.length - 1));
 }
 
 Chromosome.prototype.insertionMutation =

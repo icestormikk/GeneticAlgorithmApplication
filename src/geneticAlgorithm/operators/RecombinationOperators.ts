@@ -2,7 +2,11 @@ import {Chromosome} from '../domain/Chromosome';
 import {ChromosomePair} from '../domain/ChromosomePair';
 import {Pair} from '../domain/Pair';
 import {Population} from '../domain/Population';
-import {getRandomIndex} from './MutationOperators';
+import {
+  getRandomElementFrom,
+  getRandomIndex,
+  getRandomNumber,
+} from '../functions/arrayhelper';
 
 const RECOMBINATION_MULTIPLIER = 0.25;
 
@@ -289,36 +293,6 @@ ChromosomePair.prototype.crossoverWithReducedSurrogate =
 
       return this.multiPointCrossover(...filteredBoundaryPoints);
     };
-
-export const getRandomNumber = (min: number, max: number) : number =>
-  Math.random() * (max - min) + min;
-
-/**
- * Returns a random element from the passed array
- * @param {Array<T>} array an array from which to get a random element
- * @return {T} random element
- * @template T
- */
-export function getRandomElementFrom<T>(array: Array<T>) : T {
-  return array[getRandomIndex(array)];
-}
-
-/**
- * Applies the {@link onPass} function to an array and
- * returns a new filtered array
- * @param {Array<T>} array array based on which filtering
- * will be performed
- * @param {Function} onPass function for filtering
- * @return {Array<T>} a new array containing only elements that
- * have passed the {@link onPass} check
- * @template T
- */
-export function getFilteredArray<T>(
-    array: Array<T>,
-    onPass: (element: T) => boolean,
-) : Array<T> {
-  return array.filter(onPass);
-}
 
 /**
  * Creates an array of arrayLength length and fills it with
