@@ -1,11 +1,13 @@
-import {createSlice} from '@reduxjs/toolkit';
+import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 
 interface GraphState {
-  isAdditionalElementsShow: boolean
+  isAdditionalElementsShow: boolean,
+  foundPath: Array<string>|undefined
 }
 
 const initialState: GraphState = {
   isAdditionalElementsShow: false,
+  foundPath: undefined,
 };
 
 const graphSlice = createSlice({
@@ -15,6 +17,13 @@ const graphSlice = createSlice({
     switchElementsVisibility: (state) => {
       state.isAdditionalElementsShow = !state.isAdditionalElementsShow;
     },
+    setPath: (state, action: PayloadAction<Array<string>>) => {
+      if (!state.foundPath) {
+        state.foundPath = action.payload;
+      }
+
+      state.foundPath.splice(0, state.foundPath.length, ...action.payload);
+    },
     dropState: (state) => {
       state.isAdditionalElementsShow = false;
     },
@@ -23,5 +32,7 @@ const graphSlice = createSlice({
 
 export const graphReducer = graphSlice.reducer;
 export const {
-  switchElementsVisibility, dropState,
+  dropState,
+  setPath,
+  switchElementsVisibility,
 } = graphSlice.actions;
