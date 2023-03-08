@@ -2,11 +2,7 @@ import {Chromosome} from '../domain/Chromosome';
 import {ChromosomePair} from '../domain/ChromosomePair';
 import {Pair} from '../domain/Pair';
 import {Population} from '../domain/Population';
-import {
-  getRandomElementFrom,
-  getRandomIndex,
-  getRandomNumber,
-} from '../functions/arrayhelper';
+import {getRandomNumber} from '../functions/arrayhelper';
 
 const RECOMBINATION_MULTIPLIER = 0.25;
 
@@ -198,7 +194,7 @@ ChromosomePair.prototype.multiPointCrossover =
 
 ChromosomePair.prototype.singlePointCrossover =
     function<T>(boundaryPoint?: number) : ChromosomePair<T> {
-      const point = boundaryPoint || getRandomIndex(this.first.gens);
+      const point = boundaryPoint || this.first.gens.randomIndex();
       return this.multiPointCrossover(point);
     };
 
@@ -239,7 +235,7 @@ ChromosomePair.prototype.triadicCrossover =
       if (filteredPopulation.length === 0) {
         throw new Error('The population consists only of parent individuals');
       }
-      const randomMaskEntity = getRandomElementFrom(filteredPopulation).gens;
+      const randomMaskEntity = filteredPopulation.random().gens;
 
       for (let i = 0; i < Math.ceil(randomMaskEntity.length * 0.1); i++) {
         const randomGenIndex = getRandomNumber(0, randomMaskEntity.length);
@@ -335,7 +331,7 @@ function chunked<T>(array: Array<T>, chunkSize: number) : Array<Array<T>> {
 }
 
 /**
- * swaps values inside the segment
+ * Swaps values inside the segment
  * @param {Pair<number, number>} range segment
  * including values to exchange <b>(borders included)</b>
  * @param {Chromosome<Array<T>>} gensParent1 genes of the

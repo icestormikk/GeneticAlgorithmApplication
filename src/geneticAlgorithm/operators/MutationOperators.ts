@@ -1,5 +1,4 @@
 import {Chromosome} from '../domain/Chromosome';
-import {getRandomIndex} from '../functions/arrayhelper';
 
 declare module '../domain/Chromosome' {
     interface Chromosome<T> {
@@ -68,8 +67,8 @@ Chromosome.prototype.insertionMutation =
         throw Error('There are 0 possible values');
       }
 
-      const index = specificIndex || getRandomIndex(this.gens);
-      const randomValue = possibleValues[getRandomIndex(possibleValues)];
+      const index = specificIndex || this.gens.random();
+      const randomValue = possibleValues[possibleValues.randomIndex()];
       this.gens.splice(index, 0, randomValue);
 
       return this;
@@ -82,7 +81,7 @@ Chromosome.prototype.removingMutation =
             ' single gene in a chromosome');
       }
 
-      const index = getRandomIndex(this.gens);
+      const index = this.gens.randomIndex();
       this.gens.splice(index, 1);
 
       return this;
@@ -101,7 +100,7 @@ Chromosome.prototype.swappingMutation =
       } else {
         const indexes = Array
             .from({length: length - 2}, (_, i) => i + 1);
-        const randomIndex = indexes[getRandomIndex(indexes)];
+        const randomIndex = indexes[indexes.randomIndex()];
         [this.gens[randomIndex - 1], this.gens[randomIndex + 1]] =
             [this.gens[randomIndex + 1], this.gens[randomIndex - 1]];
       }
@@ -113,8 +112,8 @@ Chromosome.prototype.replacingMutation =
     function<T>(
         possibleValues: Array<T>,
     ) : Chromosome<T> {
-      const randomGenIndex = getRandomIndex(this.gens);
-      const randomPossibleValueIndex = getRandomIndex(possibleValues);
+      const randomGenIndex = this.gens.randomIndex();
+      const randomPossibleValueIndex = possibleValues.randomIndex();
       this.gens[randomGenIndex] = possibleValues[randomPossibleValueIndex];
 
       return this;
@@ -130,7 +129,7 @@ Chromosome.prototype.realValuedMutation =
             ${variableChangeStep}`);
       }
 
-      const randomIndex = getRandomIndex(this.gens);
+      const randomIndex = this.gens.randomIndex();
       const lowerCalculationBound = this.gens[randomIndex] - variableChangeStep;
       const topCalculationBound = this.gens[randomIndex] + variableChangeStep;
       const alpha = 0.5 * (topCalculationBound - lowerCalculationBound);
@@ -149,7 +148,7 @@ Chromosome.prototype.realValuedMutation =
 
 Chromosome.prototype.binaryMutation =
     function() : Chromosome<boolean> {
-      const randomIndex = getRandomIndex(this.gens);
+      const randomIndex = this.gens.randomIndex();
       this.gens[randomIndex] = !this.gens[randomIndex];
       return this;
     };

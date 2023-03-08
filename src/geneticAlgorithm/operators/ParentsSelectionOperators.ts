@@ -1,9 +1,6 @@
 import {Population} from '../domain/Population';
 import {ChromosomePair} from '../domain/ChromosomePair';
-import {
-  getRandomElementFrom,
-  getRandomNumber,
-} from '../functions/arrayhelper';
+import {getRandomNumber} from '../functions/arrayhelper';
 import {Pair} from '../domain/Pair';
 import {Chromosome} from '../domain/Chromosome';
 
@@ -71,8 +68,7 @@ declare module '../domain/Population' {
 Population.prototype.panmixia =
     function<T>() : ChromosomePair<T> {
       return new ChromosomePair(
-          getRandomElementFrom(this.entities),
-          getRandomElementFrom(this.entities),
+          this.entities.random(), this.entities.random(),
       );
     };
 
@@ -109,7 +105,7 @@ Population.prototype.tournamentSelection =
         const randomEntities: Array<Chromosome<T>> = [];
 
         while (randomEntities.length != tournamentSize) {
-          randomEntities.push(getRandomElementFrom(this.entities));
+          randomEntities.push(this.entities.random());
         }
 
         newPopulation.addChromosome(
@@ -147,28 +143,20 @@ Population.prototype.rouletteWheelSelection =
       return newPopulation;
     };
 
-/**
- * DOC IN DEV
- * @param {Population<T>} population asdasdas
- * @param {Function} distanceFunction sadasds
- * @param {boolean} isInbreeding asdasd
- * @return {ChromosomePair<T>} adasdsad
- * @template T
- */
 function chooseDescendatsAlgorithm<T>(
     population: Population<T>,
-    distanceFunction: (
+    onDistance: (
         chromosome1: Chromosome<T>, chromosome2: Chromosome<T>
     ) => number,
     isInbreeding: boolean,
 ) : ChromosomePair<T> {
-  const parent1 = getRandomElementFrom(population.entities);
+  const parent1 = population.entities.random();
   const parent2 = population.entities
       .filter((el) =>
         el.id !== parent1.id,
       )
       .map((el) =>
-        new Pair(el, distanceFunction(parent1, el)),
+        new Pair(el, onDistance(parent1, el)),
       )
       .sort((a, b) =>
         (isInbreeding ? a.second - b.second : b.second - a.second),

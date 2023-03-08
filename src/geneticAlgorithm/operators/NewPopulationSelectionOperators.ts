@@ -1,6 +1,5 @@
 import {Chromosome} from '../domain/Chromosome';
 import {Population} from '../domain/Population';
-import {getRandomElementFrom} from '../functions/arrayhelper';
 import {Pair} from '../domain/Pair';
 
 const TEMPERATURE = 20.0;
@@ -100,7 +99,7 @@ Population.prototype.truncationSelection =
 
       while (newPopulation.entities.length !== this.entities.length) {
         newPopulation.entities.push(
-            getRandomElementFrom(mostSuitableIndividuals),
+            mostSuitableIndividuals.random(),
         );
       }
 
@@ -173,8 +172,8 @@ Population.prototype.bolzmanSelection =
 
       const newPopulation = new Population<T>();
       for (let i = 0; i < count; i++) {
-        const randomEntity1 = getRandomElementFrom(this.entities);
-        const randomEntity2 = getRandomElementFrom(this.entities);
+        const randomEntity1 = this.entities.random();
+        const randomEntity2 = this.entities.random();
         const probability = 1.0 / (1.0 + Math.exp(
             fitnessFunction(randomEntity1) - fitnessFunction(randomEntity2),
         ) / TEMPERATURE);
@@ -187,13 +186,6 @@ Population.prototype.bolzmanSelection =
       return newPopulation;
     };
 
-/**
- * dasdsadasdsadasd
- * @param {Population<T>} population sdadasdasd
- * @param {number} passingEntitiesCount asdsad
- * @return {Pair<boolean, string>} adasdasds
- * @template T
- */
 function isPassingCountSuitable<T>(
     population: Population<T>,
     passingEntitiesCount: number,
