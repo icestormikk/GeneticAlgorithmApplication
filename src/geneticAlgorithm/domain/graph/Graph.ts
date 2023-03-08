@@ -1,8 +1,6 @@
 import {NodeEntity} from './NodeEntity';
 import {LinkEntity} from './LinkEntity';
-import {getRandomElementFrom} from '../../functions/arrayhelper';
 import {generateUUID} from 'three/src/math/MathUtils';
-import {shuffle} from '../../functions/arrayhelper';
 
 /**
  * A class representing a graph that stores nodes and connections between them
@@ -55,65 +53,73 @@ export class Graph<T> {
    * should start from
    * @param {string|undefined} endNodeId id of the node where the path
    * should end
-   * @param {boolean} isRepeatable will the IDs be repeated in the path
    * @return {Array<string>} a random path in the graph is an array of
    * node ids
    */
   async createRandomPath(
-      startNodeId?: string, endNodeId?: string, isRepeatable = false,
+      startNodeId?: string, endNodeId?: string
   ) : Promise<Array<string>> {
-    const startNode = this.nodes.find((el) => el.id === startNodeId);
-    const endNode = this.nodes.find((el) => el.id === endNodeId);
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
-    let finished = false;
+    function validateNodeById(id: string) : NodeEntity {
+      const node = self.nodes.find((el) => el.id === id)
+      if (!node) {
+        throw new Error(`Node with ${startNodeId} id was not found!`)
+      }
+
+      return node
+    }
+
+    const startNode = startNodeId !== undefined
+        ? validateNodeById(startNodeId)
+        : this.nodes.random()
+    const endNode = endNodeId !== undefined
+        ? validateNodeById(endNodeId)
+        : startNode
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    let isCompleted = false;
 
     /**
      * Auxiliary recursive function for constructing a path in a graph
-     * @param {string} nodeId id of the current node
+     * @param {string} currentNodeId id of the current node
      * @param {Array<string>} result the resulting array describing the path
-     * @param {string|undefined} endId id of the final node
+     * @param {string|undefined} finalNodeId id of the final node
      */
-    async function dfsHelper(
-        nodeId: string, result: Array<string>, endId?: string,
-    ) {
-      if (endId && nodeId === endId && result.length > 1) {
-        finished = true;
+    async function pathfinder(currentNodeId: string, result: Array<string>, finalNodeId: string) {
+      result.push(currentNodeId)
+      if (result.length === self.nodes.length) {
+        const toEndNode = self.links.find((el) =>
+            el.source == currentNodeId && el.target === finalNodeId
+        )
+        if (!toEndNode) {
+          throw new Error(
+              'End is unreachable (it is impossible to bypass all the vertices once and return to the given one)'
+          )
+        }
+
+        result.push(toEndNode.target)
+        isCompleted = true
+        return
       }
 
-      result.push(nodeId);
-      const suitableLinks = self.links.filter((el) => el.source === nodeId);
+      const suitableLinks = self.links.filter((el) => el.source === currentNodeId)
+      for (const link of suitableLinks.shuffle()) {
+        const isAlreadyInclude = result.find((node) => node === link.target) !== undefined
 
-      shuffle(suitableLinks).forEach((el) => {
-        if (finished) {
-          return;
+        if (!isAlreadyInclude && !isCompleted) {
+          await pathfinder(link.target, result, finalNodeId)
+          return
         }
+      }
 
-        if (isRepeatable) {
-          if (result.length < self.nodes.length) {
-            dfsHelper(el.target, result, endId);
-          }
-        } else {
-          if (!result.includes(el.target)) {
-            dfsHelper(el.target, result, endId);
-          }
-        }
-      });
-    }
-
-    if (startNodeId && !startNode) {
-      throw new Error(`Node with id ${startNodeId} doesn't exist in graph`);
-    }
-    if (endNodeId && !endNode) {
-      throw new Error(`Node with id ${endNodeId} doesn't exist in graph`);
+      throw new Error('End is unreachable (2)')
     }
 
     const result: Array<string> = [];
-    await dfsHelper(
+    await pathfinder(
         startNodeId !== undefined ?
-          startNodeId : getRandomElementFrom(this.nodes).id,
+          startNodeId : this.nodes.random().id,
         result,
-        endNodeId,
+        endNode.id,
     );
 
     return result;
