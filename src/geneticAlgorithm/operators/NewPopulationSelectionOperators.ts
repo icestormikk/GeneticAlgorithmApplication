@@ -41,7 +41,7 @@ declare module '../domain/Population' {
             passingEntitiesPercentage: number,
             fitnessFunction: (chromosome: Chromosome<T>) => number,
             isAscending: boolean
-        ) : Promise<Population<T>>
+        ) : Population<T>
         /**
          * In this selection, the choice of an individual in a new
          * population depends not only on the size of its suitability,
@@ -107,11 +107,11 @@ Population.prototype.truncationSelection =
     };
 
 Population.prototype.eliteSelection =
-    async function<T>(
+    function<T>(
         passingEntitiesPercentage: number,
         fitnessFunction: (chromosome: Chromosome<T>) => number,
         isAscending = true,
-    ) : Promise<Population<T> > {
+    ) : Population<T> {
       const count = Math.ceil(this.entities.length * passingEntitiesPercentage);
       const isValid = isPassingCountSuitable(this, count);
       if (!isValid.first) {

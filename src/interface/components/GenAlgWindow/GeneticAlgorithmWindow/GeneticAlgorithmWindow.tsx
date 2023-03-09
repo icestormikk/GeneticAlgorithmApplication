@@ -42,7 +42,9 @@ function GeneticAlgorithmWindow(
   );
 
   const start = async () => {
-    startAlgorithm(nodes, links).then(() => console.log('finished'));
+      console.log(selectedNodes)
+      startAlgorithm(nodes, links, selectedNodes[0])
+          .then(() => console.log('finished'));
   };
 
   return (

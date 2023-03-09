@@ -61,7 +61,7 @@ declare module '../domain/Population' {
          */
         rouletteWheelSelection(
             fitnessFunction: (chromosome: Chromosome<T>) => number
-        ) : Promise<Population<T>>
+        ) : Population<T>
     }
 }
 
@@ -119,14 +119,13 @@ Population.prototype.tournamentSelection =
     };
 
 Population.prototype.rouletteWheelSelection =
-    async function<T>(
+    function<T>(
         fitnessFunction: (chromosome: Chromosome<T>) => number,
-    ) : Promise<Population<T>> {
+    ) : Population<T> {
       const newPopulation = new Population<T>();
-      const totalFitness = (await Promise.all(
-          this.entities
-              .map(async (el) => fitnessFunction(el)),
-      )).reduce((a, b) => a + b, 0);
+      const totalFitness = this.entities
+          .map((el) => fitnessFunction(el))
+          .reduce((a, b) => a + b, 0);
 
       for (let i = 0; i < this.entities.length; i++) {
         const wheelRandomValue = getRandomNumber(0, Math.abs(totalFitness));

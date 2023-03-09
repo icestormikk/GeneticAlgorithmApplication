@@ -15,7 +15,6 @@ export const dateDiffInSeconds = (startDate: Date, endDate: Date) => {
   const mins = Math.floor(secs / SECS_PER_MINUTE);
   const hours = Math.floor(mins / MINS_PER_HOUR);
 
-  console.log({hours, minutes: mins, seconds: secs, ms});
   return {hours, minutes: mins, seconds: secs, ms};
 };
 
