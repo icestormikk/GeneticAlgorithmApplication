@@ -7,6 +7,10 @@ declare global {
      * @template T
      */
     random: () => T
+    /**
+     * Returns the index of a random array element
+     * @return {number} random index
+     */
     randomIndex: () => number
     /**
      * Shuffles the elements of the passed array in random order
@@ -19,7 +23,7 @@ declare global {
 }
 
 Array.prototype.random = function <T> () : T {
-  const randomIndex = Math.round(Math.random() * this.length)
+  const randomIndex = Math.floor(Math.random() * this.length)
   return this[randomIndex]
 }
 
