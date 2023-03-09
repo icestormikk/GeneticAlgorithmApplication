@@ -14,7 +14,7 @@ function AlgorithmActionStatus() {
 
   return (
     <div className="bordered rounded-md w-1/2 p-1 shadow-xl bg-white
-    max-h-[70vh] overflow-x-hidden overflow-y-scroll">
+    h-[70vh] overflow-x-hidden overflow-y-scroll">
       <b>Журнал</b>
       <p className="font-light text-gray-500 text-sm">
         Здесь будут отображаться текущие действия и их
