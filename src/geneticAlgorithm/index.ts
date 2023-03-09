@@ -11,6 +11,43 @@ import {addAction} from '../interface/redux/slicers/actionsSlice';
 import store from '../interface/redux/store';
 import {setPath} from '../interface/redux/slicers/graphSlice';
 
+function initializeGraph(nodesList: Array<ReduxNodeObject>, linksList: Array<ReduxLinkObject>) {
+    const nodes = nodesList.map((el) =>
+        new NodeEntity(el.label, el.id),
+    );
+    const links = linksList.map((el) =>
+        new LinkEntity(el.source, el.target, el.value, el.id),
+    );
+
+    return new Graph(nodes, links);
+}
+
+function appendAction(title: string, startDate: Date) {
+    store.dispatch(
+        addAction(
+            [{title, startDate}],
+        ),
+    );
+}
+
+async function createNewPopulation(
+    graph: Graph<any>,
+    startNode?: NodeEntity,
+    endNode?: NodeEntity
+) {
+    const paths: Array<Chromosome<string>> = []
+
+    for (let i = 0; i < 1000; i++) {
+        try {
+            const path = await graph.createRandomPath(startNode?.id, endNode?.id)
+            paths.push(new Chromosome(...path))
+        } catch (e: any) {
+            console.log(`Error while rendering: ${e.message}`)
+        }
+    }
+
+    return new Population(...paths);
+}
 
 /**
  * Runs a pre-configured genetic algorithm to solve the
@@ -19,89 +56,59 @@ import {setPath} from '../interface/redux/slicers/graphSlice';
  * vertices in the graph
  * @param {Array<ReduxLinkObject>} linksList list of available
  * links in the column
+ * @param {NodeEntity|undefined} startNode IN DEV
  */
 export async function startAlgorithm(
-    nodesList: Array<ReduxNodeObject>, linksList: Array<ReduxLinkObject>,
+    nodesList: Array<ReduxNodeObject>,
+    linksList: Array<ReduxLinkObject>,
+    startNode?: NodeEntity,
 ) {
-  const startDate = new Date();
-  store.dispatch(
-      addAction(
-          [{title: 'Запускаем алгоритм', startDate}],
-      ),
-  );
+    const startDate = new Date();
+    appendAction('Запускаем алгоритм', startDate)
 
-  store.dispatch(
-      addAction(
-          [{title: 'Инициализируем функции', startDate}],
-      ),
-  );
-  const finishCondition = (population: Population<string>) =>
-    population.entities
-        .map((el) => 1.0 / graph.getTotalDistance(onDistance, ...el.gens))
-        .every((obj, _, array) =>
-          obj === array[0] && array[0] !== Number.MAX_VALUE,
-        );
-  const onDistance = (link: LinkEntity<{ distance: number }>) =>
-    link.value.distance;
-  const fitnessFunction = (chromosome: Chromosome<string>) =>
-    1.0 / graph.getTotalDistance(onDistance, ...chromosome.gens);
+    appendAction('Инициализируем функции', startDate)
+    const finishCondition = (population: Population<string>) =>
+        population.entities
+            .map((el) => 1.0 / graph.getTotalDistance(onDistance, ...el.gens))
+            .every((obj, _, array) =>
+                obj === array[0] && array[0] !== Number.MAX_VALUE,
+            );
+    const onDistance = (link: LinkEntity<{ distance: number }>) => link.value.distance;
+    const fitnessFunction = (chromosome: Chromosome<string>) =>
+        1.0 / graph.getTotalDistance(onDistance, ...chromosome.gens);
 
-  store.dispatch(
-      addAction(
-          [{title: 'Конвертируем элементы графа', startDate}],
-      ),
-  );
-  const nodes = nodesList.map((el) =>
-    new NodeEntity(el.label, el.id),
-  );
-  const links = linksList.map((el) =>
-    new LinkEntity(el.source, el.target, el.value, el.id),
-  );
-  const graph = new Graph(nodes, links);
+    appendAction('Конвертируем элементы графа', startDate);
+    const graph = initializeGraph(nodesList, linksList);
 
-  store.dispatch(
-      addAction(
-          [{title: 'Создаём начальную популяцию', startDate}],
-      ),
-  );
-  const paths = await Promise.all(
-      [...Array(1000).keys()]
-          .map(async () => {
-            const path = await graph.createRandomPath();
+    appendAction('Создаём начальную популяцию', startDate)
+    const population = await createNewPopulation(graph, startNode);
 
-            return new Chromosome(...path);
-          }),
-  );
-  const population = new Population(...paths);
-
-  console.log(
-      graph.getTotalDistance(
-          onDistance, ...population.entities[0].gens,
-      ),
-  );
-  store.dispatch(addAction([{title: 'Запускаем алгоритм', startDate}]));
-  geneticAlgorithm(
-      5000,
-      0.8,
-      0.5,
-      finishCondition,
-      fitnessFunction,
-      onDistance,
-      population,
-  ).then((res) => {
-    console.log(graph.getTotalDistance(onDistance, ...res.entities[0].gens));
+    appendAction('Запускаем алгоритм', startDate)
     console.log(
-        res.entities[0].gens
-            .map((el) => nodes.find((node) => node.id === el))
-            .map((el) => el?.label),
-    );
-    store.dispatch(
-        addAction(
-            [{title: 'Алгоритм успешно завершил работу', startDate}],
-        ),
-    );
-    store.dispatch(setPath(res.entities[0].gens));
-  }).catch((err) => {
-    console.log(err);
-  });
+        population
+            .entities
+            .map((entity) => graph.getTotalDistance(onDistance, ...entity.gens))
+            .sort((a, b) => a - b)
+    )
+    geneticAlgorithm(
+        5000,
+        0.8,
+        0.5,
+        finishCondition,
+        fitnessFunction,
+        onDistance,
+        population,
+    ).then((res) => {
+        console.log(graph.getTotalDistance(onDistance, ...res.entities[0].gens));
+        console.log(
+            res.entities[0].gens
+                .map((el) => graph.nodes.find((node) => node.id === el))
+                .map((el) => el?.label),
+        );
+        appendAction('Алгоритм успешно завершил работу', startDate)
+        store.dispatch(setPath(res.entities[0].gens));
+    }).catch((err) => {
+        appendAction('Произошла ошибка во время работы алгоритма', startDate)
+        console.error(err);
+    });
 }
