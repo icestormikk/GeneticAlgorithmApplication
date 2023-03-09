@@ -27,7 +27,7 @@ import {LinkEntity} from './domain/graph/LinkEntity';
  * @param {Array<T>} parent2
  * @template T
  */
-async function modifiedCrossover<T>(parent1: Array<T>, parent2: Array<T>) {
+function modifiedCrossover<T>(parent1: Array<T>, parent2: Array<T>) {
   const gen1 = getRandomNumber(0, parent1.length - 1);
   const gen2 = getRandomNumber(0, parent2.length - 1);
   const startGen = Math.min(gen1, gen2);
@@ -75,7 +75,6 @@ export async function geneticAlgorithm<T>(
     onDistance: (link: LinkEntity<T>) => number,
     population: Population<string>,
 ) {
-  let counter = 0;
   population.entities.sort((a, b) =>
     fitnessFunction(b) - fitnessFunction(a),
   );
@@ -98,39 +97,33 @@ export async function geneticAlgorithm<T>(
   //         .reduce((a, b) => a + b) / population.entities.length,
   // );
 
-  while (!finishCondition(population) && counter++ < maxGenerationsCount) {
-    const eliteEntities = await (await population
+  for (let i = 0; i < maxGenerationsCount; i++) {
+    if (finishCondition(population)) {
+      break
+    }
+    const eliteEntities = population
         .eliteSelection(
             elitePercentage,
             fitnessFunction,
             false,
-        ))
+        )
         .rouletteWheelSelection(fitnessFunction);
 
     const newPopulation = new Population<string>();
     newPopulation.addAllChromosomes(...eliteEntities.entities);
 
-    for (
-      let i = eliteEntities.entities.length; i < population.entities.length; i++
-    ) {
-      const parents = await population.panmixia();
-      const offspring = await modifiedCrossover(
-          parents.first.gens, parents.second.gens,
-      );
-      newPopulation.addChromosome(new Chromosome(...offspring));
-    }
+    // for (
+    //   let i = eliteEntities.entities.length; i < population.entities.length; i++
+    // ) {
+    //   const parents = population.panmixia();
+    //   const offspring = modifiedCrossover(
+    //       parents.first.gens, parents.second.gens,
+    //   );
+    //   newPopulation.addChromosome(new Chromosome(...offspring));
+    // }
 
     population.entities = newPopulation.entities;
   }
-
-
-  // console.log(
-  //     population.entities
-  //         .map((el) =>
-  //           graph.getTotalDistance(onDistance, ...el.gens),
-  //         )
-  //         .reduce((a, b) => a + b) / population.entities.length,
-  // );
 
   return population;
 }
