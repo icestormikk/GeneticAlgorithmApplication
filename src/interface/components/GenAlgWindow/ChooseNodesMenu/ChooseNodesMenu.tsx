@@ -4,6 +4,8 @@ import {ReduxNodeObject} from '../../../redux/extensions/ReduxNodeObject';
 import {useAppSelector} from '../../../redux/hooks';
 import {AiOutlineClose} from 'react-icons/ai';
 
+const MAX_SELECTED_NODES_COUNT = 1;
+
 interface ChooseNodesMenuProps {
   nodesCollector: Array<ReduxNodeObject>,
 }
@@ -19,6 +21,7 @@ const itemVariants: Variants = {
   }),
 };
 
+
 /**
  * A component displaying a list of all available graph nodes
  * available for selection (does not affect the algorithm yet)
@@ -30,7 +33,7 @@ function ChooseNodesMenu({nodesCollector}: ChooseNodesMenuProps) {
   const [currNodes, setCurrNodes] = React.useState(nodes);
 
   const selectNode = (node: ReduxNodeObject) => {
-    if (nodesCollector.length >= 2) {
+    if (nodesCollector.length >= MAX_SELECTED_NODES_COUNT) {
       return;
     }
 
