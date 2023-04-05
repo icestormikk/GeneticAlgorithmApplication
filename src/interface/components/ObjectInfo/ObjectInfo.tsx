@@ -1,6 +1,7 @@
 import React from 'react';
+
 interface ObjectInfoProps {
-  obj: any
+    obj: any
 }
 
 /**
@@ -10,27 +11,27 @@ interface ObjectInfoProps {
  * @constructor
  */
 function ObjectInfo({obj}: ObjectInfoProps) {
-  return (
-    <>
-      {
-        Object.entries(obj).map(([key, value], index) => (
-          <div key={index} className="flex flex-row justify-start items-center
-          text-sm centered">
-            <b className="px-1">{`${key}: `}</b>
+    return (
+        <>
             {
-              typeof value === 'object' ? (
-                <pre className="text-[0.8rem]">
+                Object.entries(obj).map(([key, value], index) => (
+                    <div key={index} className="flex flex-row justify-start items-center
+          text-sm centered">
+                        <b className="px-1">{`${key}: `}</b>
+                        {
+                            typeof value === 'object' ? (
+                                <pre className="text-[0.8rem]">
                   {JSON.stringify(value, undefined, 1)}
                 </pre>
-              ) : (
-                <span>{`${value}`}</span>
-              )
+                            ) : (
+                                <span>{`${value}`}</span>
+                            )
+                        }
+                    </div>
+                ))
             }
-          </div>
-        ))
-      }
-    </>
-  );
+        </>
+    );
 }
 
 export default ObjectInfo;

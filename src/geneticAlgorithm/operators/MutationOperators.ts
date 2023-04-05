@@ -15,11 +15,13 @@ declare module '../domain/Chromosome' {
         insertionMutation(
             possibleValues: Array<T>,
             specificIndex?: number
-        ) : Chromosome<T>
+        ): Chromosome<T>
+
         /**
          * Removes a random gene from a chromosome
          */
-        removingMutation() : Chromosome<T>
+        removingMutation(): Chromosome<T>
+
         /**
          * Replaces a random gene in the chromosome with a
          * value randomly selected from the {@link possibleValues}
@@ -28,12 +30,14 @@ declare module '../domain/Chromosome' {
          */
         replacingMutation(
             possibleValues: Array<T>
-        ) : Chromosome<T>
+        ): Chromosome<T>
+
         /**
          * Exchange of places in the chromosome of two neighbors of
          * one randomly selected gene
          */
-        swappingMutation() : Chromosome<T>,
+        swappingMutation(): Chromosome<T>,
+
         /**
          * Changes chromosome genes with real
          * values according to the formula: <b>GEN(I) = OLD_GEN(i) + A * B</b>,
@@ -48,107 +52,108 @@ declare module '../domain/Chromosome' {
             this: Chromosome<number>,
             variableChangeStep: number,
             parameter: number,
-        ) : Chromosome<number>,
+        ): Chromosome<number>,
+
         /**
          * Random inversion of one gene (0 is replaced by 1 and vice versa)
          */
         binaryMutation(
             this: Chromosome<boolean>
-        ) : Chromosome<boolean>
+        ): Chromosome<boolean>
     }
 }
 
 Chromosome.prototype.insertionMutation =
-    function<T>(
-        possibleValues : Array<T>,
-        specificIndex? : number,
-    ) : Chromosome<T> {
-      if (possibleValues.length === 0) {
-        throw Error('There are 0 possible values');
-      }
+    function <T>(
+        possibleValues: Array<T>,
+        specificIndex?: number,
+    ): Chromosome<T> {
+        if (possibleValues.length === 0) {
+            throw Error('There are 0 possible values');
+        }
 
-      const index = specificIndex || this.gens.random();
-      const randomValue = possibleValues[possibleValues.randomIndex()];
-      this.gens.splice(index, 0, randomValue);
+        const index = specificIndex || this.gens.random();
+        const randomValue = possibleValues[possibleValues.randomIndex()];
+        this.gens.splice(index, 0, randomValue);
 
-      return this;
+        return this;
     };
 
 Chromosome.prototype.removingMutation =
-    function<T>() : Chromosome<T> {
-      if (this.gens.length === 1) {
-        throw new Error('It is impossible to delete a' +
-            ' single gene in a chromosome');
-      }
+    function <T>(): Chromosome<T> {
+        if (this.gens.length === 1) {
+            throw new Error('It is impossible to delete a' +
+                ' single gene in a chromosome');
+        }
 
-      const index = this.gens.randomIndex();
-      this.gens.splice(index, 1);
+        const index = this.gens.randomIndex();
+        this.gens.splice(index, 1);
 
-      return this;
+        return this;
     };
 
 Chromosome.prototype.swappingMutation =
-    function<T>() : Chromosome<T> {
-      const {length} = this.gens;
-      if (length === 1) {
-        throw new Error('It is impossible to apply swapping mutation ' +
-            'to an chromosome with a single gene');
-      }
+    function <T>(): Chromosome<T> {
+        const {length} = this.gens;
+        if (length === 1) {
+            throw new Error('It is impossible to apply swapping mutation ' +
+                'to an chromosome with a single gene');
+        }
 
-      if (length < 3) {
-        this.gens.reverse();
-      } else {
-        const indexes = Array
-            .from({length: length - 2}, (_, i) => i + 1);
-        const randomIndex = indexes[indexes.randomIndex()];
-        [this.gens[randomIndex - 1], this.gens[randomIndex + 1]] =
-            [this.gens[randomIndex + 1], this.gens[randomIndex - 1]];
-      }
+        if (length < 3) {
+            this.gens.reverse();
+        } else {
+            const indexes = Array
+                .from({length: length - 2}, (_, i) => i + 1);
+            const randomIndex = indexes[indexes.randomIndex()];
+            [this.gens[randomIndex - 1], this.gens[randomIndex + 1]] =
+                [this.gens[randomIndex + 1], this.gens[randomIndex - 1]];
+        }
 
-      return this;
+        return this;
     };
 
 Chromosome.prototype.replacingMutation =
-    function<T>(
+    function <T>(
         possibleValues: Array<T>,
-    ) : Chromosome<T> {
-      const randomGenIndex = this.gens.randomIndex();
-      const randomPossibleValueIndex = possibleValues.randomIndex();
-      this.gens[randomGenIndex] = possibleValues[randomPossibleValueIndex];
+    ): Chromosome<T> {
+        const randomGenIndex = this.gens.randomIndex();
+        const randomPossibleValueIndex = possibleValues.randomIndex();
+        this.gens[randomGenIndex] = possibleValues[randomPossibleValueIndex];
 
-      return this;
+        return this;
     };
 
 Chromosome.prototype.realValuedMutation =
-    function(
+    function (
         variableChangeStep: number,
         parameter: number,
-    ) : Chromosome<number> {
-      if (variableChangeStep <= 0) {
-        throw new Error(`Variable change step can not be non-positive: 
+    ): Chromosome<number> {
+        if (variableChangeStep <= 0) {
+            throw new Error(`Variable change step can not be non-positive: 
             ${variableChangeStep}`);
-      }
+        }
 
-      const randomIndex = this.gens.randomIndex();
-      const lowerCalculationBound = this.gens[randomIndex] - variableChangeStep;
-      const topCalculationBound = this.gens[randomIndex] + variableChangeStep;
-      const alpha = 0.5 * (topCalculationBound - lowerCalculationBound);
-      const beta = Array
-          .from({length: parameter}, (_, i) => i + 1)
-          .map((el) =>
-            (Math.random() > 1.0 / parameter ? 1 : 0) *
-              Math.pow(2.0, -el),
-          )
-          .reduce<number>((a, b) => a + b, 0);
+        const randomIndex = this.gens.randomIndex();
+        const lowerCalculationBound = this.gens[randomIndex] - variableChangeStep;
+        const topCalculationBound = this.gens[randomIndex] + variableChangeStep;
+        const alpha = 0.5 * (topCalculationBound - lowerCalculationBound);
+        const beta = Array
+            .from({length: parameter}, (_, i) => i + 1)
+            .map((el) =>
+                (Math.random() > 1.0 / parameter ? 1 : 0) *
+                Math.pow(2.0, -el),
+            )
+            .reduce<number>((a, b) => a + b, 0);
 
-      this.gens[randomIndex] += (Math.random() >= 0.5 ? 1 : -1) * alpha * beta;
+        this.gens[randomIndex] += (Math.random() >= 0.5 ? 1 : -1) * alpha * beta;
 
-      return this;
+        return this;
     };
 
 Chromosome.prototype.binaryMutation =
-    function() : Chromosome<boolean> {
-      const randomIndex = this.gens.randomIndex();
-      this.gens[randomIndex] = !this.gens[randomIndex];
-      return this;
+    function (): Chromosome<boolean> {
+        const randomIndex = this.gens.randomIndex();
+        this.gens[randomIndex] = !this.gens[randomIndex];
+        return this;
     };

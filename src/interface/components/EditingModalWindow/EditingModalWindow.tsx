@@ -1,10 +1,11 @@
 import React from 'react';
 import ModalWindow from '../ModalWindow/ModalWindow.lazy';
+
 interface EditingModalWindowProps {
-  content: JSX.Element,
-  isOpen: boolean,
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>,
-  onEdit?: () => void,
+    content: JSX.Element,
+    isOpen: boolean,
+    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>,
+    onEdit?: () => void,
 }
 
 /**
@@ -21,37 +22,37 @@ interface EditingModalWindowProps {
  */
 function EditingModalWindow(
     {
-      content,
-      onEdit,
-      setIsOpen,
-      isOpen,
+        content,
+        onEdit,
+        setIsOpen,
+        isOpen,
     }: EditingModalWindowProps,
 ) {
-  return (
-    <ModalWindow
-      isOpen={isOpen}
-      setIsOpen={setIsOpen}
-      title={(
-        <h1>Изменение параметров объектов</h1>
-      )}
-      content={(
-        <>
-          {content}
-          {
-            onEdit && (
-              <button
-                type="button"
-                className="edit-button"
-                onClick={onEdit}
-              >
-                Применить
-              </button>
-            )
-          }
-        </>
-      )}
-    />
-  );
+    return (
+        <ModalWindow
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
+            title={(
+                <h1>Изменение параметров объектов</h1>
+            )}
+            content={(
+                <>
+                    {content}
+                    {
+                        onEdit && (
+                            <button
+                                type="button"
+                                className="edit-button"
+                                onClick={onEdit}
+                            >
+                                Применить
+                            </button>
+                        )
+                    }
+                </>
+            )}
+        />
+    );
 }
 
 export default EditingModalWindow;

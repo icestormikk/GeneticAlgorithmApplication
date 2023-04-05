@@ -12,7 +12,6 @@
         "index": "templates/default/index.ts"
       },
       "withStyle": false,
-      "withTest": true,
       "withStory": false,
       "withLazy": true,
       "withIndex": true

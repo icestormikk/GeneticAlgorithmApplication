@@ -37,12 +37,12 @@ async function createNewPopulation(
 ) {
     const paths: Array<Chromosome<string>> = []
 
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < 5000; i++) {
         try {
             const path = await graph.createRandomPath(startNode?.id, endNode?.id)
             paths.push(new Chromosome(...path))
         } catch (e: any) {
-            console.log(`Error while rendering: ${e.message}`)
+            // console.log(`Error while rendering: ${e.message}`)
         }
     }
 
@@ -81,11 +81,11 @@ export async function startAlgorithm(
     const graph = initializeGraph(nodesList, linksList);
 
     appendAction('Создаём начальную популяцию', startDate)
-    const population = await createNewPopulation(graph, startNode);
+    const initialPopulation = await createNewPopulation(graph, startNode);
 
     appendAction('Запускаем алгоритм', startDate)
     console.log(
-        population
+        initialPopulation
             .entities
             .map((entity) => graph.getTotalDistance(onDistance, ...entity.gens))
             .sort((a, b) => a - b)
@@ -97,7 +97,7 @@ export async function startAlgorithm(
         finishCondition,
         fitnessFunction,
         onDistance,
-        population,
+        initialPopulation,
     ).then((res) => {
         console.log(graph.getTotalDistance(onDistance, ...res.entities[0].gens));
         console.log(

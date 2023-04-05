@@ -1,10 +1,11 @@
 import React from 'react';
 import ModalWindow from '../ModalWindow/ModalWindow.lazy';
+
 interface DeletingModalWindowProps {
-  content: JSX.Element,
-  isOpen: boolean,
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
-  onDelete: () => void
+    content: JSX.Element,
+    isOpen: boolean,
+    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+    onDelete: () => void
 }
 
 /**
@@ -21,34 +22,34 @@ interface DeletingModalWindowProps {
  */
 function DeletingModalWindow(
     {
-      content,
-      isOpen,
-      setIsOpen,
-      onDelete,
+        content,
+        isOpen,
+        setIsOpen,
+        onDelete,
     }: DeletingModalWindowProps,
 ) {
-  return (
-    <ModalWindow
-      isOpen={isOpen}
-      setIsOpen={setIsOpen}
-      title={(
-        <h1>Удаление объекта</h1>
-      )}
-      content={(
-        <>
-          {content}
-          <p>ДАННОЕ ДЕЙСТВИЕ НЕОБРАТИМО</p>
-          <button
-            type="button"
-            className="delete-button"
-            onClick={onDelete}
-          >
-            Удалить
-          </button>
-        </>
-      )}
-    />
-  );
+    return (
+        <ModalWindow
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
+            title={(
+                <h1>Удаление объекта</h1>
+            )}
+            content={(
+                <>
+                    {content}
+                    <p>ДАННОЕ ДЕЙСТВИЕ НЕОБРАТИМО</p>
+                    <button
+                        type="button"
+                        className="delete-button"
+                        onClick={onDelete}
+                    >
+                        Удалить
+                    </button>
+                </>
+            )}
+        />
+    );
 }
 
 export default DeletingModalWindow;

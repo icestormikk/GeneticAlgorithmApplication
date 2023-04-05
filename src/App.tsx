@@ -5,10 +5,8 @@ import './geneticAlgorithm/operators/NewPopulationSelectionOperators';
 import './geneticAlgorithm/operators/ParentsSelectionOperators';
 import ActionsMenu from './interface/components/ActionsMenu/ActionsMenu.lazy';
 import Graph from './interface/components/Graph';
-import JoinNodesWindow
-  from './interface/components/JoinNodesWindow/JoinNodesWindow.lazy';
-import AllEntitiesInfo
-  from './interface/components/AllEntitiesInfo/AllEntitiesInfo.lazy';
+import JoinNodesWindow from './interface/components/JoinNodesWindow/JoinNodesWindow.lazy';
+import AllEntitiesInfo from './interface/components/AllEntitiesInfo/AllEntitiesInfo.lazy';
 import ReactModal from 'react-modal';
 
 ReactModal.setAppElement('#root');
@@ -18,16 +16,16 @@ ReactModal.setAppElement('#root');
  * @constructor
  */
 function App() {
-  const [isFullInfoOpen, setIsFullInfoOpen] = React.useState(false);
+    const [isFullInfoOpen, setIsFullInfoOpen] = React.useState(false);
 
-  return (
-    <>
-      <ActionsMenu setIsFullInfoOpen={setIsFullInfoOpen} />
-      <Graph />
-      <JoinNodesWindow/>
-      <AllEntitiesInfo isOpen={isFullInfoOpen}/>
-    </>
-  );
+    return (
+        <>
+            <ActionsMenu setIsFullInfoOpen={setIsFullInfoOpen}/>
+            <Graph/>
+            <JoinNodesWindow/>
+            <AllEntitiesInfo isOpen={isFullInfoOpen}/>
+        </>
+    );
 }
 
 export default App;

@@ -36,7 +36,7 @@ const indexHtml = join(process.env.DIST, 'index.html');
 async function createWindow() {
   win = new BrowserWindow({
     autoHideMenuBar: true,
-    title: 'Main window',
+    title: 'Genetic Algorithm Application',
     icon: join(process.env.PUBLIC as string, 'favicon.ico'),
     webPreferences: {
       preload,

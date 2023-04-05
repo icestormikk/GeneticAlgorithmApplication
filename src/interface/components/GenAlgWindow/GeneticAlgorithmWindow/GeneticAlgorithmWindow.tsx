@@ -1,18 +1,16 @@
 import React from 'react';
 import {useAppSelector} from '../../../redux/hooks';
 import ModalWindow from '../../ModalWindow/ModalWindow.lazy';
-import AdditionalCondition
-  from '../AdditionalCondition/AdditionalCondition.lazy';
+import AdditionalCondition from '../AdditionalCondition/AdditionalCondition.lazy';
 import {BiLockAlt} from 'react-icons/bi';
 import {ReduxNodeObject} from '../../../redux/extensions/ReduxNodeObject';
 import ChooseNodesMenu from '../ChooseNodesMenu/ChooseNodesMenu.lazy';
 import {startAlgorithm} from '../../../../geneticAlgorithm';
-import AlgorithmActionStatus
-  from '../AlgorithmActionStatus/AlgorithmActionStatus.lazy';
+import AlgorithmActionStatus from '../AlgorithmActionStatus/AlgorithmActionStatus.lazy';
 
 interface GeneticAlgorithmWindowProps {
-  isOpen: boolean,
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+    isOpen: boolean,
+    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 /**
@@ -27,72 +25,69 @@ interface GeneticAlgorithmWindowProps {
 function GeneticAlgorithmWindow(
     {isOpen, setIsOpen}: GeneticAlgorithmWindowProps,
 ) {
-  const nodes = useAppSelector((state) => state.nodes.items);
-  const links = useAppSelector((state) => state.links.items);
-  const [
-    // eslint-disable-next-line no-unused-vars
-    selectedNodes, setSelectedNodes,
-  ] = React.useState<Array<ReduxNodeObject>>([]);
+    const nodes = useAppSelector((state) => state.nodes.items);
+    const links = useAppSelector((state) => state.links.items);
+    const [selectedNodes, setSelectedNodes] = React.useState<Array<ReduxNodeObject>>([]);
 
-  const isSuitable = React.useCallback(
-      () => {
-        return nodes.length > 1 && links.length > 0;
-      },
-      [nodes, links],
-  );
+    const isSuitable = React.useCallback(
+        () => {
+            return nodes.length > 1 && links.length > 0;
+        },
+        [nodes, links],
+    );
 
-  const start = async () => {
-      console.log(selectedNodes)
-      startAlgorithm(nodes, links, selectedNodes[0])
-          .then(() => console.log('finished'));
-  };
+    const start = async () => {
+        console.log(selectedNodes)
+        startAlgorithm(nodes, links, selectedNodes[0])
+            .then(() => console.log('finished'));
+    };
 
-  return (
-    <ModalWindow
-      isOpen={isOpen}
-      setIsOpen={setIsOpen}
-      title={(
-        <h1>Задача Комми-Вояжера</h1>
-      )}
-      content={(
-        <div className="flex flex-row gap-2">
-          <div>
-            <AdditionalCondition
-              condition={isSuitable}
-              content={(
-                <p className="font-light text-gray-500">
-                  Необходимо наличие в графе как минимум 2 узлов
-                  и 1 ссылки
-                </p>
-              )}
-            />
-            {
-              !isSuitable() ? (
-                <div className="w-full h-20 bg-gray-400/60 rounded-md
+    return (
+        <ModalWindow
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
+            title={(
+                <h1>Задача Комми-Вояжера</h1>
+            )}
+            content={(
+                <div className="flex flex-row gap-2">
+                    <div>
+                        <AdditionalCondition
+                            condition={isSuitable}
+                            content={(
+                                <p className="font-light text-gray-500">
+                                    Необходимо наличие в графе как минимум 2 узлов
+                                    и 1 ссылки
+                                </p>
+                            )}
+                        />
+                        {
+                            !isSuitable() ? (
+                                <div className="w-full h-20 bg-gray-400/60 rounded-md
                 centered text-center flex-col text-xl text-gray-600
                 shadow-xl">
-                  <BiLockAlt/>
-                  <span>Locked</span>
+                                    <BiLockAlt/>
+                                    <span>Locked</span>
+                                </div>
+                            ) : (
+                                <>
+                                    <ChooseNodesMenu nodesCollector={selectedNodes}/>
+                                    <button
+                                        type="button"
+                                        className="submit-button"
+                                        onClick={() => start()}
+                                    >
+                                        Запустить
+                                    </button>
+                                </>
+                            )
+                        }
+                    </div>
+                    <AlgorithmActionStatus/>
                 </div>
-              ) : (
-                <>
-                  <ChooseNodesMenu nodesCollector={selectedNodes}/>
-                  <button
-                    type="button"
-                    className="submit-button"
-                    onClick={() => start()}
-                  >
-                    Запустить
-                  </button>
-                </>
-              )
-            }
-          </div>
-          <AlgorithmActionStatus/>
-        </div>
-      )}
-    />
-  );
+            )}
+        />
+    );
 }
 
 export default GeneticAlgorithmWindow;

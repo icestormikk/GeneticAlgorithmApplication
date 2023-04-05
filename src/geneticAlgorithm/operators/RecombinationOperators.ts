@@ -16,7 +16,8 @@ declare module '../domain/ChromosomePair' {
          */
         discreteRecombination(
             this: ChromosomePair<T>,
-        ) : ChromosomePair<T>
+        ): ChromosomePair<T>
+
         /**
          * The genes of both chromosomes change according to the formula:
          * <b>GEN(i) = PARENT1(i) + A*(PARENT2(i) - PARENT1(i))</b>,
@@ -30,7 +31,8 @@ declare module '../domain/ChromosomePair' {
          */
         intermediateRecombination(
             this: ChromosomePair<number>,
-        ) : ChromosomePair<number>
+        ): ChromosomePair<number>
+
         /**
          * The functionality is similar to the intermediateRecombination(..)
          * function. It differs in that the multiplier A is <b>selected for
@@ -45,7 +47,8 @@ declare module '../domain/ChromosomePair' {
             this: ChromosomePair<number>,
             firstChildMultiplier: number,
             secondChildMultiplier: number
-        ) : ChromosomePair<number>
+        ): ChromosomePair<number>
+
         /**
          * The boundary points are determined, which divide
          * the chromosomes into segments, after which chromosomes
@@ -55,7 +58,8 @@ declare module '../domain/ChromosomePair' {
          */
         multiPointCrossover(
             ...boundaryPoints: Array<number>
-        ) : ChromosomePair<T>
+        ): ChromosomePair<T>
+
         /**
          * A point inside the chromosome (the boundary point)
          * is randomly determined at which both chromosomes
@@ -63,8 +67,9 @@ declare module '../domain/ChromosomePair' {
          * @param boundaryPoint the point at which chromosomes divide
          */
         singlePointCrossover(
-           boundaryPoint?: number
-        ) : ChromosomePair<T>
+            boundaryPoint?: number
+        ): ChromosomePair<T>
+
         /**
          * Creates a mask (scheme) of an individual, in each locus of which
          * there is a potential crossing point. the mask genes are random binary
@@ -74,7 +79,7 @@ declare module '../domain/ChromosomePair' {
          */
         uniformCrossover(
             this: ChromosomePair<boolean>
-        ) : ChromosomePair<boolean>
+        ): ChromosomePair<boolean>
 
         /**
          * The functionality is similar to the uniformCrossover(..)
@@ -96,14 +101,16 @@ declare module '../domain/ChromosomePair' {
         triadicCrossover(
             this: ChromosomePair<boolean>,
             population: Population<boolean>
-        ) : ChromosomePair<boolean>
+        ): ChromosomePair<boolean>
+
         /**
          * Individuals selected for crossing over randomly exchange genes.
          * Then a point is selected for a single-point crossing and
          * parts of chromosomes are exchanged. After crossing, the created
          * descendants are shuffled again.
          */
-        shuffleCrossover() : ChromosomePair<T>
+        shuffleCrossover(): ChromosomePair<T>
+
         /**
          * Performs a limited crossover. This is done by limiting the choice
          * of the boundary point: the cut points should appear only where the
@@ -113,181 +120,181 @@ declare module '../domain/ChromosomePair' {
          */
         crossoverWithReducedSurrogate(
             ...boundaryPoints: Array<number>
-        ) : ChromosomePair<T>
+        ): ChromosomePair<T>
     }
 }
 
 ChromosomePair.prototype.discreteRecombination =
-    function<T>() : ChromosomePair<T> {
-      const parent1: Chromosome<T> = this.first;
-      const parent2: Chromosome<T> = this.second;
+    function <T>(): ChromosomePair<T> {
+        const parent1: Chromosome<T> = this.first;
+        const parent2: Chromosome<T> = this.second;
 
-      return new ChromosomePair(
-          new Chromosome<T>(
-              ...Array.from(Array(parent1.gens.length).keys())
-                  .map((el, index) =>
-                    (Math.random() >= 0.5 ? parent1 : parent2).gens[index],
-                  ),
-          ),
-          new Chromosome<T>(
-              ...Array.from(Array(parent1.gens.length).keys())
-                  .map((el, index) =>
-                    (Math.random() >= 0.5 ? parent1 : parent2).gens[index],
-                  ),
-          ),
-      );
+        return new ChromosomePair(
+            new Chromosome<T>(
+                ...Array.from(Array(parent1.gens.length).keys())
+                    .map((el, index) =>
+                        (Math.random() >= 0.5 ? parent1 : parent2).gens[index],
+                    ),
+            ),
+            new Chromosome<T>(
+                ...Array.from(Array(parent1.gens.length).keys())
+                    .map((el, index) =>
+                        (Math.random() >= 0.5 ? parent1 : parent2).gens[index],
+                    ),
+            ),
+        );
     };
 
 ChromosomePair.prototype.intermediateRecombination =
-    function() : ChromosomePair<number> {
-      return recombinationWithMultiplier(this);
+    function (): ChromosomePair<number> {
+        return recombinationWithMultiplier(this);
     };
 
 ChromosomePair.prototype.lineRecombination =
-    function(
+    function (
         firstChildMultiplier: number,
         secondChildMultiplier: number,
-    ) : ChromosomePair<number> {
-      return recombinationWithMultiplier(
-          this, firstChildMultiplier, secondChildMultiplier,
-      );
+    ): ChromosomePair<number> {
+        return recombinationWithMultiplier(
+            this, firstChildMultiplier, secondChildMultiplier,
+        );
     };
 
 ChromosomePair.prototype.multiPointCrossover =
-    function<T>(
+    function <T>(
         ...boundaryPoints: Array<number>
-    ) : ChromosomePair<T> {
-      const parent1 = this.first;
-      const parent2 = this.second;
-      const updatedBoundaryPoints = boundaryPoints
-          .filter((point) => point >= 0 && point < parent1.gens.length)
-          .filter((point, index, self) => self.indexOf(point) === index)
-          .sort((a, b) => a - b);
+    ): ChromosomePair<T> {
+        const parent1 = this.first;
+        const parent2 = this.second;
+        const updatedBoundaryPoints = boundaryPoints
+            .filter((point) => point >= 0 && point < parent1.gens.length)
+            .filter((point, index, self) => self.indexOf(point) === index)
+            .sort((a, b) => a - b);
 
-      if (updatedBoundaryPoints.length === 0) {
-        throw new Error('No suitable boundary points were found');
-      }
+        if (updatedBoundaryPoints.length === 0) {
+            throw new Error('No suitable boundary points were found');
+        }
 
-      let swappingElements = new Pair(
-          parent1.gens, parent2.gens,
-      );
-      chunked(updatedBoundaryPoints, 2).forEach((chunk) => {
-        const updatedChunk = (chunk.length === 1) ?
-              chunk.concat(parent1.gens.length - 1) :
-              chunk;
-        swappingElements = swapElementsInArrayByRange(
-            new Pair(updatedChunk[0], updatedChunk[1]),
-            swappingElements.first,
-            swappingElements.second,
+        let swappingElements = new Pair(
+            parent1.gens, parent2.gens,
         );
-      });
+        chunked(updatedBoundaryPoints, 2).forEach((chunk) => {
+            const updatedChunk = (chunk.length === 1) ?
+                chunk.concat(parent1.gens.length - 1) :
+                chunk;
+            swappingElements = swapElementsInArrayByRange(
+                new Pair(updatedChunk[0], updatedChunk[1]),
+                swappingElements.first,
+                swappingElements.second,
+            );
+        });
 
-      return new ChromosomePair(
-          new Chromosome(
-              ...swappingElements.first,
-          ),
-          new Chromosome(
-              ...swappingElements.second,
-          ),
-      );
+        return new ChromosomePair(
+            new Chromosome(
+                ...swappingElements.first,
+            ),
+            new Chromosome(
+                ...swappingElements.second,
+            ),
+        );
     };
 
 ChromosomePair.prototype.singlePointCrossover =
-    function<T>(boundaryPoint?: number) : ChromosomePair<T> {
-      const point = boundaryPoint || this.first.gens.randomIndex();
-      return this.multiPointCrossover(point);
+    function <T>(boundaryPoint?: number): ChromosomePair<T> {
+        const point = boundaryPoint || this.first.gens.randomIndex();
+        return this.multiPointCrossover(point);
     };
 
 ChromosomePair.prototype.uniformCrossover =
-    function() : ChromosomePair<boolean> {
-      const parent1 = this.first;
-      const parent2 = this.second;
-      const bitMask = [
-        getArrayWithRandomNumbers(parent1.gens.length, 0, 1),
-        getArrayWithRandomNumbers(parent1.gens.length, 0, 1),
-      ];
+    function (): ChromosomePair<boolean> {
+        const parent1 = this.first;
+        const parent2 = this.second;
+        const bitMask = [
+            getArrayWithRandomNumbers(parent1.gens.length, 0, 1),
+            getArrayWithRandomNumbers(parent1.gens.length, 0, 1),
+        ];
 
-      return new ChromosomePair(
-          new Chromosome(
-              ...bitMask[0].map((bit, index) =>
-                ((bit === 1) ? parent1 : parent2).gens[index],
-              ),
-          ),
-          new Chromosome(
-              ...bitMask[1].map((bit, index) =>
-                ((bit === 1) ? parent1 : parent2).gens[index],
-              ),
-          ),
-      );
+        return new ChromosomePair(
+            new Chromosome(
+                ...bitMask[0].map((bit, index) =>
+                    ((bit === 1) ? parent1 : parent2).gens[index],
+                ),
+            ),
+            new Chromosome(
+                ...bitMask[1].map((bit, index) =>
+                    ((bit === 1) ? parent1 : parent2).gens[index],
+                ),
+            ),
+        );
     };
 
 ChromosomePair.prototype.triadicCrossover =
-    function(
+    function (
         population: Population<boolean>,
-    ) : ChromosomePair<boolean> {
-      const parent1 = this.first;
-      const parent2 = this.second;
-      const filteredPopulation = population.entities
-          .filter((entity) =>
-            entity.id !== parent1.id && entity.id !== parent2.id,
-          );
+    ): ChromosomePair<boolean> {
+        const parent1 = this.first;
+        const parent2 = this.second;
+        const filteredPopulation = population.entities
+            .filter((entity) =>
+                entity.id !== parent1.id && entity.id !== parent2.id,
+            );
 
-      if (filteredPopulation.length === 0) {
-        throw new Error('The population consists only of parent individuals');
-      }
-      const randomMaskEntity = filteredPopulation.random().gens;
+        if (filteredPopulation.length === 0) {
+            throw new Error('The population consists only of parent individuals');
+        }
+        const randomMaskEntity = filteredPopulation.random().gens;
 
-      for (let i = 0; i < Math.ceil(randomMaskEntity.length * 0.1); i++) {
-        const randomGenIndex = getRandomNumber(0, randomMaskEntity.length);
-        randomMaskEntity[randomGenIndex] = !randomMaskEntity[randomGenIndex];
-      }
+        for (let i = 0; i < Math.ceil(randomMaskEntity.length * 0.1); i++) {
+            const randomGenIndex = getRandomNumber(0, randomMaskEntity.length);
+            randomMaskEntity[randomGenIndex] = !randomMaskEntity[randomGenIndex];
+        }
 
-      const descendant1gens: Array<boolean> = [];
-      const descendant2gens: Array<boolean> = [];
+        const descendant1gens: Array<boolean> = [];
+        const descendant2gens: Array<boolean> = [];
 
-      parent1.gens.forEach((gen, index) => {
-        descendant1gens.push(
-            gen === randomMaskEntity[index] ? gen : parent2.gens[index],
+        parent1.gens.forEach((gen, index) => {
+            descendant1gens.push(
+                gen === randomMaskEntity[index] ? gen : parent2.gens[index],
+            );
+            descendant2gens.push(
+                gen === randomMaskEntity[index] ? parent2.gens[index] : gen,
+            );
+        });
+
+        return new ChromosomePair(
+            new Chromosome(...descendant1gens),
+            new Chromosome(...descendant2gens),
         );
-        descendant2gens.push(
-            gen === randomMaskEntity[index] ? parent2.gens[index] : gen,
-        );
-      });
-
-      return new ChromosomePair(
-          new Chromosome(...descendant1gens),
-          new Chromosome(...descendant2gens),
-      );
     };
 
 ChromosomePair.prototype.shuffleCrossover =
-    function<T>() : ChromosomePair<T> {
-      const parent1 = this.first;
-      const parent2 = this.second;
+    function <T>(): ChromosomePair<T> {
+        const parent1 = this.first;
+        const parent2 = this.second;
 
-      shuffle(parent1, parent2);
-      const descendants = this.multiPointCrossover(
-          Math.floor(getRandomNumber(0, parent1.gens.length - 1)),
-      );
-      shuffle(descendants.first, descendants.second);
+        shuffle(parent1, parent2);
+        const descendants = this.multiPointCrossover(
+            Math.floor(getRandomNumber(0, parent1.gens.length - 1)),
+        );
+        shuffle(descendants.first, descendants.second);
 
-      return new ChromosomePair(descendants.first, descendants.second);
+        return new ChromosomePair(descendants.first, descendants.second);
     };
 
 ChromosomePair.prototype.crossoverWithReducedSurrogate =
-    function<T>(
+    function <T>(
         ...boundaryPoints: Array<number>
     ): ChromosomePair<T> {
-      const filteredBoundaryPoints = boundaryPoints
-          .filter((el) =>
-            this.first.gens[el] !== this.second.gens[el],
-          );
+        const filteredBoundaryPoints = boundaryPoints
+            .filter((el) =>
+                this.first.gens[el] !== this.second.gens[el],
+            );
 
-      if (filteredBoundaryPoints.length === 0) {
-        throw new Error('No suitable boundary points were found');
-      }
+        if (filteredBoundaryPoints.length === 0) {
+            throw new Error('No suitable boundary points were found');
+        }
 
-      return this.multiPointCrossover(...filteredBoundaryPoints);
+        return this.multiPointCrossover(...filteredBoundaryPoints);
     };
 
 /**
@@ -302,10 +309,10 @@ function getArrayWithRandomNumbers(
     arrayLength: number,
     min: number,
     max: number,
-) : Array<number> {
-  return Array(arrayLength)
-      .fill(undefined)
-      .map(() => Math.round(Math.random() * (max - min) + min));
+): Array<number> {
+    return Array(arrayLength)
+        .fill(undefined)
+        .map(() => Math.round(Math.random() * (max - min) + min));
 }
 
 /**
@@ -317,17 +324,17 @@ function getArrayWithRandomNumbers(
  * length equal to chunkSize
  * @template T
  */
-function chunked<T>(array: Array<T>, chunkSize: number) : Array<Array<T>> {
-  if (chunkSize < 1) {
-    throw new Error('Chunk size must be positive!');
-  }
+function chunked<T>(array: Array<T>, chunkSize: number): Array<Array<T>> {
+    if (chunkSize < 1) {
+        throw new Error('Chunk size must be positive!');
+    }
 
-  const chunks = [];
-  for (let i = 0; i < array.length; i += chunkSize) {
-    chunks.push(array.slice(i, i + chunkSize));
-  }
+    const chunks = [];
+    for (let i = 0; i < array.length; i += chunkSize) {
+        chunks.push(array.slice(i, i + chunkSize));
+    }
 
-  return chunks;
+    return chunks;
 }
 
 /**
@@ -346,20 +353,20 @@ function swapElementsInArrayByRange<T>(
     range: Pair<number, number>,
     gensParent1: Array<T>,
     gensParent2: Array<T>,
-) : Pair<Array<T>, Array<T>> {
-  if (range.first > range.second) {
-    throw new Error(
-        'The first value of the range must be less than the second',
-    );
-  }
+): Pair<Array<T>, Array<T>> {
+    if (range.first > range.second) {
+        throw new Error(
+            'The first value of the range must be less than the second',
+        );
+    }
 
-  for (let i = range.first; i <= range.second; i++) {
-    const replacingElement = gensParent1[i];
-    gensParent1[i] = gensParent2[i];
-    gensParent2[i] = replacingElement;
-  }
+    for (let i = range.first; i <= range.second; i++) {
+        const replacingElement = gensParent1[i];
+        gensParent1[i] = gensParent2[i];
+        gensParent2[i] = replacingElement;
+    }
 
-  return new Pair(gensParent1, gensParent2);
+    return new Pair(gensParent1, gensParent2);
 }
 
 
@@ -373,13 +380,13 @@ function shuffle<T extends boolean>(
     parent1: Chromosome<T>,
     parent2: Chromosome<T>,
 ) {
-  parent1.gens.forEach((elem, index) => {
-    if (Math.random() >= 0.5) {
-      const replacingElement = parent1.gens[index];
-      parent1.gens[index] = parent2.gens[index];
-      parent2.gens[index] = replacingElement;
-    }
-  });
+    parent1.gens.forEach((elem, index) => {
+        if (Math.random() >= 0.5) {
+            const replacingElement = parent1.gens[index];
+            parent1.gens[index] = parent2.gens[index];
+            parent2.gens[index] = replacingElement;
+        }
+    });
 }
 
 /**
@@ -400,24 +407,24 @@ function recombinationWithMultiplier<T extends number>(
     parents: ChromosomePair<T>,
     firstChildMultiplier?: number,
     secondChildMultiplier?: number,
-) : ChromosomePair<T> {
-  const parent1 = parents.first;
-  const parent2 = parents.second;
+): ChromosomePair<T> {
+    const parent1 = parents.first;
+    const parent2 = parents.second;
 
-  return new ChromosomePair<T>(
-      new Chromosome<T>(
-          ...makeRecombination(
-              parent1, parent2,
-              firstChildMultiplier,
-          ),
-      ),
-      new Chromosome<T>(
-          ...makeRecombination(
-              parent1, parent2,
-              secondChildMultiplier,
-          ),
-      ),
-  );
+    return new ChromosomePair<T>(
+        new Chromosome<T>(
+            ...makeRecombination(
+                parent1, parent2,
+                firstChildMultiplier,
+            ),
+        ),
+        new Chromosome<T>(
+            ...makeRecombination(
+                parent1, parent2,
+                secondChildMultiplier,
+            ),
+        ),
+    );
 }
 
 /**
@@ -434,17 +441,17 @@ function recombinationWithMultiplier<T extends number>(
  * @see {@link intermediateRecombination}
  */
 function makeRecombination<T extends number>(
-    parent1 : Chromosome<T>,
-    parent2 : Chromosome<T>,
-    multiplier? : number,
-) : Array<T> {
-  const lowerBound = -RECOMBINATION_MULTIPLIER;
-  const topBound = 1 - RECOMBINATION_MULTIPLIER;
+    parent1: Chromosome<T>,
+    parent2: Chromosome<T>,
+    multiplier?: number,
+): Array<T> {
+    const lowerBound = -RECOMBINATION_MULTIPLIER;
+    const topBound = 1 - RECOMBINATION_MULTIPLIER;
 
-  return parent1.gens.map((gen, index) => {
-    const parent2value = parent2.gens[index];
-    const randomValue = multiplier || getRandomNumber(lowerBound, topBound);
+    return parent1.gens.map((gen, index) => {
+        const parent2value = parent2.gens[index];
+        const randomValue = multiplier || getRandomNumber(lowerBound, topBound);
 
-    return gen + randomValue * (parent2value - gen);
-  }) as Array<T>;
+        return gen + randomValue * (parent2value - gen);
+    }) as Array<T>;
 }

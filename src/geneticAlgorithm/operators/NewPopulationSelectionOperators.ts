@@ -24,7 +24,8 @@ declare module '../domain/Population' {
         truncationSelection(
             threshold: number,
             fitnessFunction: (chromosome: Chromosome<T>) => number
-        ) : Population<T>
+        ): Population<T>
+
         /**
          * The members of the transferred population are evaluated, and then
          * N of the best (suitable) are selected from them, which will enter
@@ -41,7 +42,8 @@ declare module '../domain/Population' {
             passingEntitiesPercentage: number,
             fitnessFunction: (chromosome: Chromosome<T>) => number,
             isAscending: boolean
-        ) : Population<T>
+        ): Population<T>
+
         /**
          * In this selection, the choice of an individual in a new
          * population depends not only on the size of its suitability,
@@ -60,7 +62,8 @@ declare module '../domain/Population' {
             passingEntitiesPercentage: number,
             fitnessFunction: (chromosome: Chromosome<T>) => number,
             isAscending: boolean
-        ) : Population<T>
+        ): Population<T>
+
         /**
          * In this method the probability of selection to a new
          * population depends on the control parameter — <b>temperature T</b>.
@@ -77,133 +80,133 @@ declare module '../domain/Population' {
         bolzmanSelection(
             passingEntitiesPercentage: number,
             fitnessFunction: (chromosome: Chromosome<T>) => number
-        ) : Population<T>
+        ): Population<T>
     }
 }
 
 Population.prototype.truncationSelection =
-    function<T>(
+    function <T>(
         threshold: number,
         fitnessFunction: (chromosome: Chromosome<T>) => number,
-    ) : Population<T> {
-      if (!(threshold >= 0 && threshold <= 1)) {
-        throw new Error('Threshold value must be in the range [0, 1]');
-      }
+    ): Population<T> {
+        if (!(threshold >= 0 && threshold <= 1)) {
+            throw new Error('Threshold value must be in the range [0, 1]');
+        }
 
-      const newPopulation = new Population<T>();
-      const mostSuitableIndividuals = this.entities
-          .sort((a, b) =>
-            fitnessFunction(b) - fitnessFunction(a),
-          )
-          .slice(0, Math.round(this.entities.length * threshold));
+        const newPopulation = new Population<T>();
+        const mostSuitableIndividuals = this.entities
+            .sort((a, b) =>
+                fitnessFunction(b) - fitnessFunction(a),
+            )
+            .slice(0, Math.round(this.entities.length * threshold));
 
-      while (newPopulation.entities.length !== this.entities.length) {
-        newPopulation.entities.push(
-            mostSuitableIndividuals.random(),
-        );
-      }
+        while (newPopulation.entities.length !== this.entities.length) {
+            newPopulation.entities.push(
+                mostSuitableIndividuals.random(),
+            );
+        }
 
-      return newPopulation;
+        return newPopulation;
     };
 
 Population.prototype.eliteSelection =
-    function<T>(
+    function <T>(
         passingEntitiesPercentage: number,
         fitnessFunction: (chromosome: Chromosome<T>) => number,
         isAscending = true,
-    ) : Population<T> {
-      const count = Math.ceil(this.entities.length * passingEntitiesPercentage);
-      const isValid = isPassingCountSuitable(this, count);
-      if (!isValid.first) {
-        throw new Error(isValid.second);
-      }
+    ): Population<T> {
+        const count = Math.ceil(this.entities.length * passingEntitiesPercentage);
+        const isValid = isPassingCountSuitable(this, count);
+        if (!isValid.first) {
+            throw new Error(isValid.second);
+        }
 
-      return new Population(
-          ...this.entities
-              .sort((a, b) =>
-                isAscending ?
-                  fitnessFunction(a) - fitnessFunction(b) :
-                  fitnessFunction(b) - fitnessFunction(a),
-              )
-              .slice(0, count),
-      );
+        return new Population(
+            ...this.entities
+                .sort((a, b) =>
+                    isAscending ?
+                        fitnessFunction(a) - fitnessFunction(b) :
+                        fitnessFunction(b) - fitnessFunction(a),
+                )
+                .slice(0, count),
+        );
     };
 
 Population.prototype.exclusionSelection =
-    function<T>(
+    function <T>(
         passingEntitiesPercentage: number,
         fitnessFunction: (chromosome: Chromosome<T>) => number,
         isAscending = true,
-    ) : Population<T> {
-      const count = Math.ceil(this.entities.length * passingEntitiesPercentage);
-      const isValid = isPassingCountSuitable(this, count);
-      if (!isValid.first) {
-        throw new Error(isValid.second);
-      }
+    ): Population<T> {
+        const count = Math.ceil(this.entities.length * passingEntitiesPercentage);
+        const isValid = isPassingCountSuitable(this, count);
+        if (!isValid.first) {
+            throw new Error(isValid.second);
+        }
 
-      const newPopulationEntities = this.entities
-          .sort((a, b) =>
-            isAscending ?
-              fitnessFunction(a) - fitnessFunction(b) :
-              fitnessFunction(b) - fitnessFunction(a),
-          )
-          .filter((chromosome, index, self) =>
-            index === self.findIndex((t) => (
-              t.gens.every((elem, genIndex) =>
-                elem === chromosome.gens[genIndex],
-              )
-            )),
-          )
-          .slice(0, count);
+        const newPopulationEntities = this.entities
+            .sort((a, b) =>
+                isAscending ?
+                    fitnessFunction(a) - fitnessFunction(b) :
+                    fitnessFunction(b) - fitnessFunction(a),
+            )
+            .filter((chromosome, index, self) =>
+                    index === self.findIndex((t) => (
+                        t.gens.every((elem, genIndex) =>
+                            elem === chromosome.gens[genIndex],
+                        )
+                    )),
+            )
+            .slice(0, count);
 
-      return new Population(...newPopulationEntities);
+        return new Population(...newPopulationEntities);
     };
 
 Population.prototype.bolzmanSelection =
-    function<T>(
+    function <T>(
         passingEntitiesPercentage: number,
         fitnessFunction: (chromosome: Chromosome<T>) => number,
-    ) : Population<T> {
-      const count = Math.ceil(this.entities.length * passingEntitiesPercentage);
-      const isValid = isPassingCountSuitable(this, count);
-      if (!isValid.first) {
-        throw new Error(isValid.second);
-      }
+    ): Population<T> {
+        const count = Math.ceil(this.entities.length * passingEntitiesPercentage);
+        const isValid = isPassingCountSuitable(this, count);
+        if (!isValid.first) {
+            throw new Error(isValid.second);
+        }
 
-      const newPopulation = new Population<T>();
-      for (let i = 0; i < count; i++) {
-        const randomEntity1 = this.entities.random();
-        const randomEntity2 = this.entities.random();
-        const probability = 1.0 / (1.0 + Math.exp(
-            fitnessFunction(randomEntity1) - fitnessFunction(randomEntity2),
-        ) / TEMPERATURE);
+        const newPopulation = new Population<T>();
+        for (let i = 0; i < count; i++) {
+            const randomEntity1 = this.entities.random();
+            const randomEntity2 = this.entities.random();
+            const probability = 1.0 / (1.0 + Math.exp(
+                fitnessFunction(randomEntity1) - fitnessFunction(randomEntity2),
+            ) / TEMPERATURE);
 
-        newPopulation.addChromosome(
-            probability > Math.random() ? randomEntity1 : randomEntity2,
-        );
-      }
+            newPopulation.addChromosome(
+                probability > Math.random() ? randomEntity1 : randomEntity2,
+            );
+        }
 
-      return newPopulation;
+        return newPopulation;
     };
 
 function isPassingCountSuitable<T>(
     population: Population<T>,
     passingEntitiesCount: number,
-) : Pair<boolean, string> {
-  if (passingEntitiesCount < 1) {
-    return new Pair(
-        false,
-        `Passing entities count can not be non-positive: 
+): Pair<boolean, string> {
+    if (passingEntitiesCount < 1) {
+        return new Pair(
+            false,
+            `Passing entities count can not be non-positive: 
         ${passingEntitiesCount}`,
-    );
-  }
-  if (passingEntitiesCount > population.entities.length) {
-    return new Pair(
-        false,
-        `Passing entities count can not be more than population 
+        );
+    }
+    if (passingEntitiesCount > population.entities.length) {
+        return new Pair(
+            false,
+            `Passing entities count can not be more than population 
         size: ${passingEntitiesCount}`,
-    );
-  }
+        );
+    }
 
-  return new Pair(true, '');
+    return new Pair(true, '');
 }

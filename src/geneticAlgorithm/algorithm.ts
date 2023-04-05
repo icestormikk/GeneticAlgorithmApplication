@@ -28,22 +28,22 @@ import {LinkEntity} from './domain/graph/LinkEntity';
  * @template T
  */
 function modifiedCrossover<T>(parent1: Array<T>, parent2: Array<T>) {
-  const gen1 = getRandomNumber(0, parent1.length - 1);
-  const gen2 = getRandomNumber(0, parent2.length - 1);
-  const startGen = Math.min(gen1, gen2);
-  const endGen = Math.max(gen1, gen2);
-  const offspring: Array<T> = Array(parent1.length).fill(-1);
+    const gen1 = getRandomNumber(0, parent1.length - 1);
+    const gen2 = getRandomNumber(0, parent2.length - 1);
+    const startGen = Math.min(gen1, gen2);
+    const endGen = Math.max(gen1, gen2);
+    const offspring: Array<T> = Array(parent1.length).fill(-1);
 
-  for (let i = startGen; i <= endGen; i++) {
-    offspring[i] = parent1[i];
-  }
-  parent2.forEach((el) => {
-    const index = offspring.findIndex((el) => el === -1);
-    if (!offspring.includes(el)) {
-      offspring[index] = el;
+    for (let i = startGen; i <= endGen; i++) {
+        offspring[i] = parent1[i];
     }
-  });
-  return offspring;
+    parent2.forEach((el) => {
+        const index = offspring.findIndex((el) => el === -1);
+        if (!offspring.includes(el)) {
+            offspring[index] = el;
+        }
+    });
+    return offspring;
 }
 
 /**
@@ -75,55 +75,37 @@ export async function geneticAlgorithm<T>(
     onDistance: (link: LinkEntity<T>) => number,
     population: Population<string>,
 ) {
-  population.entities.sort((a, b) =>
-    fitnessFunction(b) - fitnessFunction(a),
-  );
+    population.entities.sort((a, b) =>
+        fitnessFunction(b) - fitnessFunction(a),
+    );
 
-  // console.log('popul');
-  // console.log(
-  //     population.entities
-  //         .sort((a, b) =>
-  //           fitnessFunction(b) - fitnessFunction(a),
-  //         )
-  //         .map((el) =>
-  //           graph.getTotalDistance(onDistance, ...el.gens),
-  //         ),
-  // );
-  // console.log(
-  //     population.entities
-  //         .map((el) =>
-  //           graph.getTotalDistance(onDistance, ...el.gens),
-  //         )
-  //         .reduce((a, b) => a + b) / population.entities.length,
-  // );
+    for (let i = 0; i < maxGenerationsCount; i++) {
+        if (finishCondition(population)) {
+            break
+        }
+        const eliteEntities = population
+            .eliteSelection(
+                elitePercentage,
+                fitnessFunction,
+                false,
+            )
+            .rouletteWheelSelection(fitnessFunction);
 
-  for (let i = 0; i < maxGenerationsCount; i++) {
-    if (finishCondition(population)) {
-      break
+        const newPopulation = new Population<string>();
+        newPopulation.addAllChromosomes(...eliteEntities.entities);
+
+        // for (
+        //   let i = eliteEntities.entities.length; i < population.entities.length; i++
+        // ) {
+        //   const parents = population.panmixia();
+        //   const offspring = modifiedCrossover(
+        //       parents.first.gens, parents.second.gens,
+        //   );
+        //   newPopulation.addChromosome(new Chromosome(...offspring));
+        // }
+
+        population.entities = newPopulation.entities;
     }
-    const eliteEntities = population
-        .eliteSelection(
-            elitePercentage,
-            fitnessFunction,
-            false,
-        )
-        .rouletteWheelSelection(fitnessFunction);
 
-    const newPopulation = new Population<string>();
-    newPopulation.addAllChromosomes(...eliteEntities.entities);
-
-    // for (
-    //   let i = eliteEntities.entities.length; i < population.entities.length; i++
-    // ) {
-    //   const parents = population.panmixia();
-    //   const offspring = modifiedCrossover(
-    //       parents.first.gens, parents.second.gens,
-    //   );
-    //   newPopulation.addChromosome(new Chromosome(...offspring));
-    // }
-
-    population.entities = newPopulation.entities;
-  }
-
-  return population;
+    return population;
 }
