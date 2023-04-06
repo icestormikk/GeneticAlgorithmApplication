@@ -7,9 +7,6 @@ import ActionsMenu from './interface/components/ActionsMenu/ActionsMenu.lazy';
 import Graph from './interface/components/Graph';
 import JoinNodesWindow from './interface/components/JoinNodesWindow/JoinNodesWindow.lazy';
 import AllEntitiesInfo from './interface/components/AllEntitiesInfo/AllEntitiesInfo.lazy';
-import ReactModal from 'react-modal';
-
-ReactModal.setAppElement('#root');
 
 /**
  * The root component of the React application

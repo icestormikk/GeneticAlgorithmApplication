@@ -3,7 +3,6 @@ import {useAppSelector} from '../../../redux/hooks';
 import ModalWindow from '../../ModalWindow/ModalWindow.lazy';
 import AdditionalCondition from '../AdditionalCondition/AdditionalCondition.lazy';
 import {BiLockAlt} from 'react-icons/bi';
-import {ReduxNodeObject} from '../../../redux/extensions/ReduxNodeObject';
 import ChooseNodesMenu from '../ChooseNodesMenu/ChooseNodesMenu.lazy';
 import {startAlgorithm} from '../../../../geneticAlgorithm';
 import AlgorithmActionStatus from '../AlgorithmActionStatus/AlgorithmActionStatus.lazy';
@@ -27,7 +26,7 @@ function GeneticAlgorithmWindow(
 ) {
     const nodes = useAppSelector((state) => state.nodes.items);
     const links = useAppSelector((state) => state.links.items);
-    const [selectedNodes, setSelectedNodes] = React.useState<Array<ReduxNodeObject>>([]);
+    const selectedNodes = useAppSelector((state) => state.nodes.pickedPathfinderNodes)
 
     const isSuitable = React.useCallback(
         () => {
@@ -64,14 +63,14 @@ function GeneticAlgorithmWindow(
                         {
                             !isSuitable() ? (
                                 <div className="w-full h-20 bg-gray-400/60 rounded-md
-                centered text-center flex-col text-xl text-gray-600
-                shadow-xl">
+                                centered text-center flex-col text-xl text-gray-600
+                                shadow-xl">
                                     <BiLockAlt/>
                                     <span>Locked</span>
                                 </div>
                             ) : (
                                 <>
-                                    <ChooseNodesMenu nodesCollector={selectedNodes}/>
+                                    <ChooseNodesMenu/>
                                     <button
                                         type="button"
                                         className="submit-button"
