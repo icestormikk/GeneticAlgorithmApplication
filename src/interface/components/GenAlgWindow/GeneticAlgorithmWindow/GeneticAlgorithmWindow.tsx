@@ -46,7 +46,7 @@ function GeneticAlgorithmWindow(
             isOpen={isOpen}
             setIsOpen={setIsOpen}
             title={(
-                <h1>Задача Комми-Вояжера</h1>
+                <h1>Задача коммивояжера</h1>
             )}
             content={(
                 <div className="flex flex-row gap-2">
