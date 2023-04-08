@@ -8,10 +8,9 @@ import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import {ReduxNodeObject} from '../redux/extensions/ReduxNodeObject';
 import {ReduxLinkObject} from '../redux/extensions/ReduxLinkObject';
 import {getRandomNumber,} from '../../geneticAlgorithm/functions/arrayhelper';
-import SpriteText from 'three-spritetext';
 import {ExtendedNodeObject} from '../redux/extensions/ExtendedNodeObject';
 import {ExtendedLinkObject} from '../redux/extensions/ExtendedLinkObject';
-import {beautify, buildNameFromUUID} from '../utils/helpers';
+import {buildNameFromUUID} from '../utils/helpers';
 import {addNode, select} from '../redux/slicers/nodeSlice';
 import {addLink} from '../redux/slicers/linkSlice';
 
@@ -25,9 +24,6 @@ export const createNewLink = (
         label: `${fromNode.label} -> ${toNode.label}`,
         value: {
             distance: getRandomNumber(0, 100),
-            cost: getRandomNumber(50, 100),
-            broken: Math.random() > 0.5,
-            isPath: Math.random() > 0.5,
         },
     };
 };
@@ -42,9 +38,7 @@ function Graph() {
     const dispatch = useAppDispatch();
     const [width, setWidth] = React.useState(window.innerWidth);
     const [height, setHeight] = React.useState(window.innerHeight);
-    const {
-        isAdditionalElementsShow, foundPath,
-    } = useAppSelector((state) => state.graph);
+    const {foundPath} = useAppSelector((state) => state.graph);
     const links = useAppSelector((state) => state.links.items);
     const nodes = useAppSelector((state) => state.nodes.items);
     const selectedNodes = useAppSelector((state) => state.nodes.selectedItems
@@ -129,27 +123,6 @@ function Graph() {
         }
         // @ts-ignore
         onNodeClick={(node: ExtendedNodeObject) => handleNodeLeftClick(node)}
-        linkThreeObjectExtend={true}
-        // @ts-ignore
-        linkThreeObject={(link: ExtendedLinkObject) => {
-            const sprite = new SpriteText(
-                isAdditionalElementsShow ? beautify(link.value) : ' ',
-            );
-            sprite.color = link.value.broken ? 'red' : 'green';
-            sprite.fontFace = 'Arial';
-            sprite.textHeight = 1.5;
-            return sprite;
-        }}
-        // @ts-ignore
-        linkPositionUpdate={(sprite, {start, end}) => {
-            const strings: [string, string, string] = ['x', 'y', 'z'];
-            const middlePos = Object.assign({}, ...strings.map((c) => ({
-                // @ts-ignore
-                [c]: start[c] + (end[c] - start[c]) / 2,
-            })));
-
-            Object.assign(sprite.position, middlePos);
-        }}
         linkDirectionalParticles={1}
         linkDirectionalArrowLength={3.5}
         linkDirectionalArrowRelPos={1}

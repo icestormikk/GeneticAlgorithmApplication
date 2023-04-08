@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-vars */
 import React from 'react';
 import {GiHamburgerMenu, GiPathDistance} from 'react-icons/gi';
-import {AiOutlineClose, AiOutlineInfo,} from 'react-icons/ai';
+import {AiOutlineClose} from 'react-icons/ai';
 import {HiOutlineArrowsPointingOut} from 'react-icons/hi2';
-import {dropState, switchElementsVisibility,} from '../../redux/slicers/graphSlice';
+import {dropState} from '../../redux/slicers/graphSlice';
 import {ImLoop2} from 'react-icons/im';
 import {MdReadMore} from 'react-icons/md';
 import {useAppDispatch} from '../../redux/hooks';
@@ -61,14 +61,6 @@ function ActionsMenu({setIsFullInfoOpen}: ActionsMenuProps): JSX.Element {
             icon: <GiPathDistance/>,
             action: () => {
                 setIsWindowShown(true);
-            },
-        },
-        {
-            id: 4,
-            title: 'Показать/скрыть дополнительные параметры',
-            icon: <AiOutlineInfo/>,
-            action: () => {
-                dispatch(switchElementsVisibility());
             },
         },
     ], []);
