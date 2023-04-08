@@ -156,8 +156,8 @@ function LinkEntity({id}: LinkEntityProps) {
                                             ))
                                         }
                                         <span className="text-red-500 font-bold">
-                      {error}
-                    </span>
+                                            {error}
+                                        </span>
                                         <input type="submit" value="Применить"
                                                className="submit-button"/>
                                     </form>
@@ -183,7 +183,7 @@ function LinkEntity({id}: LinkEntityProps) {
                     data-testid="NodeEntity"
                 >
                     <div className="px-2 py-1 flex flex-row justify-between
-          items-center">
+                    items-center">
                         {link.label}
                         <motion.button
                             initial={{
