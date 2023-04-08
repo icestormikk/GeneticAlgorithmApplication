@@ -57,13 +57,13 @@ function AllEntitiesInfo({isOpen}: AllEntitiesInfoProps) {
                     >
                         <div
                             className="flex flex-row gap-2 justify-start items-center
-              border-b-[1px] border-b-gray-300 px-2 py-1"
+                            border-b-[1px] border-b-gray-300 px-2 py-1"
                         >
                             {list.icon}
                             {list.title}
                         </div>
                         <div className="overflow-x-hidden overflow-y-scroll h-full
-            entities-list">
+                        entities-list">
                             {
                                 list.id === 0 && (
                                     list.entities.map((el) => (
