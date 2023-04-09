@@ -151,7 +151,7 @@ function NodeEntity({id}: NodeEntityProps) {
                     data-testid="NodeEntity"
                 >
                     <div className="px-2 py-1 flex flex-row justify-between
-          items-center">
+                    items-center">
                         {node.label}
                         <motion.button
                             initial={{

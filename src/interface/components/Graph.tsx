@@ -24,6 +24,7 @@ export const createNewLink = (
         label: `${fromNode.label} -> ${toNode.label}`,
         value: {
             distance: getRandomNumber(0, 100),
+            cost: getRandomNumber(0, 100)
         },
     };
 };

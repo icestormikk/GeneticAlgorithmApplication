@@ -6,6 +6,7 @@ import {BiLockAlt} from 'react-icons/bi';
 import ChooseNodesMenu from '../ChooseNodesMenu/ChooseNodesMenu.lazy';
 import {startAlgorithm} from '../../../../geneticAlgorithm';
 import AlgorithmActionStatus from '../AlgorithmActionStatus/AlgorithmActionStatus.lazy';
+import PathInfoPanel from "../PathInfoPanel/PathInfoPanel.lazy";
 
 interface GeneticAlgorithmWindowProps {
     isOpen: boolean,
@@ -26,6 +27,7 @@ function GeneticAlgorithmWindow(
 ) {
     const nodes = useAppSelector((state) => state.nodes.items);
     const links = useAppSelector((state) => state.links.items);
+    const path = useAppSelector((state) => state.graph.foundPath)
     const selectedNodes = useAppSelector((state) => state.nodes.pickedPathfinderNodes)
 
     const isSuitable = React.useCallback(
@@ -37,7 +39,7 @@ function GeneticAlgorithmWindow(
 
     const start = async () => {
         console.log(selectedNodes)
-        startAlgorithm(nodes, links, selectedNodes[0])
+        startAlgorithm(nodes, links, ['distance'], selectedNodes[0])
             .then(() => console.log('finished'));
     };
 
@@ -62,11 +64,11 @@ function GeneticAlgorithmWindow(
                         />
                         {
                             !isSuitable() ? (
-                                <div className="w-full h-20 bg-gray-400/60 rounded-md
+                                <div className="w-full h-20 bordered rounded-md
                                 centered text-center flex-col text-xl text-gray-600
-                                shadow-xl">
+                                shadow-md">
                                     <BiLockAlt/>
-                                    <span>Locked</span>
+                                    <span>Недоступно, пока не выполнено условие</span>
                                 </div>
                             ) : (
                                 <>
@@ -79,6 +81,17 @@ function GeneticAlgorithmWindow(
                                         Запустить
                                     </button>
                                 </>
+                            )
+                        }
+                        {
+                            path ? (
+                                <PathInfoPanel pathInfo={path}/>
+                            ) : (
+                                <div className="centered text-center w-full p-2">
+                                    <span className="text-gray-400">
+                                        Здесь будет показан результат вычислений
+                                    </span>
+                                </div>
                             )
                         }
                     </div>

@@ -14,7 +14,8 @@
       "withStyle": false,
       "withStory": false,
       "withLazy": true,
-      "withIndex": true
+      "withIndex": true,
+      "withTest": false
     }
   }
 }

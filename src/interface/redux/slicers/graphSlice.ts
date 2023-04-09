@@ -1,7 +1,8 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {PathInfo} from "../extensions/PathInfo";
 
 interface GraphState {
-    foundPath: Array<string> | undefined
+    foundPath: PathInfo<number> | undefined
 }
 
 const initialState: GraphState = {
@@ -12,12 +13,14 @@ const graphSlice = createSlice({
     name: 'graphSlice',
     initialState,
     reducers: {
-        setPath: (state, action: PayloadAction<Array<string>>) => {
+        setPath: (state, action: PayloadAction<PathInfo<number>>) => {
             if (!state.foundPath) {
                 state.foundPath = action.payload;
             }
 
-            state.foundPath.splice(0, state.foundPath.length, ...action.payload);
+            const {nodes, totalLength} = action.payload
+            state.foundPath.nodes.splice(0, state.foundPath.nodes.length, ...nodes);
+            state.foundPath.totalLength = totalLength
         },
         dropState: (state) => {
             state.foundPath = undefined;

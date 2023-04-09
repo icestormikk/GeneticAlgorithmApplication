@@ -84,4 +84,16 @@
         @apply
         w-0
     }
+
+    .found-path-table {
+        @apply
+        flex flex-col gap-1 my-4
+    }
+    .found-path-table th {
+        @apply text-left
+    }
+    .found-path-table td, .found-path-table th {
+        @apply
+        border-[1px] border-gray-400 p-1
+    }
 }

@@ -4,7 +4,7 @@ import {ReduxNodeObject} from '../../../redux/extensions/ReduxNodeObject';
 import {useAppSelector} from '../../../redux/hooks';
 import {AiOutlineClose} from 'react-icons/ai';
 
-const MAX_SELECTED_NODES_COUNT = 2;
+const MAX_SELECTED_NODES_COUNT = 1;
 
 interface ChooseNodesMenuProps {
     nodesCollector: Array<ReduxNodeObject>,
@@ -45,7 +45,6 @@ function ChooseNodesMenu() {
         const index = nodesCollector.findIndex((el) =>
             el.id === node.id,
         );
-        console.log(index)
         if (index > -1) {
             setNodesCollector((prevState) => {
                 prevState.splice(index, 1)
@@ -56,7 +55,7 @@ function ChooseNodesMenu() {
 
     return (
         <div>
-            <b>Выберите узлы:</b>
+            <b>Выберите узел:</b>
             <div className="flex flex-row gap-1">
                 {
                     nodesCollector.map((el) => (

@@ -11,6 +11,28 @@ import {addAction} from '../interface/redux/slicers/actionsSlice';
 import store from '../interface/redux/store';
 import {setPath} from '../interface/redux/slicers/graphSlice';
 
+function buildInitialState<T>(source: T) : T {
+    const castedSource = {...source} as any
+    Object.keys(castedSource).forEach((key) => {
+        if (typeof castedSource[key] === 'number') {
+            castedSource[key] = 0
+        }
+    })
+
+    return castedSource as T
+}
+
+function buildInfiniteState<T>(source: T) : T {
+    const castedSource = {...source} as any
+    Object.keys(castedSource).forEach((key) => {
+        if (typeof castedSource[key] === 'number') {
+            castedSource[key] = Number.NaN
+        }
+    })
+
+    return castedSource as T
+}
+
 function initializeGraph(nodesList: Array<ReduxNodeObject>, linksList: Array<ReduxLinkObject>) {
     const nodes = nodesList.map((el) =>
         new NodeEntity(el.label, el.id),
@@ -37,7 +59,7 @@ async function createNewPopulation(
 ) {
     const paths: Array<Chromosome<string>> = []
 
-    for (let i = 0; i < 5000; i++) {
+    for (let i = 0; i < 100; i++) {
         try {
             const path = await graph.createRandomPath(startNode?.id, endNode?.id)
             paths.push(new Chromosome(...path))
@@ -61,12 +83,15 @@ async function createNewPopulation(
 export async function startAlgorithm(
     nodesList: Array<ReduxNodeObject>,
     linksList: Array<ReduxLinkObject>,
+    sortTarget: Array<string>,
     startNode?: NodeEntity,
 ) {
     const startDate = new Date();
     appendAction('Запускаем алгоритм', startDate)
 
     appendAction('Инициализируем функции', startDate)
+    const initialState = buildInitialState(linksList[0].value)
+    const infiniteState = buildInfiniteState(linksList[0].value)
     const finishCondition = (population: Population<string>) =>
         population.entities
             .map((el) => 1.0 / graph.getTotalDistance(onDistance, ...el.gens))
@@ -82,22 +107,23 @@ export async function startAlgorithm(
 
     appendAction('Создаём начальную популяцию', startDate)
     const initialPopulation = await createNewPopulation(graph, startNode);
-
-    appendAction('Запускаем алгоритм', startDate)
     console.log(
         initialPopulation
             .entities
             .map((entity) => graph.getTotalDistance(onDistance, ...entity.gens))
             .sort((a, b) => a - b)
     )
+
     geneticAlgorithm(
-        5000,
+        500,
         0.8,
         0.5,
         finishCondition,
         fitnessFunction,
         onDistance,
         initialPopulation,
+        graph,
+        startNode?.id
     ).then((res) => {
         console.log(graph.getTotalDistance(onDistance, ...res.entities[0].gens));
         console.log(
@@ -105,8 +131,14 @@ export async function startAlgorithm(
                 .map((el) => graph.nodes.find((node) => node.id === el))
                 .map((el) => el?.label),
         );
+
         appendAction('Алгоритм успешно завершил работу', startDate)
-        store.dispatch(setPath(res.entities[0].gens));
+        store.dispatch(
+            setPath({
+                nodes: res.entities[0].gens,
+                totalLength: graph.getTotalDistance(onDistance, ...res.entities[0].gens)
+            })
+        );
     }).catch((err) => {
         appendAction('Произошла ошибка во время работы алгоритма', startDate)
         console.error(err);

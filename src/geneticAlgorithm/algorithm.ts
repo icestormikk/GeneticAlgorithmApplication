@@ -2,6 +2,7 @@ import {Population} from './domain/Population';
 import {Chromosome} from './domain/Chromosome';
 import {getRandomNumber} from './functions/arrayhelper';
 import {LinkEntity} from './domain/graph/LinkEntity';
+import {Graph} from "./domain/graph/Graph";
 
 // /**
 //  * Get a random index from an array of elements
@@ -74,38 +75,33 @@ export async function geneticAlgorithm<T>(
     fitnessFunction: (chromosome: Chromosome<string>) => number,
     onDistance: (link: LinkEntity<T>) => number,
     population: Population<string>,
+    graph: Graph<T>,
+    startNodeId?: string
 ) {
-    population.entities.sort((a, b) =>
-        fitnessFunction(b) - fitnessFunction(a),
-    );
+    for (;!finishCondition(population);) {
+        let newGens = undefined
 
-    for (let i = 0; i < maxGenerationsCount; i++) {
-        if (finishCondition(population)) {
-            break
+        while (!newGens) {
+            try {
+                newGens = await graph.createRandomPath(startNodeId, startNodeId)
+            } catch (e) {
+                newGens = undefined
+            }
         }
-        const eliteEntities = population
-            .eliteSelection(
-                elitePercentage,
-                fitnessFunction,
-                false,
-            )
-            .rouletteWheelSelection(fitnessFunction);
 
-        const newPopulation = new Population<string>();
-        newPopulation.addAllChromosomes(...eliteEntities.entities);
+        const newEntity = new Chromosome(...newGens)
 
-        // for (
-        //   let i = eliteEntities.entities.length; i < population.entities.length; i++
-        // ) {
-        //   const parents = population.panmixia();
-        //   const offspring = modifiedCrossover(
-        //       parents.first.gens, parents.second.gens,
-        //   );
-        //   newPopulation.addChromosome(new Chromosome(...offspring));
-        // }
-
-        population.entities = newPopulation.entities;
+        population.entities.sort((a, b) =>
+            fitnessFunction(b) - fitnessFunction(a),
+        );
+        population.entities.splice(
+            population.entities.length - 1, 1, newEntity
+        )
     }
+
+    console.log(
+        population.entities.map((en) => fitnessFunction(en))
+    )
 
     return population;
 }
