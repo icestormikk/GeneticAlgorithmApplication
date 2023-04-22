@@ -20,7 +20,7 @@ function AlgorithmActionsController() {
             return [
                 {
                     id: 0,
-                    title: 'Удалить',
+                    title: 'Очистить',
                     icon: undefined,
                     action: () => {
                         handleActionClear();

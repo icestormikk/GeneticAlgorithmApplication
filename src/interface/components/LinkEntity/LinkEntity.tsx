@@ -1,7 +1,5 @@
 import React from 'react';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
-import DeletingModalWindow from '../DeletingModalWindow/DeletingModalWindow.lazy';
-import EditingModalWindow from '../EditingModalWindow/EditingModalWindow.lazy';
 import {motion} from 'framer-motion';
 import {AiOutlineCaretDown, AiOutlineClose} from 'react-icons/ai';
 import ObjectInfo from '../ObjectInfo/ObjectInfo.lazy';
@@ -26,7 +24,6 @@ function LinkEntity({id}: LinkEntityProps) {
     const links = useAppSelector((state) => state.links.items);
     const [isShown, setIsShown] = React.useState(false);
     const [isEditing, setIsEditing] = React.useState(false);
-    const [isDeleting, setIsDeleting] = React.useState(false);
     const [error, setError] = React.useState<string | undefined>(undefined);
     const fields = React.useMemo(
         () => {
@@ -92,80 +89,6 @@ function LinkEntity({id}: LinkEntityProps) {
             <p>Загружаем...</p>
         ) : (
             <>
-                {
-                    isDeleting && (
-                        <DeletingModalWindow
-                            content={(
-                                <p>
-                                    {`Вы действительно хотите удалить ссылку ${link?.label}?`}
-                                </p>
-                            )}
-                            isOpen={isDeleting}
-                            setIsOpen={setIsDeleting}
-                            onDelete={handleLinkDeleting}
-                        />
-                    )
-                }
-                {
-                    isEditing && (
-                        <EditingModalWindow
-                            isOpen={isEditing}
-                            setIsOpen={setIsEditing}
-                            content={(
-                                <div>
-                                    <p className="text-gray-500 mb-2">
-                                        {`Объект: Link - ${id}`}
-                                    </p>
-                                    <p>
-                                        Доступные для изменения параметры:
-                                    </p>
-                                    <form
-                                        onSubmit={(event) =>
-                                            handleLinkEditing(event)
-                                        }
-                                        className="flex justify-start items-start flex-col"
-                                    >
-                                        {
-                                            fields.map((field) => (
-                                                <label
-                                                    key={field.id}
-                                                    htmlFor={field.fieldId}
-                                                    className="ml-3 mt-2 text-md"
-                                                >
-                                                    <span>{field.title}</span>
-                                                    {
-                                                        field.type === 'textarea' ? (
-                                                            <textarea
-                                                                name={field.fieldId}
-                                                                id={field.fieldId}
-                                                                defaultValue={field.defaultValue}
-                                                                className="w-96 p-1 text-gray-500 h-60"
-                                                            />
-                                                        ) : (
-                                                            <input
-                                                                type={field.type}
-                                                                name={field.fieldId}
-                                                                id={field.fieldId}
-                                                                required
-                                                                defaultValue={field.defaultValue}
-                                                                className="input-field-style"
-                                                            />
-                                                        )
-                                                    }
-                                                </label>
-                                            ))
-                                        }
-                                        <span className="text-red-500 font-bold">
-                                            {error}
-                                        </span>
-                                        <input type="submit" value="Применить"
-                                               className="submit-button"/>
-                                    </form>
-                                </div>
-                            )}
-                        />
-                    )
-                }
                 <motion.div
                     initial={{
                         scale: 0.5,
@@ -209,7 +132,7 @@ function LinkEntity({id}: LinkEntityProps) {
                                 <div className="flex flew-row gap-2">
                                     <button
                                         type="button"
-                                        onClick={() => setIsEditing(true)}
+                                        onClick={() => setIsEditing((prevState) => !prevState)}
                                         className="edit-button mt-2"
                                     >
                                         <MdModeEdit/>
@@ -217,13 +140,58 @@ function LinkEntity({id}: LinkEntityProps) {
                                     </button>
                                     <button
                                         type="button"
-                                        onClick={() => setIsDeleting(true)}
+                                        onClick={() => handleLinkDeleting()}
                                         className="delete-button mt-2"
                                     >
                                         <AiOutlineClose/>
                                         Удалить
                                     </button>
                                 </div>
+                                {
+                                    isEditing && (
+                                        <form
+                                            onSubmit={(event) =>
+                                                handleLinkEditing(event)
+                                            }
+                                            className="flex justify-start items-start flex-col"
+                                        >
+                                            {
+                                                fields.map((field) => (
+                                                    <label
+                                                        key={field.id}
+                                                        htmlFor={field.fieldId}
+                                                        className="ml-3 mt-2 text-md"
+                                                    >
+                                                        <span>{field.title}</span>
+                                                        {
+                                                            field.type === 'textarea' ? (
+                                                                <textarea
+                                                                    name={field.fieldId}
+                                                                    id={field.fieldId}
+                                                                    defaultValue={field.defaultValue}
+                                                                    className="w-full p-1 text-gray-500 h-60 w-80"
+                                                                />
+                                                            ) : (
+                                                                <input
+                                                                    type={field.type}
+                                                                    name={field.fieldId}
+                                                                    id={field.fieldId}
+                                                                    required
+                                                                    defaultValue={field.defaultValue}
+                                                                    className="input-field-style"
+                                                                />
+                                                            )
+                                                        }
+                                                    </label>
+                                                ))
+                                            }
+                                            <span className="text-red-500 font-bold">
+                                                {error}
+                                            </span>
+                                            <input type="submit" value="Применить" className="submit-button"/>
+                                        </form>
+                                    )
+                                }
                             </div>
                         )
                     }

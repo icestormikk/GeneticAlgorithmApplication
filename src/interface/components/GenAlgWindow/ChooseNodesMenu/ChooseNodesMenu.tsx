@@ -1,14 +1,11 @@
 import React from 'react';
 import {motion, Variants} from 'framer-motion';
 import {ReduxNodeObject} from '../../../redux/extensions/ReduxNodeObject';
-import {useAppSelector} from '../../../redux/hooks';
+import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
 import {AiOutlineClose} from 'react-icons/ai';
+import {setAsPathfinderNodes} from "../../../redux/slicers/nodeSlice";
 
 const MAX_SELECTED_NODES_COUNT = 1;
-
-interface ChooseNodesMenuProps {
-    nodesCollector: Array<ReduxNodeObject>,
-}
 
 const itemVariants: Variants = {
     initial: ({
@@ -28,17 +25,20 @@ const itemVariants: Variants = {
  * @constructor
  */
 function ChooseNodesMenu() {
+    const dispatch = useAppDispatch()
     const nodes = useAppSelector((state) => state.nodes.items)
-    const [nodesCollector, setNodesCollector] = React.useState<Array<ReduxNodeObject>>([])
+    const nodesCollector = useAppSelector((state) => state.nodes.pickedPathfinderNodes)
 
     const selectNode = (node: ReduxNodeObject) => {
         if (nodesCollector.length >= MAX_SELECTED_NODES_COUNT) {
             return;
         }
 
-        setNodesCollector((prevState) => {
-            return [...prevState, node]
-        });
+        dispatch(
+            setAsPathfinderNodes(
+                [...nodesCollector, node]
+            )
+        )
     };
 
     const unselectNode = (node: ReduxNodeObject) => {
@@ -46,10 +46,11 @@ function ChooseNodesMenu() {
             el.id === node.id,
         );
         if (index > -1) {
-            setNodesCollector((prevState) => {
-                prevState.splice(index, 1)
-                return [...prevState]
-            });
+            const newPickedNodes = [...nodesCollector]
+            newPickedNodes.splice(index, 1)
+            dispatch(
+                setAsPathfinderNodes(newPickedNodes)
+            )
         }
     };
 

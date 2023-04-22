@@ -64,11 +64,11 @@ function ModalWindow(
             >
                 <div
                     className="bg-[#efefef] rounded-md text-black sm:max-w-[90vw]
-                    lg:max-w-[80rem] max-w-[90vw]"
+                    lg:max-w-[80rem] max-w-[90vw] max-h-screen overflow-y-hidden"
                     onClick={(event) => event.stopPropagation()}
                 >
                     <ModalHeader content={title} setIsOpen={setIsOpen}/>
-                    <div className="p-2">
+                    <div className="Modal">
                         {content}
                     </div>
                 </div>

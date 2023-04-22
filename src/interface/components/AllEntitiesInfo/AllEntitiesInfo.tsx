@@ -43,7 +43,7 @@ function AllEntitiesInfo({isOpen}: AllEntitiesInfoProps) {
                 lists.map((list, index) => (
                     <motion.div
                         key={list.id}
-                        className="bg-white rounded-md w-80 overflow-hidden h-fit"
+                        className="bg-white rounded-md w-96 h-fit"
                         initial={{
                             x: '150%',
                         }}
@@ -62,8 +62,7 @@ function AllEntitiesInfo({isOpen}: AllEntitiesInfoProps) {
                             {list.icon}
                             {list.title}
                         </div>
-                        <div className="overflow-x-hidden overflow-y-scroll h-full
-                        entities-list">
+                        <div className="overflow-y-scroll h-full entities-list">
                             {
                                 list.id === 0 && (
                                     list.entities.map((el) => (

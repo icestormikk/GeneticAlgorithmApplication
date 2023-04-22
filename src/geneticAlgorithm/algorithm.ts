@@ -1,7 +1,6 @@
 import {Population} from './domain/Population';
 import {Chromosome} from './domain/Chromosome';
 import {getRandomNumber} from './functions/arrayhelper';
-import {LinkEntity} from './domain/graph/LinkEntity';
 import {Graph} from "./domain/graph/Graph";
 
 // /**
@@ -50,12 +49,6 @@ function modifiedCrossover<T>(parent1: Array<T>, parent2: Array<T>) {
 /**
  * A method that performs calculations of the shortest path
  * in a graph using methods of genetic algorithms
- * @param {number} maxGenerationsCount maximum number of populations
- * (number of repetitions of selection and mutation cycles)
- * @param {number} mutationProbability the probability of mutations
- * in the offspring
- * @param {number} elitePercentage the percentage of individuals that,
- * when sorted, will participate in reproduction
  * @param {Function} finishCondition algorithm termination condition
  * @param {Function} fitnessFunction fitness function that will be
  * applied to each individual
@@ -68,12 +61,8 @@ function modifiedCrossover<T>(parent1: Array<T>, parent2: Array<T>) {
  * @template R
  */
 export async function geneticAlgorithm<T>(
-    maxGenerationsCount: number,
-    mutationProbability: number,
-    elitePercentage: number,
     finishCondition: (population: Population<string>) => boolean,
     fitnessFunction: (chromosome: Chromosome<string>) => number,
-    onDistance: (link: LinkEntity<T>) => number,
     population: Population<string>,
     graph: Graph<T>,
     startNodeId?: string
@@ -83,7 +72,7 @@ export async function geneticAlgorithm<T>(
 
         while (!newGens) {
             try {
-                newGens = await graph.createRandomPath(startNodeId, startNodeId)
+                newGens = await graph.createRandomPath(startNodeId)
             } catch (e) {
                 newGens = undefined
             }

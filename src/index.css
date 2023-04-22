@@ -80,7 +80,9 @@
         overflow-y-scroll overflow-x-hidden mb-2
     }
 
-    .all-entities-list::-webkit-scrollbar, .entities-list::-webkit-scrollbar {
+    .all-entities-list::-webkit-scrollbar,
+    .entities-list::-webkit-scrollbar,
+    .Modal::-webkit-scrollbar {
         @apply
         w-0
     }
@@ -95,5 +97,10 @@
     .found-path-table td, .found-path-table th {
         @apply
         border-[1px] border-gray-400 p-1
+    }
+
+    .Modal {
+        @apply
+        p-2 h-[90vh] overflow-y-scroll
     }
 }

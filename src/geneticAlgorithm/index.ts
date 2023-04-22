@@ -10,6 +10,7 @@ import {Population} from './domain/Population';
 import {addAction} from '../interface/redux/slicers/actionsSlice';
 import store from '../interface/redux/store';
 import {setPath} from '../interface/redux/slicers/graphSlice';
+import {UnreachableEndError} from "./domain/exception/UnreachableEndError";
 
 function buildInitialState<T>(source: T) : T {
     const castedSource = {...source} as any
@@ -52,19 +53,28 @@ function appendAction(title: string, startDate: Date) {
     );
 }
 
-async function createNewPopulation(
-    graph: Graph<any>,
+async function createNewPopulation<T>(
+    graph: Graph<T>,
     startNode?: NodeEntity,
-    endNode?: NodeEntity
 ) {
     const paths: Array<Chromosome<string>> = []
 
-    for (let i = 0; i < 100; i++) {
-        try {
-            const path = await graph.createRandomPath(startNode?.id, endNode?.id)
-            paths.push(new Chromosome(...path))
-        } catch (e: any) {
-            // console.log(`Error while rendering: ${e.message}`)
+    for (let i = 0; i < graph.links.length + 1; i++) {
+        let path: Array<string> | undefined
+        while (path === undefined) {
+            try {
+                path = await graph.createRandomPath(startNode?.id)
+                paths.push(new Chromosome(...path))
+            } catch (e: any) {
+                if (e instanceof UnreachableEndError) {
+                    appendAction(
+                        `Произошла ошибка: ${e.message}`,
+                        new Date()
+                    )
+                    throw e
+                }
+                path = undefined
+            }
         }
     }
 
@@ -94,7 +104,7 @@ export async function startAlgorithm(
     const infiniteState = buildInfiniteState(linksList[0].value)
     const finishCondition = (population: Population<string>) =>
         population.entities
-            .map((el) => 1.0 / graph.getTotalDistance(onDistance, ...el.gens))
+            .map((el) => fitnessFunction(el))
             .every((obj, _, array) =>
                 obj === array[0] && array[0] !== Number.MAX_VALUE,
             );
@@ -115,12 +125,8 @@ export async function startAlgorithm(
     )
 
     geneticAlgorithm(
-        500,
-        0.8,
-        0.5,
         finishCondition,
         fitnessFunction,
-        onDistance,
         initialPopulation,
         graph,
         startNode?.id

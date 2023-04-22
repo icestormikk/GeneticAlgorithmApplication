@@ -14,10 +14,6 @@ export class Chromosome<T> {
      * @template T
      */
     constructor(...gens: T[]) {
-        if (gens.length === 0) {
-            throw new Error('You cant create chromosome without genes!');
-        } else {
-            this.gens = gens;
-        }
+        this.gens = gens;
     }
 }

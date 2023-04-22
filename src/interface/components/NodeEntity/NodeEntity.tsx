@@ -5,8 +5,6 @@ import {motion} from 'framer-motion';
 import ObjectInfo from '../ObjectInfo/ObjectInfo.lazy';
 import {removeNode, updateNode} from '../../redux/slicers/nodeSlice';
 import {MdModeEdit} from 'react-icons/md';
-import DeletingModalWindow from '../DeletingModalWindow/DeletingModalWindow.lazy';
-import EditingModalWindow from '../EditingModalWindow/EditingModalWindow.lazy';
 import {setLinks} from '../../redux/slicers/linkSlice';
 
 interface NodeEntityProps {
@@ -27,7 +25,6 @@ function NodeEntity({id}: NodeEntityProps) {
     const links = useAppSelector((state) => state.links.items);
     const [isShown, setIsShown] = React.useState(false);
     const [isEditing, setIsEditing] = React.useState(false);
-    const [isDeleting, setIsDeleting] = React.useState(false);
     const fields = React.useMemo(() => {
         return [
             {
@@ -76,64 +73,6 @@ function NodeEntity({id}: NodeEntityProps) {
             <p>Загружаем...</p>
         ) : (
             <>
-                {
-                    isDeleting && (
-                        <DeletingModalWindow
-                            content={(
-                                <p>{`Вы действительно хотите удалить точку ${node?.label}?`}</p>
-                            )}
-                            isOpen={isDeleting}
-                            setIsOpen={setIsDeleting}
-                            onDelete={handleNodeDeleting}
-                        />
-                    )
-                }
-                {
-                    isEditing && (
-                        <EditingModalWindow
-                            isOpen={isEditing}
-                            setIsOpen={setIsEditing}
-                            content={(
-                                <div>
-                                    <p className="text-gray-500 mb-2">
-                                        {`Объект: Node - ${id}`}
-                                    </p>
-                                    <p>
-                                        Доступные для изменения параметры:
-                                    </p>
-                                    <form
-                                        onSubmit={(event) =>
-                                            handleNodeEditing(event)
-                                        }
-                                        className="flex justify-start items-start flex-col"
-                                    >
-                                        {
-                                            fields.map((field) => (
-                                                <label
-                                                    key={field.id}
-                                                    htmlFor={field.fieldId}
-                                                    className="ml-3 text-md"
-                                                >
-                                                    <span>{field.title}</span>
-                                                    <input
-                                                        type={field.type}
-                                                        name={field.fieldId}
-                                                        id={field.fieldId}
-                                                        required
-                                                        defaultValue={field.defaultValue}
-                                                        className="input-field-style"
-                                                    />
-                                                </label>
-                                            ))
-                                        }
-                                        <input type="submit" value="Применить"
-                                               className="submit-button"/>
-                                    </form>
-                                </div>
-                            )}
-                        />
-                    )
-                }
                 <motion.div
                     initial={{
                         scale: 0.5,
@@ -150,8 +89,7 @@ function NodeEntity({id}: NodeEntityProps) {
                     className="bordered m-1 rounded-md"
                     data-testid="NodeEntity"
                 >
-                    <div className="px-2 py-1 flex flex-row justify-between
-                    items-center">
+                    <div className="px-2 py-1 flex flex-row justify-between items-center">
                         {node.label}
                         <motion.button
                             initial={{
@@ -177,7 +115,7 @@ function NodeEntity({id}: NodeEntityProps) {
                                 <div className="flex flew-row gap-2">
                                     <button
                                         type="button"
-                                        onClick={() => setIsEditing(true)}
+                                        onClick={() => setIsEditing((prevState) => !prevState)}
                                         className="edit-button mt-2"
                                     >
                                         <MdModeEdit/>
@@ -185,13 +123,44 @@ function NodeEntity({id}: NodeEntityProps) {
                                     </button>
                                     <button
                                         type="button"
-                                        onClick={() => setIsDeleting(true)}
+                                        onClick={() => handleNodeDeleting()}
                                         className="delete-button mt-2"
                                     >
                                         <AiOutlineClose/>
                                         Удалить
                                     </button>
                                 </div>
+                                {
+                                    isEditing && (
+                                        <form
+                                            onSubmit={(event) =>
+                                                handleNodeEditing(event)
+                                            }
+                                            className="flex justify-start items-start flex-col"
+                                        >
+                                            {
+                                                fields.map((field) => (
+                                                    <label
+                                                        key={field.id}
+                                                        htmlFor={field.fieldId}
+                                                        className="ml-3 text-md"
+                                                    >
+                                                        <span>{field.title}</span>
+                                                        <input
+                                                            type={field.type}
+                                                            name={field.fieldId}
+                                                            id={field.fieldId}
+                                                            required
+                                                            defaultValue={field.defaultValue}
+                                                            className="input-field-style"
+                                                        />
+                                                    </label>
+                                                ))
+                                            }
+                                            <input type="submit" value="Применить" className="submit-button"/>
+                                        </form>
+                                    )
+                                }
                             </div>
                         )
                     }

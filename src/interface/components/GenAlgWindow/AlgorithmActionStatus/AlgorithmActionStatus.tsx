@@ -12,21 +12,21 @@ function AlgorithmActionStatus() {
     const actions = useAppSelector((state) => state.actions.items);
 
     return (
-        <div className="bordered rounded-md w-1/2 p-1 shadow-xl bg-white
-    h-[70vh] overflow-x-hidden overflow-y-scroll">
+        <div className="bordered rounded-md p-1 shadow-xl bg-white
+        h-full overflow-x-hidden overflow-y-scroll">
             <b>Журнал</b>
             <p className="font-light text-gray-500 text-sm">
                 Здесь будут отображаться текущие действия и их
                 прогресс
             </p>
             <AlgorithmActionsController/>
-            <ul className="flex flex-col gap-1">
+            <ul className="flex flex-col gap-1 w-[40vw]">
                 {
                     actions.map((el) => (
                         <motion.li
                             key={el.id}
                             className="flex flex-col justify-center items-start
-              px-2 py-0.5 rounded-md bordered"
+                            px-2 py-0.5 rounded-md bordered"
                             initial={{
                                 opacity: 0,
                                 rotateX: '90deg',

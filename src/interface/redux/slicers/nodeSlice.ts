@@ -82,6 +82,9 @@ const graphSlice = createSlice({
                 state.items.splice(index, 1, {id, label});
             }
         },
+        setAsPathfinderNodes: (state, action: PayloadAction<Array<ReduxNodeObject>>) => {
+            state.pickedPathfinderNodes = [...action.payload]
+        },
         dropNodes: (state) => {
             state.pickedPathfinderNodes.splice(0, state.pickedPathfinderNodes.length)
             state.selectedItems.splice(0, state.selectedItems.length);
@@ -93,5 +96,5 @@ const graphSlice = createSlice({
 export const nodesReducer = graphSlice.reducer;
 export const {
     setNodes, addNode, removeNode, updateNode, dropNodes,
-    setSelectedNodes, select,
+    setSelectedNodes, select, setAsPathfinderNodes
 } = graphSlice.actions;

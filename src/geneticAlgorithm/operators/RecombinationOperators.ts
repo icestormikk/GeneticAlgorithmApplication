@@ -121,6 +121,12 @@ declare module '../domain/ChromosomePair' {
         crossoverWithReducedSurrogate(
             ...boundaryPoints: Array<number>
         ): ChromosomePair<T>
+
+        /**
+         * A kind of homogeneous crossover, in which exactly half of the bits of each
+         * parent are transferred to the descendant
+         */
+        halfUniformCrossover() : Chromosome<T>
     }
 }
 
@@ -296,6 +302,21 @@ ChromosomePair.prototype.crossoverWithReducedSurrogate =
 
         return this.multiPointCrossover(...filteredBoundaryPoints);
     };
+
+ChromosomePair.prototype.halfUniformCrossover =
+    function <T>(): Chromosome<T> {
+        const children = new Chromosome<T>()
+        const halfChromosomeSize = Math.ceil(this.first.gens.length / 2)
+
+        for (let i = 0; i < halfChromosomeSize; i++) {
+            children.gens.push(this.first.gens[i])
+        }
+        for (let i = halfChromosomeSize; i < this.second.gens.length; i++) {
+            children.gens.push(this.second.gens[i])
+        }
+
+        return children
+    }
 
 /**
  * Creates an array of arrayLength length and fills it with

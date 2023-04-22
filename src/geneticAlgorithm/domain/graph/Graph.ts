@@ -1,6 +1,7 @@
 import {NodeEntity} from './NodeEntity';
 import {LinkEntity} from './LinkEntity';
 import {generateUUID} from 'three/src/math/MathUtils';
+import {UnreachableEndError} from "../exception/UnreachableEndError";
 
 /**
  * A class representing a graph that stores nodes and connections between them
@@ -52,13 +53,11 @@ export class Graph<T> {
      * Returns a random set of note ids representing a path in the graph
      * @param {string|undefined} startNodeId id of the node that the path
      * should start from
-     * @param {string|undefined} endNodeId id of the node where the path
-     * should end
      * @return {Array<string>} a random path in the graph is an array of
      * node ids
      */
     async createRandomPath(
-        startNodeId?: string, endNodeId?: string
+        startNodeId?: string
     ): Promise<Array<string>> {
         const self = this;
 
@@ -74,9 +73,6 @@ export class Graph<T> {
         const startNode = startNodeId !== undefined
             ? validateNodeById(startNodeId)
             : this.nodes.random()
-        const endNode = endNodeId !== undefined
-            ? validateNodeById(endNodeId)
-            : startNode
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         let isCompleted = false;
 
@@ -93,7 +89,7 @@ export class Graph<T> {
                     el.source == currentNodeId && el.target === finalNodeId
                 )
                 if (!toEndNode) {
-                    throw new Error(
+                    throw new UnreachableEndError(
                         'End is unreachable (it is impossible to bypass all the vertices once and return to the given one)'
                     )
                 }
@@ -113,16 +109,11 @@ export class Graph<T> {
                 }
             }
 
-            throw new Error('End is unreachable (2)')
+            throw new UnreachableEndError('End is unreachable (suitable links were not found)')
         }
 
         const result: Array<string> = [];
-        await pathfinder(
-            startNodeId !== undefined ?
-                startNodeId : this.nodes.random().id,
-            result,
-            endNode.id,
-        );
+        await pathfinder(startNode.id, result, startNode.id);
 
         return result;
     }
