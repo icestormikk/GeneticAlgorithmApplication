@@ -22,31 +22,35 @@ export class Graph<T> {
 
     /**
      * Calculates the total length of the path containing the passed nodes
-     * @param {Function} onDistance a function that counts the distance
+     * @param {Function} onSum a function that counts the distance
      * between two nodes
-     * @param {Array<number>} nodeIDs list of unique node
+     * @param {Array<number>} path list of unique node
      * identifiers in the graph
+     * @param states
      * @return {number} total path length
      */
     getTotalDistance(
-        onDistance: (link: LinkEntity<T>) => number,
-        ...nodeIDs: Readonly<Array<string>>
-    ): number {
-        let res = 0;
+        path: Array<string>,
+        onSum: (first: T, second: T) => void,
+        states: {
+            initial: T, infinite: T
+        }
+    ) : T {
+        const result = {...states.initial}
 
-        for (let i = 0; i < nodeIDs.length - 1; i++) {
-            const link = this.links.find((link) =>
-                link.source == nodeIDs[i] && link.target == nodeIDs[i + 1],
-            );
+        for (let i = 0; i < path.length - 1; i++) {
+            const suitableLink = this.links.find((el) =>
+                el.source === path[i] && el.target === path[i + 1]
+            )
 
-            if (!link) {
-                return Number.MAX_VALUE;
+            if (!suitableLink) {
+                return states.infinite
             }
 
-            res += onDistance(link);
+            onSum(result, suitableLink.value)
         }
 
-        return res;
+        return result
     }
 
     /**

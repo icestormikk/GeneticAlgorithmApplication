@@ -4,7 +4,7 @@ import {PathInfo} from "../../../redux/extensions/PathInfo";
 const LazyPathInfoPanel = lazy(() => import('./PathInfoPanel'));
 
 interface PathInfoPanelProps {
-    pathInfo: PathInfo<number>
+    pathInfo: PathInfo<any>
 }
 
 const PathInfoPanel = (props: JSX.IntrinsicAttributes & PathInfoPanelProps) => (

@@ -43,7 +43,10 @@ function LinkActions() {
                 source: startNodeId,
                 target: endNodeId,
                 label: `${selectedNodes[0].label} -> ${selectedNodes[1].label}`,
-                value: {distance: Math.round(Math.random() * 100)},
+                value: {
+                    distance: Math.round(Math.random() * 100),
+                    cost: Math.round(Math.random() * 100)
+                },
             };
 
             dispatch(addLink(newLink));

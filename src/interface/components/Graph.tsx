@@ -52,9 +52,9 @@ function Graph() {
             }
 
             const result: Array<ExtendedLinkObject> = [];
-            for (let i = 0; i < foundPath.length - 1; i++) {
+            for (let i = 0; i < foundPath.nodes.length - 1; i++) {
                 const item = links.find((el) =>
-                    el.source === foundPath[i] && el.target === foundPath[i + 1],
+                    el.source === foundPath.nodes[i] && el.target === foundPath.nodes[i + 1],
                 );
 
                 if (item) {

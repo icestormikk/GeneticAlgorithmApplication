@@ -11,6 +11,8 @@ import {dropLinks, setLinks} from '../../redux/slicers/linkSlice';
 import {dropNodes} from '../../redux/slicers/nodeSlice';
 import {AnimatePresence, motion} from 'framer-motion';
 import GeneticAlgorithmWindow from '../GenAlgWindow/GeneticAlgorithmWindow/GeneticAlgorithmWindow.lazy';
+import {HiOutlineDownload} from "react-icons/hi";
+import PresetsModal from "../PresetsModal/PresetsModal.lazy";
 
 interface ActionsMenuProps {
     setIsFullInfoOpen: React.Dispatch<React.SetStateAction<boolean>>
@@ -28,6 +30,7 @@ function ActionsMenu({setIsFullInfoOpen}: ActionsMenuProps): JSX.Element {
     const dispatch = useAppDispatch();
     const [isShown, setShown] = React.useState(false);
     const [isWindowShown, setIsWindowShown] = React.useState(false);
+    const [isPresetsWindowOpen, setIsPresetsWindowOpen] = React.useState(false)
     const buttons = React.useMemo(() => [
         {
             id: 0,
@@ -63,17 +66,33 @@ function ActionsMenu({setIsFullInfoOpen}: ActionsMenuProps): JSX.Element {
                 setIsWindowShown(true);
             },
         },
+        {
+            id: 4,
+            title: 'Загрузить шаблон',
+            icon: <HiOutlineDownload/>,
+            action: () => {
+                setIsPresetsWindowOpen(true)
+            }
+        }
     ], []);
 
     return (
         <>
+            {
+                isPresetsWindowOpen && (
+                    <PresetsModal
+                        isOpen={isPresetsWindowOpen}
+                        setIsOpen={setIsPresetsWindowOpen}
+                    />
+                )
+            }
             <GeneticAlgorithmWindow
                 isOpen={isWindowShown}
                 setIsOpen={setIsWindowShown}
             />
             <AnimatePresence>
                 <div className="absolute left-0 bottom-0 z-10 text-white flex
-      flex-row gap-2 p-2 text-xl">
+                flex-row gap-2 p-2 text-xl">
                     <button
                         type="button"
                         onClick={() => setShown((prevState) => !prevState)}

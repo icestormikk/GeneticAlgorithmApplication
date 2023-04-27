@@ -3,7 +3,7 @@ import {PathInfo} from "../../../redux/extensions/PathInfo";
 import {useAppSelector} from "../../../redux/hooks";
 
 interface PathInfoPanelProps {
-    pathInfo: PathInfo<number>
+    pathInfo: PathInfo<any>
 }
 
 /**
@@ -44,7 +44,26 @@ function PathInfoPanel({pathInfo}: PathInfoPanelProps) {
                     }
                 </tbody>
             </table>
-            <span>Общая длина: <b>{pathInfo.totalLength}</b></span>
+            {
+                pathInfo.totalLength !== undefined && (
+                    <table className="found-path-table">
+                        <tbody>
+                            <tr>
+                                <th>Параметр</th>
+                                <th>Значение</th>
+                            </tr>
+                            {
+                                Object.keys(pathInfo.totalLength).map((key) => (
+                                    <tr>
+                                        <td>{key}</td>
+                                        <td>{pathInfo.totalLength[key]}</td>
+                                    </tr>
+                                ))
+                            }
+                        </tbody>
+                    </table>
+                )
+            }
         </>
     );
 }
