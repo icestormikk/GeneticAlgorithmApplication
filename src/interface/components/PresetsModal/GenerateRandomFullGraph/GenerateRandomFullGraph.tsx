@@ -18,9 +18,8 @@ function GenerateRandomFullGraph() {
             size: {value: number}
         }
         if (target.size.value < 2) { return }
-        console.log(target.size.value)
 
-        const graph = Graph.createRandomGraph(target.size.value)
+        const graph = Graph.createRandomGraph(Number(target.size.value))
         dispatch(
             setLinks(
                 graph.links.map((link) => {
