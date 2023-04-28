@@ -13,11 +13,15 @@ const graphSlice = createSlice({
     name: 'graphSlice',
     initialState,
     reducers: {
-        setPath: (state, action: PayloadAction<PathInfo<number>>) => {
+        setPath: (state, action: PayloadAction<PathInfo<number> | undefined>) => {
+            if (!action.payload) {
+                state.foundPath = undefined
+                return
+            }
+
             if (!state.foundPath) {
                 state.foundPath = action.payload;
             }
-
             const {nodes, totalLength} = action.payload
             state.foundPath.nodes.splice(0, state.foundPath.nodes.length, ...nodes);
             state.foundPath.totalLength = totalLength

@@ -41,6 +41,11 @@ Array.prototype.shuffle = function <T>(): Array<T> {
     return this;
 }
 
+Array.prototype.randomIndex = function (): number {
+    return Math.floor(Math.random() * this.length)
+}
+
+
 export const getRandomNumber = (min: number, max: number): number =>
     Math.random() * (max - min) + min;
 

@@ -51,8 +51,8 @@ declare module '../domain/Population' {
          * "proximity" of two chromosomes
          */
         tournamentSelection(
-            tournamentSize: number,
-            fitnessFunction: (chromosome: Chromosome<T>) => number
+            fitnessFunction: (chromosome: Chromosome<T>) => number,
+            tournamentSize: number
         ): Population<T>
 
         /**
@@ -100,8 +100,8 @@ Population.prototype.outcrossing =
 
 Population.prototype.tournamentSelection =
     function <T>(
-        tournamentSize = 2,
         fitnessFunction: (chromosome: Chromosome<T>) => number,
+        tournamentSize = 2,
     ): Population<T> {
         const newPopulation = new Population<T>();
 

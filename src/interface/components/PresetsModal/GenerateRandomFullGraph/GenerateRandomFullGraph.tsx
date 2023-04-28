@@ -1,17 +1,41 @@
 import React, {FormEvent} from 'react';
+import {useAppDispatch} from "../../../redux/hooks";
+import {setLinks} from "../../../redux/slicers/linkSlice";
+import {setNodes} from "../../../redux/slicers/nodeSlice";
+import {setPath} from "../../../redux/slicers/graphSlice";
+import {Graph} from "../../../../geneticAlgorithm/domain/graph/Graph";
 
 /**
  * GenerateRandomFullGraph
  * @constructor
  */
 function GenerateRandomFullGraph() {
+    const dispatch = useAppDispatch()
+
     const onCreate = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         const target = event.target as typeof event.target & {
             size: {value: number}
         }
+        if (target.size.value < 2) { return }
+        console.log(target.size.value)
 
-
+        const graph = Graph.createRandomGraph(target.size.value)
+        dispatch(
+            setLinks(
+                graph.links.map((link) => {
+                    return {
+                        id: link.id,
+                        source: link.source,
+                        target: link.target,
+                        label: `${link.source} -> ${link.target}`,
+                        value: link.value
+                    }
+                })
+            )
+        )
+        dispatch(setNodes(graph.nodes))
+        dispatch(setPath(undefined))
     }
 
     return (

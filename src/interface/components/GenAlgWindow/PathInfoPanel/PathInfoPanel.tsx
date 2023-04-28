@@ -14,6 +14,8 @@ interface PathInfoPanelProps {
  */
 function PathInfoPanel({pathInfo}: PathInfoPanelProps) {
     const nodesInGraph = useAppSelector((state) => state.nodes)
+    const linksInGraph = useAppSelector((state) => state.links)
+
     return (
         <>
             <table
@@ -22,7 +24,7 @@ function PathInfoPanel({pathInfo}: PathInfoPanelProps) {
             >
                 <thead>
                     <tr>
-                        <td>Результаты вычислений</td>
+                        <th>Результаты вычислений</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -34,7 +36,17 @@ function PathInfoPanel({pathInfo}: PathInfoPanelProps) {
                         pathInfo.nodes.map((node, index) => (
                             <tr key={index}>
                                 <td>{node}</td>
-                                <td>
+                                <td
+                                    title={
+                                        JSON.stringify(
+                                            linksInGraph.items.find((link) =>
+                                                link.source === node && link.target === pathInfo.nodes[index + 1]
+                                            )?.value,
+                                            undefined,
+                                            4
+                                        )
+                                    }
+                                >
                                     {
                                         nodesInGraph.items.find((el) => el.id === node)?.label
                                     }
@@ -53,8 +65,8 @@ function PathInfoPanel({pathInfo}: PathInfoPanelProps) {
                                 <th>Значение</th>
                             </tr>
                             {
-                                Object.keys(pathInfo.totalLength).map((key) => (
-                                    <tr>
+                                Object.keys(pathInfo.totalLength).map((key, index) => (
+                                    <tr key={index}>
                                         <td>{key}</td>
                                         <td>{pathInfo.totalLength[key]}</td>
                                     </tr>

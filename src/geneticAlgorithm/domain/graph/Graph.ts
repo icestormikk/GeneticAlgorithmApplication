@@ -17,7 +17,30 @@ export class Graph<T> {
     constructor(
         public readonly nodes: Array<NodeEntity>,
         public readonly links: Array<LinkEntity<T>>,
-    ) {
+    ) {}
+
+    static createRandomGraph<T>(size: number) {
+        const nodes = [...Array(size).keys()].map((el) => new NodeEntity(`Node-${el}`))
+        const links: Array<LinkEntity<T>> = []
+
+        for (let i = 0; i < nodes.length; i++) {
+            for (let j = 0; j < nodes.length; j++) {
+                if (i !== j) {
+                    links.push(
+                        new LinkEntity(
+                            nodes[i].id,
+                            nodes[j].id,
+                            {
+                                distance: Math.round(Math.random() * 100),
+                                cost: Math.round(Math.random() * 100),
+                            } as T
+                        )
+                    )
+                }
+            }
+        }
+
+        return new Graph(nodes, links)
     }
 
     /**

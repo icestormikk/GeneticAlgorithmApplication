@@ -2,6 +2,7 @@ import {Action} from '../extensions/Action';
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {generateUUID} from 'three/src/math/MathUtils';
 import {dateDiffInSeconds} from '../../../geneticAlgorithm/functions/datehelper';
+import {ActionType} from "../extensions/enum/ActionType";
 
 interface ActionsState {
     items: Array<Action>
@@ -18,12 +19,13 @@ const actionsSlice = createSlice({
         addAction: (
             state,
             action: PayloadAction<
-                Array<{ title: string, description?: string, startDate: Date }>
+                Array<{ title: string, description?: string, startDate: Date, type?: ActionType }>
             >,
         ) => {
             action.payload.forEach((act) => {
                 state.items.push({
                     id: generateUUID(),
+                    type: act.type || ActionType.DEFAULT,
                     title: act.title,
                     description: act.description,
                     time: dateDiffInSeconds(act.startDate, new Date()),
