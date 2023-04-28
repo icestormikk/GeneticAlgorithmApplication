@@ -83,7 +83,7 @@ function appendAction(title: string, startDate: Date, type: ActionType = ActionT
 
 async function createNewPopulation<T>(
     graph: Graph<T>,
-    startNode?: NodeEntity,
+    startNodeId: string,
 ) {
     const paths: Array<Chromosome<string>> = []
 
@@ -91,7 +91,7 @@ async function createNewPopulation<T>(
         let path: Array<string> | undefined
         while (path === undefined) {
             try {
-                path = await graph.createRandomPath(startNode?.id)
+                path = await graph.createRandomPath(startNodeId)
                 paths.push(new Chromosome(...path))
             } catch (e: any) {
                 console.log('test')
@@ -126,7 +126,7 @@ async function createNewPopulation<T>(
  * @param {Array<ReduxLinkObject>} linksList list of available
  * links in the column
  * @param limits
- * @param {NodeEntity|undefined} startNode IN DEV
+ * @param {NodeEntity|undefined} startNode
  */
 export async function startAlgorithm(
     nodesList: Array<ReduxNodeObject>,
@@ -171,24 +171,27 @@ export async function startAlgorithm(
 
     appendAction('Конвертируем элементы графа', startDate);
     const graph = initializeGraph(nodesList, linksList);
+    const startNodeId = startNode ? startNode.id : graph.nodes.random().id
 
     appendAction('Создаём начальную популяцию', startDate)
-    const initialPopulation = await createNewPopulation(graph, startNode);
+    const initialPopulation = await createNewPopulation(graph, startNodeId);
 
     await geneticAlgorithm(
-        0.5,
-        500,
+        0.01,
+        1000,
         finishCondition,
         calculateFitnessFor,
         initialPopulation,
         graph,
-        startNode?.id
+        startNodeId
     ).then((res) => {
         const firstSuitable = res.entities
             .sort((a, b) =>
                 calculateFitnessFor(b) - calculateFitnessFor(a)
-            )[0]
-
+            )
+            .find((el) =>
+                calculateFitnessFor(el) !== 1 / Number.MAX_VALUE
+            )
         if (!firstSuitable) {
             appendAction("Подходящий путь не найден!", startDate, ActionType.ERROR)
             return
