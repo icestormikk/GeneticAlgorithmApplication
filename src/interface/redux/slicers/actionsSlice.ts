@@ -2,7 +2,7 @@ import {Action} from '../extensions/Action';
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {generateUUID} from 'three/src/math/MathUtils';
 import {dateDiffInSeconds} from '../../../geneticAlgorithm/functions/datehelper';
-import {ActionType} from "../extensions/enum/ActionType";
+import {ActionType} from "../extensions/enums/ActionType";
 
 interface ActionsState {
     items: Array<Action>

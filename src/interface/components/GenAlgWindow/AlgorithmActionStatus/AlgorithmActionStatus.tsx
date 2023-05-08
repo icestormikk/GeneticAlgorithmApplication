@@ -4,7 +4,7 @@ import {motion} from 'framer-motion';
 import AlgorithmActionsController from '../AlgorithmActionsController/AlgorithmActionsController.lazy';
 import {formatDiff} from '../../../../geneticAlgorithm/functions/datehelper';
 import AlgorithmActionIcon from "./AlgorithmActionIcon/AlgorithmActionIcon.lazy";
-import {ActionType} from "../../../redux/extensions/enum/ActionType";
+import {ActionType} from "../../../redux/extensions/enums/ActionType";
 
 /**
  * A component that displays a list of actions performed by the algorithm

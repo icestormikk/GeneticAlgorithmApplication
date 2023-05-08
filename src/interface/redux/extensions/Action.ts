@@ -1,4 +1,4 @@
-import {ActionType} from "./enum/ActionType";
+import {ActionType} from "./enums/ActionType";
 
 export type Action = {
     id: string

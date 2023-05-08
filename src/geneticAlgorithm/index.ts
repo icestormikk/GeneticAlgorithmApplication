@@ -10,7 +10,7 @@ import {Population} from './domain/Population';
 import {addAction} from '../interface/redux/slicers/actionsSlice';
 import store from '../interface/redux/store';
 import {setPath} from '../interface/redux/slicers/graphSlice';
-import {ActionType} from "../interface/redux/extensions/enum/ActionType";
+import {ActionType} from "../interface/redux/extensions/enums/ActionType";
 
 function getState<T>(source: T, type: "initial" | "infinite") : T {
     const castedSource = {...source} as any
@@ -65,8 +65,7 @@ function fitnessFunction<T>(
         }
 
         if (totalParamSum[limit.name] > limit.limit) {
-            console.log(limit.name)
-            return Number.NaN
+            return Number.MAX_VALUE
         }
     }
 
@@ -94,7 +93,6 @@ async function createNewPopulation<T>(
                 path = await graph.createRandomPath(startNodeId)
                 paths.push(new Chromosome(...path))
             } catch (e: any) {
-                console.log('test')
                 // if (e instanceof UnreachableEndError) {
                 //     appendAction(
                 //         `Произошла ошибка: ${e.message}`,
@@ -134,6 +132,7 @@ export async function startAlgorithm(
     limits: Array<{name: string, limit: number}>,
     startNode?: NodeEntity,
 ) {
+    console.log(limits)
     const startDate = new Date();
     appendAction('Запускаем алгоритм', startDate)
 
@@ -144,7 +143,7 @@ export async function startAlgorithm(
         population.entities
             .map((el) => calculateFitnessFor(el))
             .every((obj, _, array) =>
-                obj === array[0] && array[0] !== Number.MAX_VALUE,
+                obj === array[0] && array[0] !== 1 / Number.MAX_VALUE,
             );
     const onSum = <T, >(first: T, second: T) => {
         const [firstAsObj, secondAsObj] = [first as any, second as any]
@@ -177,8 +176,8 @@ export async function startAlgorithm(
     const initialPopulation = await createNewPopulation(graph, startNodeId);
 
     await geneticAlgorithm(
-        0.01,
-        1000,
+        0.8,
+        graph.links.length * 50,
         finishCondition,
         calculateFitnessFor,
         initialPopulation,
@@ -190,9 +189,10 @@ export async function startAlgorithm(
                 calculateFitnessFor(b) - calculateFitnessFor(a)
             )
             .find((el) =>
-                calculateFitnessFor(el) !== 1 / Number.MAX_VALUE
+                calculateFitnessFor(el) !== Number.MAX_VALUE
             )
         if (!firstSuitable) {
+            store.dispatch(setPath(undefined))
             appendAction("Подходящий путь не найден!", startDate, ActionType.ERROR)
             return
         }
@@ -202,6 +202,9 @@ export async function startAlgorithm(
                 .map((el) => graph.nodes.find((node) => node.id === el))
                 .map((el) => el?.label),
         );
+        console.log(
+            calculateFitnessFor(firstSuitable)
+        )
 
         appendAction('Алгоритм успешно завершил работу', startDate)
         store.dispatch(

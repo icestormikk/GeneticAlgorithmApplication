@@ -13,6 +13,11 @@ import {ExtendedLinkObject} from '../redux/extensions/ExtendedLinkObject';
 import {buildNameFromUUID} from '../utils/helpers';
 import {addNode, select} from '../redux/slicers/nodeSlice';
 import {addLink} from '../redux/slicers/linkSlice';
+import {LinksViewMode} from "../redux/extensions/enums/LinksViewMode";
+
+interface GraphProps {
+    linksViewMode: LinksViewMode
+}
 
 export const createNewLink = (
     fromNode: ReduxNodeObject, toNode: ReduxNodeObject,
@@ -35,7 +40,7 @@ export const createNewLink = (
  * @return {JSX.Element}
  * @constructor
  */
-function Graph() {
+function Graph(props: GraphProps) {
     const dispatch = useAppDispatch();
     const [width, setWidth] = React.useState(window.innerWidth);
     const [height, setHeight] = React.useState(window.innerHeight);
@@ -139,7 +144,9 @@ function Graph() {
                 link.id === el.id,
             );
 
-            return isSuitable ? 'green' : 'red';
+            return props.linksViewMode === LinksViewMode.ONLY_PATH ? (
+                isSuitable ? 'lime' : 'black'
+            ) : 'red'
         }}
     />;
 }

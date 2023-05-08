@@ -7,6 +7,7 @@ import ChooseNodesMenu from '../ChooseNodesMenu/ChooseNodesMenu.lazy';
 import {startAlgorithm} from '../../../../geneticAlgorithm';
 import AlgorithmActionStatus from '../AlgorithmActionStatus/AlgorithmActionStatus.lazy';
 import PathInfoPanel from "../PathInfoPanel/PathInfoPanel.lazy";
+import Limiter from "../Limiter/Limiter.lazy";
 
 interface GeneticAlgorithmWindowProps {
     isOpen: boolean,
@@ -29,6 +30,11 @@ function GeneticAlgorithmWindow(
     const links = useAppSelector((state) => state.links.items);
     const path = useAppSelector((state) => state.graph.foundPath)
     const selectedNodes = useAppSelector((state) => state.nodes.pickedPathfinderNodes)
+    const [limitations, setLimitations] = React.useState<Array<{name: string, limit: number}>>(
+        Object.keys(links[0].value).map((key) => {
+            return {name: key, limit: links[0].value[key]}
+        })
+    )
 
     const isSuitable = React.useCallback(
         () => {
@@ -39,7 +45,7 @@ function GeneticAlgorithmWindow(
 
     const start = async () => {
         console.log(selectedNodes)
-        startAlgorithm(nodes, links, [], selectedNodes[0])
+        startAlgorithm(nodes, links, limitations, selectedNodes[0])
             .then(() => console.log('finished'));
     };
 
@@ -72,6 +78,14 @@ function GeneticAlgorithmWindow(
                                 </div>
                             ) : (
                                 <>
+                                    <div>
+                                        <b>Ограничения:</b>
+                                        <Limiter
+                                            source={links[0].value}
+                                            limitations={limitations}
+                                            setLimitations={setLimitations}
+                                        />
+                                    </div>
                                     <ChooseNodesMenu/>
                                     <button
                                         type="button"

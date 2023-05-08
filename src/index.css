@@ -103,4 +103,19 @@
         @apply
         p-2 h-[90vh] overflow-y-scroll
     }
+
+    .links-view-mode-changer {
+        @apply
+        absolute bottom-10 left-1/2 -translate-x-1/2 text-black
+        px-4 py-2 bg-white rounded-md gap-2 flex flex-col
+    }
+    .links-view-mode-changer button {
+        @apply
+        px-2 py-0.5 bg-gray-300 last:rounded-r-md first:rounded-l-md font-bold
+        bordered
+    }
+    .links-view-mode-changer button.selected {
+        @apply
+        bg-green-600/80 text-white
+    }
 }
