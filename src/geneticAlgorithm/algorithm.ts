@@ -1,25 +1,8 @@
 import {Population} from './domain/Population';
 import {Chromosome} from './domain/Chromosome';
 import {getRandomNumber} from './functions/arrayhelper';
-import {Graph} from "./domain/graph/Graph";
-
-// /**
-//  * Get a random index from an array of elements
-//  * @param {Array} array array of elements
-//  * @return {number} random index
-//  */
-// function getRandomIndex(array: Array<unknown>) : number {
-//   return Math.round(Math.random() * (array.length - 1));
-// }
-
-// const recycleArray = (array: Array<number>, index: number) => {
-//   const idx = index ? index : getRandomIndex(array);
-//   const res = [];
-//   for (let i = 0; i < array.length; i++) {
-//     res[i] = array[(idx + i) % array.length];
-//   }
-//   return res;
-// };
+import store from "../interface/redux/store";
+import {clearStepsInfo} from "../interface/redux/slicers/graphSlice";
 
 /**
  * Modified version of default crossover
@@ -27,7 +10,7 @@ import {Graph} from "./domain/graph/Graph";
  * @param {Array<T>} parent2
  * @template T
  */
-function modifiedCrossover<T>(parent1: Array<T>, parent2: Array<T>) {
+export async function modifiedCrossover<T>(parent1: Array<T>, parent2: Array<T>) {
     const [gen1, gen2] = [
         Math.round(getRandomNumber(1, parent1.length - 2)),
         Math.round(getRandomNumber(1, parent1.length - 2))
@@ -57,8 +40,6 @@ function modifiedCrossover<T>(parent1: Array<T>, parent2: Array<T>) {
  * @param {Function} fitnessFunction fitness function that will be
  * applied to each individual
  * @param {Population<number>} population initial population
- * @param graph
- * @param startNodeId
  * @return {Population<number>} a population with supposedly the most
  * suitable "individuals"
  * @template T
@@ -70,23 +51,23 @@ export async function geneticAlgorithm<T>(
     finishCondition: (population: Population<string>) => boolean,
     fitnessFunction: (chromosome: Chromosome<string>) => number,
     population: Population<string>,
-    graph: Graph<T>,
-    startNodeId?: string
 ) {
+    store.dispatch(clearStepsInfo())
+    const steps = []
     for (let i = 0; i < maxGenerationsCount; i++) {
         const newPopulation = new Population<string>()
 
-        const tempPopulation = population
+        const tempPopulation = await population
             .tournamentSelection(fitnessFunction, 2)
         while (newPopulation.entities.length !== population.entities.length) {
-            const parents = tempPopulation.panmixia()
-            const offspring = modifiedCrossover(
+            const parents = await tempPopulation.panmixia()
+            const offspring = await modifiedCrossover(
                 parents.first.gens, parents.second.gens
             )
 
             if (Math.random() < mutationRate) {
                 const tempChromosome = new Chromosome(...offspring.gens.slice(1, -1))
-                tempChromosome.swappingMutation()
+                await tempChromosome.swappingMutation()
 
                 const mutatedGens = [offspring.gens[0], ...tempChromosome.gens, offspring.gens[0]]
                 offspring.gens.splice(0, offspring.gens.length, ...mutatedGens)
@@ -96,11 +77,11 @@ export async function geneticAlgorithm<T>(
         }
 
         population = newPopulation
+        steps.push({
+            generationNumber: i,
+            generation: [...population.entities]
+        })
     }
 
-    console.log(
-        population.entities.map((en) => fitnessFunction(en))
-    )
-
-    return population;
+    return {progress: steps, result: population};
 }

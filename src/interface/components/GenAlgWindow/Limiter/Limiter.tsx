@@ -35,7 +35,7 @@ function Limiter({source, limitations, setLimitations}: LimiterProps) {
                                     return [...prevState]
                                 })
                             }}
-                            defaultValue={source[key]}/>
+                            defaultValue={Number.MAX_VALUE}/>
                     </div>
                 ))
             }

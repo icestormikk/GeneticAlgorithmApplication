@@ -2,7 +2,6 @@ import React from 'react';
 import {useAppSelector} from '../../../redux/hooks';
 import {motion} from 'framer-motion';
 import AlgorithmActionsController from '../AlgorithmActionsController/AlgorithmActionsController.lazy';
-import {formatDiff} from '../../../../geneticAlgorithm/functions/datehelper';
 import AlgorithmActionIcon from "./AlgorithmActionIcon/AlgorithmActionIcon.lazy";
 import {ActionType} from "../../../redux/extensions/enums/ActionType";
 
@@ -33,7 +32,7 @@ function AlgorithmActionStatus() {
                 прогресс
             </p>
             <AlgorithmActionsController/>
-            <ul className="flex flex-col gap-1 w-[40vw]">
+            <ul className="flex flex-col gap-1 w-[36vw]">
                 {
                     actions.map((el) => (
                         <motion.li
@@ -63,14 +62,7 @@ function AlgorithmActionStatus() {
                                 <AlgorithmActionIcon type={el.type}/>
                                 <span>{el.title}</span>
                                 <span className="text-sm font-bold">
-                                      {
-                                          formatDiff(
-                                              el.time.hours,
-                                              el.time.minutes,
-                                              el.time.seconds,
-                                              el.time.ms,
-                                          )
-                                      }
+                                      {new Date(el.timestamp).toLocaleTimeString('ru')}
                                 </span>
                             </div>
                             <div>

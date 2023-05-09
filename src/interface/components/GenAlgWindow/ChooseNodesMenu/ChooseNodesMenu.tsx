@@ -56,7 +56,7 @@ function ChooseNodesMenu() {
 
     return (
         <div>
-            <b>Выберите узел:</b>
+            <b>Выберите узел (опционально):</b>
             <div className="flex flex-row gap-1">
                 {
                     nodesCollector.map((el) => (

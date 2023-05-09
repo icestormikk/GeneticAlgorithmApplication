@@ -36,7 +36,7 @@ declare module '../domain/Chromosome' {
          * Exchange of places in the chromosome of two neighbors of
          * one randomly selected gene
          */
-        swappingMutation(): Chromosome<T>,
+        swappingMutation(): Promise<Chromosome<T>>,
 
         /**
          * Changes chromosome genes with real
@@ -93,7 +93,7 @@ Chromosome.prototype.removingMutation =
     };
 
 Chromosome.prototype.swappingMutation =
-    function <T>(): Chromosome<T> {
+    async function <T>(): Promise<Chromosome<T>> {
         const {length} = this.gens;
         if (length === 1) {
             throw new Error('It is impossible to apply swapping mutation ' +

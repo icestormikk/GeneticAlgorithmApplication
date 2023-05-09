@@ -4,13 +4,14 @@ import {ReduxLinkObject} from '../interface/redux/extensions/ReduxLinkObject';
 import {NodeEntity} from './domain/graph/NodeEntity';
 import {LinkEntity} from './domain/graph/LinkEntity';
 import {Graph} from './domain/graph/Graph';
-import {geneticAlgorithm} from './algorithm';
 import {Chromosome} from './domain/Chromosome';
 import {Population} from './domain/Population';
 import {addAction} from '../interface/redux/slicers/actionsSlice';
 import store from '../interface/redux/store';
-import {setPath} from '../interface/redux/slicers/graphSlice';
+import {addStepInfo, setPath} from '../interface/redux/slicers/graphSlice';
 import {ActionType} from "../interface/redux/extensions/enums/ActionType";
+import {Config} from "../interface/components/GenAlgWindow/AlgorithmConfigPanel";
+import {genitor} from "./models";
 
 function getState<T>(source: T, type: "initial" | "infinite") : T {
     const castedSource = {...source} as any
@@ -72,10 +73,10 @@ function fitnessFunction<T>(
     return 1 / totalParamSum[keys[0]]
 }
 
-function appendAction(title: string, startDate: Date, type: ActionType = ActionType.DEFAULT) {
+function appendAction(title: string, type: ActionType = ActionType.DEFAULT) {
     store.dispatch(
         addAction(
-            [{title, startDate, type}],
+            [{title, type}],
         ),
     );
 }
@@ -83,10 +84,11 @@ function appendAction(title: string, startDate: Date, type: ActionType = ActionT
 async function createNewPopulation<T>(
     graph: Graph<T>,
     startNodeId: string,
+    populationSize: number
 ) {
     const paths: Array<Chromosome<string>> = []
 
-    for (let i = 0; i < 50 + graph.links.length * 2; i++) {
+    for (let i = 0; i < populationSize; i++) {
         let path: Array<string> | undefined
         while (path === undefined) {
             try {
@@ -108,7 +110,7 @@ async function createNewPopulation<T>(
     if (paths.length === 0) {
         const message = "End is unreachable (it is impossible to bypass all the " +
             "vertices once and return to the given one)"
-        appendAction(message, new Date(), ActionType.ERROR)
+        appendAction(message, ActionType.ERROR)
 
         throw new Error(message)
     }
@@ -116,9 +118,30 @@ async function createNewPopulation<T>(
     return new Population(...paths);
 }
 
+async function convertDataToPlotData(
+    res: { result: Population<string>; progress: any[] },
+    onDistance: (chromosome: Chromosome<string>) => any,
+    onFitness: (chromosome: Chromosome<string>) => number
+) : Promise<void> {
+    res.progress.forEach((step) => {
+        store.dispatch(
+            addStepInfo({
+                generationNumber: step.generationNumber,
+                distance: onDistance(
+                    step.generation
+                        .sort((a: Chromosome<string>, b: Chromosome<string>) =>
+                            onFitness(b) - onFitness(a)
+                        )[0]
+                ).distance
+            })
+        )
+    })
+}
+
 /**
  * Runs a pre-configured genetic algorithm to solve the
  * traveling salesman problem
+ * @param config
  * @param {Array<ReduxNodeObject>} nodesList list of available
  * vertices in the graph
  * @param {Array<ReduxLinkObject>} linksList list of available
@@ -127,16 +150,15 @@ async function createNewPopulation<T>(
  * @param {NodeEntity|undefined} startNode
  */
 export async function startAlgorithm(
+    config: Config,
     nodesList: Array<ReduxNodeObject>,
     linksList: Array<ReduxLinkObject>,
     limits: Array<{name: string, limit: number}>,
     startNode?: NodeEntity,
 ) {
-    console.log(limits)
-    const startDate = new Date();
-    appendAction('Запускаем алгоритм', startDate)
+    appendAction('Запускаем алгоритм')
 
-    appendAction('Инициализируем функции', startDate)
+    appendAction('Инициализируем функции')
     const initialState = getState(linksList[0].value, "initial")
     const infiniteState = getState(linksList[0].value, "infinite")
     const finishCondition = (population: Population<string>) =>
@@ -145,6 +167,7 @@ export async function startAlgorithm(
             .every((obj, _, array) =>
                 obj === array[0] && array[0] !== 1 / Number.MAX_VALUE,
             );
+
     const onSum = <T, >(first: T, second: T) => {
         const [firstAsObj, secondAsObj] = [first as any, second as any]
         Object.keys(firstAsObj).forEach((key) => {
@@ -168,23 +191,21 @@ export async function startAlgorithm(
     {initial: {...initialState}, infinite: {...infiniteState}}
         )
 
-    appendAction('Конвертируем элементы графа', startDate);
+    appendAction('Конвертируем элементы графа');
     const graph = initializeGraph(nodesList, linksList);
     const startNodeId = startNode ? startNode.id : graph.nodes.random().id
 
-    appendAction('Создаём начальную популяцию', startDate)
-    const initialPopulation = await createNewPopulation(graph, startNodeId);
+    appendAction('Создаём начальную популяцию')
+    const initialPopulation = await createNewPopulation(graph, startNodeId, config.populationSize);
 
-    await geneticAlgorithm(
-        0.8,
-        graph.links.length * 50,
-        finishCondition,
-        calculateFitnessFor,
+    await genitor(
+        config.mutationRate,
+        1,
         initialPopulation,
-        graph,
-        startNodeId
-    ).then((res) => {
-        const firstSuitable = res.entities
+        calculateFitnessFor,
+        config.generationsCount,
+    ).then(async (res) => {
+        const firstSuitable = res.result.entities
             .sort((a, b) =>
                 calculateFitnessFor(b) - calculateFitnessFor(a)
             )
@@ -193,20 +214,15 @@ export async function startAlgorithm(
             )
         if (!firstSuitable) {
             store.dispatch(setPath(undefined))
-            appendAction("Подходящий путь не найден!", startDate, ActionType.ERROR)
+            appendAction("Подходящий путь не найден!", ActionType.ERROR)
             return
         }
 
-        console.log(
-            firstSuitable.gens
-                .map((el) => graph.nodes.find((node) => node.id === el))
-                .map((el) => el?.label),
-        );
-        console.log(
-            calculateFitnessFor(firstSuitable)
-        )
+        appendAction("Рисуем график")
+        Promise.all([convertDataToPlotData(res, calculateDistanceFor, calculateFitnessFor)])
+            .then(() => console.log('plot - finished'))
 
-        appendAction('Алгоритм успешно завершил работу', startDate)
+        appendAction('Алгоритм успешно завершил работу')
         store.dispatch(
             setPath({
                 nodes: firstSuitable.gens,
@@ -214,7 +230,7 @@ export async function startAlgorithm(
             })
         );
     }).catch((err) => {
-        appendAction('Произошла ошибка во время работы алгоритма', startDate, ActionType.ERROR)
+        appendAction('Произошла ошибка во время работы алгоритма', ActionType.ERROR)
         console.error(err);
     });
 }

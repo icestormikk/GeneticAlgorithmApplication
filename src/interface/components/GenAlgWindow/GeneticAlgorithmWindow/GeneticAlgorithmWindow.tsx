@@ -8,6 +8,8 @@ import {startAlgorithm} from '../../../../geneticAlgorithm';
 import AlgorithmActionStatus from '../AlgorithmActionStatus/AlgorithmActionStatus.lazy';
 import PathInfoPanel from "../PathInfoPanel/PathInfoPanel.lazy";
 import Limiter from "../Limiter/Limiter.lazy";
+import StatisticsChart from "../../StatisticsChart/StatisticsChart.lazy";
+import AlgorithmConfigPanel from "../AlgorithmConfigPanel/AlgorithmConfigPanel.lazy";
 
 interface GeneticAlgorithmWindowProps {
     isOpen: boolean,
@@ -30,11 +32,15 @@ function GeneticAlgorithmWindow(
     const links = useAppSelector((state) => state.links.items);
     const path = useAppSelector((state) => state.graph.foundPath)
     const selectedNodes = useAppSelector((state) => state.nodes.pickedPathfinderNodes)
+    const algorithmStepsInfo = useAppSelector((state) => state.graph.algorithmStepsInfo)
     const [limitations, setLimitations] = React.useState<Array<{name: string, limit: number}>>(
-        Object.keys(links[0].value).map((key) => {
-            return {name: key, limit: links[0].value[key]}
+        Object.keys(links[0]?.value || {}).map((key) => {
+            return {name: key, limit: Number.MAX_VALUE}
         })
     )
+    const [config, setConfig] = React.useState({
+        mutationRate: 0.1, generationsCount: 500, populationSize: 200
+    })
 
     const isSuitable = React.useCallback(
         () => {
@@ -43,10 +49,9 @@ function GeneticAlgorithmWindow(
         [nodes, links],
     );
 
-    const start = async () => {
-        console.log(selectedNodes)
-        startAlgorithm(nodes, links, limitations, selectedNodes[0])
-            .then(() => console.log('finished'));
+    const start = () => {
+        startAlgorithm(config, nodes, links, limitations, selectedNodes[0])
+            .then(() => console.log('finished'))
     };
 
     return (
@@ -57,59 +62,69 @@ function GeneticAlgorithmWindow(
                 <h1>Задача коммивояжера</h1>
             )}
             content={(
-                <div className="flex flex-row gap-2">
-                    <div>
-                        <AdditionalCondition
-                            condition={isSuitable}
-                            content={(
-                                <p className="font-light text-gray-500">
-                                    Необходимо наличие в графе как минимум 2 узлов
-                                    и 1 ссылки
-                                </p>
-                            )}
-                        />
-                        {
-                            !isSuitable() ? (
-                                <div className="w-full h-20 bordered rounded-md
-                                centered text-center flex-col text-xl text-gray-600
-                                shadow-md">
-                                    <BiLockAlt/>
-                                    <span>Недоступно, пока не выполнено условие</span>
-                                </div>
-                            ) : (
-                                <>
-                                    <div>
-                                        <b>Ограничения:</b>
-                                        <Limiter
-                                            source={links[0].value}
-                                            limitations={limitations}
-                                            setLimitations={setLimitations}
-                                        />
+                <div className="flex flex-col gap-2">
+                    {
+                        algorithmStepsInfo.length > 0 && (
+                            <StatisticsChart data={algorithmStepsInfo}/>
+                        )
+                    }
+                    <div className="flex flex-row gap-2">
+                        <div>
+                            <AdditionalCondition
+                                condition={isSuitable}
+                                content={(
+                                    <p className="font-light text-gray-500">
+                                        Необходимо наличие в графе как минимум 2 узлов
+                                        и 1 ссылки
+                                    </p>
+                                )}
+                            />
+                            {
+                                !isSuitable() ? (
+                                    <div className="w-full h-20 bordered rounded-md
+                                    centered text-center flex-col text-xl text-gray-600
+                                    shadow-md">
+                                        <BiLockAlt/>
+                                        <span>Недоступно, пока не выполнено условие</span>
                                     </div>
-                                    <ChooseNodesMenu/>
-                                    <button
-                                        type="button"
-                                        className="submit-button"
-                                        onClick={() => start()}
-                                    >
-                                        Запустить
-                                    </button>
-                                </>
-                            )
-                        }
-                        {
-                            path ? (
-                                <PathInfoPanel pathInfo={path}/>
-                            ) : (
-                                <div className="centered text-center w-full p-2">
-                                    <span className="text-gray-400">
-                                        Здесь будет показан результат вычислений
-                                    </span>
-                                </div>
-                            )
-                        }
+                                ) : (
+                                    <>
+                                        <div>
+                                            <b>Ограничения:</b>
+                                            <Limiter
+                                                source={links[0].value}
+                                                limitations={limitations}
+                                                setLimitations={setLimitations}
+                                            />
+                                        </div>
+                                        <ChooseNodesMenu/>
+                                        <AlgorithmConfigPanel
+                                            config={config} setConfig={setConfig}
+                                        />
+                                        <button
+                                            type="button"
+                                            className="submit-button"
+                                            onClick={() => start()}
+                                        >
+                                            Запустить
+                                        </button>
+                                    </>
+                                )
+                            }
+                            {
+                                path ? (
+                                    <PathInfoPanel pathInfo={path}/>
+                                ) : (
+                                    <div className="centered text-center w-full p-2">
+                                        <span className="text-gray-400">
+                                            Здесь будет показан результат вычислений
+                                        </span>
+                                    </div>
+                                )
+                            }
+                        </div>
+                        <AlgorithmActionStatus/>
                     </div>
-                    <AlgorithmActionStatus/>
                 </div>
             )}
         />

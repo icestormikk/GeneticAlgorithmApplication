@@ -10,7 +10,7 @@ declare module '../domain/Population' {
          * Each individual in the population is randomly matched
          * to another individual from the same population
          */
-        panmixia(): ChromosomePair<T>,
+        panmixia(): Promise<ChromosomePair<T>>,
 
         /**
          * The first parent is chosen randomly, and the second parent
@@ -22,7 +22,7 @@ declare module '../domain/Population' {
          */
         inbreeding(
             distanceFunction: (
-                chromosome1: Chromosome<T>, chromosome: Chromosome<T>
+                chromosome1: Chromosome<T>, chromosome2: Chromosome<T>
             ) => number
         ): ChromosomePair<T>
 
@@ -36,7 +36,7 @@ declare module '../domain/Population' {
          */
         outcrossing(
             distanceFunction: (
-                chromosome1: Chromosome<T>, chromosome: Chromosome<T>
+                chromosome1: Chromosome<T>, chromosome2: Chromosome<T>
             ) => number
         ): ChromosomePair<T>
 
@@ -53,7 +53,7 @@ declare module '../domain/Population' {
         tournamentSelection(
             fitnessFunction: (chromosome: Chromosome<T>) => number,
             tournamentSize: number
-        ): Population<T>
+        ): Promise<Population<T>>
 
         /**
          * Individuals are selected using N "roulette runs", where N is the
@@ -65,12 +65,12 @@ declare module '../domain/Population' {
          */
         rouletteWheelSelection(
             fitnessFunction: (chromosome: Chromosome<T>) => number
-        ): Population<T>
+        ): Promise<Population<T>>
     }
 }
 
 Population.prototype.panmixia =
-    function <T>(): ChromosomePair<T> {
+    async function <T>(): Promise<ChromosomePair<T>> {
         return new ChromosomePair(
             this.entities.random(), this.entities.random(),
         );
@@ -79,7 +79,7 @@ Population.prototype.panmixia =
 Population.prototype.inbreeding =
     function <T>(
         distanceFunction: (
-            chromosome1: Chromosome<T>, chromosome: Chromosome<T>
+            chromosome1: Chromosome<T>, chromosome2: Chromosome<T>
         ) => number,
     ): ChromosomePair<T> {
         return chooseDescendatsAlgorithm(
@@ -90,7 +90,7 @@ Population.prototype.inbreeding =
 Population.prototype.outcrossing =
     function <T>(
         distanceFunction: (
-            chromosome1: Chromosome<T>, chromosome: Chromosome<T>
+            chromosome1: Chromosome<T>, chromosome2: Chromosome<T>
         ) => number,
     ): ChromosomePair<T> {
         return chooseDescendatsAlgorithm(
@@ -99,10 +99,10 @@ Population.prototype.outcrossing =
     };
 
 Population.prototype.tournamentSelection =
-    function <T>(
+    async function <T>(
         fitnessFunction: (chromosome: Chromosome<T>) => number,
         tournamentSize = 2,
-    ): Population<T> {
+    ): Promise<Population<T>> {
         const newPopulation = new Population<T>();
 
         for (let i = 0; i < this.entities.length; i++) {
@@ -123,9 +123,9 @@ Population.prototype.tournamentSelection =
     };
 
 Population.prototype.rouletteWheelSelection =
-    function <T>(
+    async function <T>(
         fitnessFunction: (chromosome: Chromosome<T>) => number,
-    ): Population<T> {
+    ): Promise<Population<T>> {
         const newPopulation = new Population<T>();
         const totalFitness = this.entities
             .map((el) => fitnessFunction(el))

@@ -10,7 +10,7 @@ import {Chromosome} from '../domain/Chromosome';
  */
 export function hammingDistance(
     chromosome1: Chromosome<boolean>, chromosome2: Chromosome<boolean>,
-): number {
+) : number {
     return chromosome2.gens.map((gen, index) =>
         chromosome1.gens[index] !== gen ? 1 : 0,
     ).reduce<number>((a, b) => a + b, 0);
@@ -27,11 +27,24 @@ export function hammingDistance(
  * @template T
  */
 export function euclideanDistance(
-    chromosome1: Chromosome<number>, chromosome2: Chromosome<number>,
-): number {
+    chromosome1: Chromosome<number>, chromosome2: Chromosome<number>
+) : number {
     return Math.sqrt(
         chromosome1.gens.map((value, index) =>
             Math.pow(chromosome2.gens[index] - value, 2.0),
         ).reduce<number>((a, b) => a + b, 0),
     );
+}
+
+export function pathDistance<T>(
+    chromosome1: Chromosome<T>, chromosome2: Chromosome<T>
+) : number {
+    let result = 0
+    chromosome1.gens.forEach((gen, index) => {
+        if (gen !== chromosome2.gens[index]) {
+            result++
+        }
+    })
+
+    return result
 }
