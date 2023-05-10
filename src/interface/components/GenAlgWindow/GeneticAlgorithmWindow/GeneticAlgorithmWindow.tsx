@@ -39,7 +39,7 @@ function GeneticAlgorithmWindow(
         })
     )
     const [config, setConfig] = React.useState({
-        mutationRate: 0.1, generationsCount: 500, populationSize: 200
+        crossoverRate: 1, mutationRate: 0.1, generationsCount: 500, populationSize: 200
     })
 
     const isSuitable = React.useCallback(

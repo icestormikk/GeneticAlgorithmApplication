@@ -1,6 +1,7 @@
 import React from 'react';
 
 export type Config = {
+    crossoverRate: number,
     mutationRate: number,
     populationSize: number,
     generationsCount: number
@@ -21,6 +22,12 @@ function AlgorithmConfigPanel({config, setConfig}: AlgorithmConfigPanelProps) {
     }> = React.useMemo(
         () => {
             return [
+                {
+                    id: "crossoverRate",
+                    title: "Вероятность кроссинговера",
+                    key: "crossoverRate",
+                    min: 0, max: 1,
+                },
                 {
                     id: "mutRate",
                     title: "Вероятность мутации",

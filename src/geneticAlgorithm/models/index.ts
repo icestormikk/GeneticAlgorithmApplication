@@ -34,7 +34,6 @@ export async function canonical<T>(
 
 export async function genitor<T>(
     mutationProbability: number,
-    crossoverProbability: number,
     population: Population<T>,
     fitnessFunction: (chromosome: Chromosome<T>) => number,
     maxPopulationCount: number
@@ -50,6 +49,11 @@ export async function genitor<T>(
         const offspring = await modifiedCrossover(
             parents.first.gens, parents.second.gens
         )
+
+        if (Math.random() < mutationProbability) {
+            await offspring.swappingMutation()
+        }
+
         population.entities.splice(
             population.entities.length - 1, 1, offspring
         )
