@@ -8,7 +8,7 @@ import {Chromosome} from './domain/Chromosome';
 import {Population} from './domain/Population';
 import {addAction} from '../interface/redux/slicers/actionsSlice';
 import store from '../interface/redux/store';
-import {addStepInfo, setPath} from '../interface/redux/slicers/graphSlice';
+import {addStepInfo, clearStepsInfo, setPath} from '../interface/redux/slicers/graphSlice';
 import {ActionType} from "../interface/redux/extensions/enums/ActionType";
 import {Config} from "../interface/components/GenAlgWindow/AlgorithmConfigPanel";
 import {genitor} from "./models";
@@ -156,6 +156,7 @@ export async function startAlgorithm(
     limits: Array<{name: string, limit: number}>,
     startNode?: NodeEntity,
 ) {
+    store.dispatch(clearStepsInfo())
     appendAction('Запускаем алгоритм')
 
     appendAction('Инициализируем функции')
@@ -200,7 +201,6 @@ export async function startAlgorithm(
 
     await genitor(
         config.mutationRate,
-        1,
         initialPopulation,
         calculateFitnessFor,
         config.generationsCount,

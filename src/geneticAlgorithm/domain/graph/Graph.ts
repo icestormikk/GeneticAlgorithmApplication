@@ -19,7 +19,7 @@ export class Graph<T> {
         public readonly links: Array<LinkEntity<T>>,
     ) {}
 
-    static createRandomGraph<T>(size: number) {
+    static async createRandomGraph<T>(size: number) {
         const nodes = [...Array(size).keys()].map((el) => new NodeEntity(`Node-${el}`))
         const links: Array<LinkEntity<T>> = []
 

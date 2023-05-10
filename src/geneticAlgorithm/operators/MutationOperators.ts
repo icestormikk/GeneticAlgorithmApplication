@@ -1,4 +1,5 @@
 import {Chromosome} from '../domain/Chromosome';
+import {getRandomNumber} from "../functions/arrayhelper";
 
 declare module '../domain/Chromosome' {
     interface Chromosome<T> {
@@ -100,12 +101,10 @@ Chromosome.prototype.swappingMutation =
                 'to an chromosome with a single gene');
         }
 
-        if (length < 3) {
+        if (length < 6) {
             this.gens.reverse();
         } else {
-            const indexes = Array
-                .from({length: length - 2}, (_, i) => i + 1);
-            const randomIndex = indexes[indexes.randomIndex()];
+            const randomIndex = Math.floor(getRandomNumber(2, this.gens.length - 2));
             [this.gens[randomIndex - 1], this.gens[randomIndex + 1]] =
                 [this.gens[randomIndex + 1], this.gens[randomIndex - 1]];
         }

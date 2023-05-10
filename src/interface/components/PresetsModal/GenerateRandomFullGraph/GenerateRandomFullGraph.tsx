@@ -12,14 +12,14 @@ import {Graph} from "../../../../geneticAlgorithm/domain/graph/Graph";
 function GenerateRandomFullGraph() {
     const dispatch = useAppDispatch()
 
-    const onCreate = (event: FormEvent<HTMLFormElement>) => {
+    const onCreate = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         const target = event.target as typeof event.target & {
             size: {value: number}
         }
         if (target.size.value < 2) { return }
 
-        const graph = Graph.createRandomGraph(Number(target.size.value))
+        const graph = await Graph.createRandomGraph(Number(target.size.value))
         dispatch(
             setLinks(
                 graph.links.map((link) => {
