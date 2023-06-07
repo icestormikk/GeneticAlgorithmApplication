@@ -1,1 +1,1 @@
-export type ReduxNodeObject = { id: string, label: string }
+export type ReduxNodeObject = { id: number, label: string }

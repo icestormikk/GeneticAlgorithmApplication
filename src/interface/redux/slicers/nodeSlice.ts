@@ -1,6 +1,5 @@
 import {ReduxNodeObject} from '../extensions/ReduxNodeObject';
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {generateUUID} from 'three/src/math/MathUtils';
 
 interface NodesState {
     pickedPathfinderNodes: Array<ReduxNodeObject>
@@ -11,7 +10,7 @@ interface NodesState {
 const initialState: NodesState = {
     pickedPathfinderNodes: [],
     selectedItems: [],
-    items: [{id: generateUUID(), label: 'node-0'}],
+    items: [{id: 0, label: 'node-0'}],
 };
 
 const graphSlice = createSlice({
@@ -59,7 +58,7 @@ const graphSlice = createSlice({
                 state.items.push({id, label});
             }
         },
-        removeNode: (state, action: PayloadAction<string>) => {
+        removeNode: (state, action: PayloadAction<number>) => {
             function removeElementFrom<T>(source: Array<T>, condition: (element: T) => boolean) {
                 const index = source.findIndex((el) => condition(el))
                 if (index > -1) {
@@ -88,7 +87,7 @@ const graphSlice = createSlice({
         dropNodes: (state) => {
             state.pickedPathfinderNodes.splice(0, state.pickedPathfinderNodes.length)
             state.selectedItems.splice(0, state.selectedItems.length);
-            state.items.splice(0, state.items.length, {id: generateUUID(), label: 'node-0'});
+            state.items.splice(0, state.items.length, {id: 0, label: 'node-0'});
         },
     },
 });

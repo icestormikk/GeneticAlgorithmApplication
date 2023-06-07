@@ -2,6 +2,7 @@ import {Population} from "../domain/Population";
 import {Chromosome} from "../domain/Chromosome";
 import {modifiedCrossover} from "../algorithm";
 import {pathDistance} from "../functions/distance";
+import {Graph} from "../domain/graph/Graph";
 
 export async function canonical<T>(
     mutationProbability: number,
@@ -42,6 +43,8 @@ export async function genitor<T>(
     population: Population<T>,
     fitnessFunction: (chromosome: Chromosome<T>) => number,
     maxPopulationCount: number,
+    graph: Graph<T>,
+    startNodeId: number
 ) {
     const steps: Array<Population<T>> = []
     for (let i = 0; i < maxPopulationCount; i++) {
@@ -50,14 +53,24 @@ export async function genitor<T>(
                 fitnessFunction(b) - fitnessFunction(a)
             )
 
-        const parents = await population.panmixia()
-        const offspring = await modifiedCrossover(
-            parents.first.gens, parents.second.gens
-        )
-
-        if (Math.random() < mutationProbability) {
-            await offspring.swappingMutation()
+        let offspring: Chromosome<any>|undefined = undefined
+        while (offspring === undefined) {
+            try {
+                const path = await graph.createRandomPath(startNodeId)
+                offspring = new Chromosome(...path)
+            } catch (e: any) {
+                // ignore
+            }
         }
+
+        // const parents = await population.panmixia()
+        // const offspring = await modifiedCrossover(
+        //     parents.first.gens, parents.second.gens
+        // )
+        //
+        // if (Math.random() < mutationProbability) {
+        //     await offspring.swappingMutation()
+        // }
 
         population.entities.splice(
             population.entities.length - 1, 1, offspring

@@ -1,9 +1,9 @@
-import {generateUUID} from 'three/src/math/MathUtils';
-
 /**
  * A class representing a node in a graph
  */
 export class NodeEntity {
+    private static counter = 0;
+
     /**
      * Node Entity constructor
      * @param {string} id unique node id
@@ -11,7 +11,6 @@ export class NodeEntity {
      */
     constructor(
         public label: string,
-        readonly id = generateUUID(),
-    ) {
-    }
+        readonly id = NodeEntity.counter++
+    ) {}
 }

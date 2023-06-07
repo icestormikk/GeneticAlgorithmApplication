@@ -1,4 +1,4 @@
 export type PathInfo<T> = {
-    nodes: Array<string>,
+    nodes: Array<number>,
     totalLength: T
 }

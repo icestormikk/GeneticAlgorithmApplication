@@ -53,7 +53,7 @@ export class Graph<T> {
      * @return {number} total path length
      */
     getTotalDistance(
-        path: Array<string>,
+        path: Array<number>,
         onSum: (first: T, second: T) => void,
         states: {
             initial: T, infinite: T
@@ -84,11 +84,11 @@ export class Graph<T> {
      * node ids
      */
     async createRandomPath(
-        startNodeId?: string
-    ): Promise<Array<string>> {
+        startNodeId?: number
+    ): Promise<Array<number>> {
         const self = this;
 
-        function validateNodeById(id: string): NodeEntity {
+        function validateNodeById(id: number): NodeEntity {
             const node = self.nodes.find((el) => el.id === id)
             if (!node) {
                 throw new Error(`Node with ${startNodeId} id was not found!`)
@@ -109,7 +109,7 @@ export class Graph<T> {
          * @param {Array<string>} result the resulting array describing the path
          * @param {string|undefined} finalNodeId id of the final node
          */
-        async function pathfinder(currentNodeId: string, result: Array<string>, finalNodeId: string) {
+        async function pathfinder(currentNodeId: number, result: Array<number>, finalNodeId: number) {
             result.push(currentNodeId)
             if (result.length === self.nodes.length) {
                 const toEndNode = self.links.find((el) =>
@@ -139,7 +139,7 @@ export class Graph<T> {
             throw new UnreachableEndError('End is unreachable (suitable links were not found)')
         }
 
-        const result: Array<string> = [];
+        const result: Array<number> = [];
         await pathfinder(startNode.id, result, startNode.id);
 
         return result;
@@ -153,7 +153,7 @@ export class Graph<T> {
      * @return {boolean} true if there is at least one path between
      * the knives, otherwise false
      */
-    isReachable(startNodeId: string, endNodeId: string): boolean {
+    isReachable(startNodeId: number, endNodeId: number): boolean {
         const startNode = this.nodes.find((el) => el.id === startNodeId);
         if (!startNode) {
             throw Error(`Node with id ${startNodeId} doesn't exist in graph`);

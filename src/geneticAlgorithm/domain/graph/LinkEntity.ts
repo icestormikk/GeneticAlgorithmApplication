@@ -14,8 +14,8 @@ export class LinkEntity<T> {
      * @template T
      */
     constructor(
-        public readonly source: string,
-        public readonly target: string,
+        public readonly source: number,
+        public readonly target: number,
         public value: T,
         readonly id = generateUUID(),
     ) {

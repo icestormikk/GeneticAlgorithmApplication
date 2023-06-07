@@ -1,7 +1,7 @@
 export type ReduxLinkObject = {
     id: string,
-    source: string,
-    target: string,
+    source: number,
+    target: number,
     label: string,
     value: any
 }

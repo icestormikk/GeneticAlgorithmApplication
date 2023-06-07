@@ -55,7 +55,7 @@ function initializeGraph(nodesList: Array<ReduxNodeObject>, linksList: Array<Red
 }
 
 function fitnessFunction<T>(
-    entity: Chromosome<string>,
+    entity: Chromosome<number>,
     onSum: (first: T, second: T) => void,
     states: { initial: T, infinite: T },
     graph: Graph<T>,
@@ -84,13 +84,13 @@ function appendAction(title: string, type: ActionType = ActionType.DEFAULT) {
 
 async function createNewPopulation<T>(
     graph: Graph<T>,
-    startNodeId: string,
+    startNodeId: number,
     populationSize: number
 ) {
-    const paths: Array<Chromosome<string>> = []
+    const paths: Array<Chromosome<number>> = []
 
     for (let i = 0; i < populationSize; i++) {
-        let path: Array<string> | undefined
+        let path: Array<number> | undefined
         try {
             path = await graph.createRandomPath(startNodeId)
             paths.push(new Chromosome(...path))
@@ -137,12 +137,12 @@ export async function startAlgorithm(
     appendAction('Инициализируем функции')
     const initialState = getState(linksList[0].value, "initial")
     const infiniteState = getState(linksList[0].value, "infinite")
-    const finishCondition = (population: Population<string>) =>
-        population.entities
-            .map((el) => calculateFitnessFor(el))
-            .every((obj, _, array) =>
-                obj === array[0] && array[0] !== 1 / Number.MAX_VALUE,
-            );
+    // const finishCondition = (population: Population<number>) =>
+    //     population.entities
+    //         .map((el) => calculateFitnessFor(el))
+    //         .every((obj, _, array) =>
+    //             obj === array[0] && array[0] !== 1 / Number.MAX_VALUE,
+    //         );
 
     const onSum = <T, >(first: T, second: T) => {
         const [firstAsObj, secondAsObj] = [first as any, second as any]
@@ -152,7 +152,7 @@ export async function startAlgorithm(
             }
         })
     }
-    const calculateFitnessFor = (chromosome: Chromosome<string>) =>
+    const calculateFitnessFor = (chromosome: Chromosome<number>) =>
         fitnessFunction(
             chromosome,
             onSum,
@@ -160,7 +160,7 @@ export async function startAlgorithm(
             graph,
             limits
         )
-    const calculateDistanceFor = (chromosome: Chromosome<string>) =>
+    const calculateDistanceFor = (chromosome: Chromosome<number>) =>
         graph.getTotalDistance(
             chromosome.gens,
             onSum,
@@ -193,6 +193,8 @@ export async function startAlgorithm(
                     initialPopulation,
                     calculateFitnessFor,
                     config.generationsCount,
+                    graph,
+                    startNodeId
                 )
             case AlgorithmType.CHC:
                 console.log('CHC')
@@ -246,7 +248,7 @@ export async function startAlgorithm(
                 (population) => {
                     return calculateDistanceFor(
                         population.entities
-                            .sort((a: Chromosome<string>, b: Chromosome<string>) =>
+                            .sort((a: Chromosome<number>, b: Chromosome<number>) =>
                                 calculateFitnessFor(b) - calculateFitnessFor(a)
                             )[0]
                     ).distance

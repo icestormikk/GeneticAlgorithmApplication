@@ -8,7 +8,7 @@ import {setSelectedNodes} from '../../redux/slicers/nodeSlice';
 import {LinkEntity} from '../../../geneticAlgorithm/domain/graph/LinkEntity';
 
 const isLinkExist = (
-    links: Array<LinkEntity<unknown>>, startNodeId: string, endNodeId: string,
+    links: Array<LinkEntity<unknown>>, startNodeId: number, endNodeId: number,
 ): boolean => {
     return links.find((el) =>
         el.source === startNodeId && el.target === endNodeId,
@@ -44,8 +44,8 @@ function LinkActions() {
                 target: endNodeId,
                 label: `${selectedNodes[0].label} -> ${selectedNodes[1].label}`,
                 value: {
-                    distance: Math.round(Math.random() * 100),
-                    cost: Math.round(Math.random() * 100)
+                    distance: 1,
+                    cost: 1
                 },
             };
 

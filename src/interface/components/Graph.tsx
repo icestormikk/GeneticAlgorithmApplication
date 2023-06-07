@@ -7,10 +7,8 @@ import {generateUUID} from 'three/src/math/MathUtils';
 import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import {ReduxNodeObject} from '../redux/extensions/ReduxNodeObject';
 import {ReduxLinkObject} from '../redux/extensions/ReduxLinkObject';
-import {getRandomNumber,} from '../../geneticAlgorithm/functions/arrayhelper';
 import {ExtendedNodeObject} from '../redux/extensions/ExtendedNodeObject';
 import {ExtendedLinkObject} from '../redux/extensions/ExtendedLinkObject';
-import {buildNameFromUUID} from '../utils/helpers';
 import {addNode, select} from '../redux/slicers/nodeSlice';
 import {addLink} from '../redux/slicers/linkSlice';
 import {LinksViewMode} from "../redux/extensions/enums/LinksViewMode";
@@ -80,12 +78,11 @@ function Graph(props: GraphProps) {
     }, [nodes, links]);
 
     const handleNodeRightClick = async (node: ReduxNodeObject) => {
-        const uuid = generateUUID();
         const distance = 1
         const cost = 1
         const newNode = {
-            id: uuid,
-            label: `node-${buildNameFromUUID(uuid)}`,
+            id: nodes.length,
+            label: `node-${nodes.length}`,
         };
         const newLinks = [
             createNewLink(node, newNode, distance, cost),

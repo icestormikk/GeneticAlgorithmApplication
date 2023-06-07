@@ -4,8 +4,8 @@ import {Population} from "../../../geneticAlgorithm/domain/Population";
 
 interface GraphState<T> {
     algorithmStepsInfo: {
-        items: Array<Population<string>>,
-        onResult?: (population: Population<string>) => number
+        items: Array<Population<number>>,
+        onResult?: (population: Population<number>) => number
     },
     foundPath: PathInfo<number> | undefined,
     executionTimeInMS: number
@@ -24,7 +24,7 @@ const graphSlice = createSlice({
     name: 'graphSlice',
     initialState,
     reducers: {
-        addStepInfo: (state, action: PayloadAction<Population<string>>) => {
+        addStepInfo: (state, action: PayloadAction<Population<number>>) => {
             state.algorithmStepsInfo.items.push(action.payload)
         },
         clearStepsInfo: (state) => {
@@ -32,7 +32,7 @@ const graphSlice = createSlice({
         },
         setResultFunction: (
             state,
-            action: PayloadAction<(population: Population<string>) => number>
+            action: PayloadAction<(population: Population<number>) => number>
         ) => {
             state.algorithmStepsInfo.onResult = action.payload
         },
