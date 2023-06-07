@@ -8,12 +8,19 @@ import {Chromosome} from './domain/Chromosome';
 import {Population} from './domain/Population';
 import {addAction} from '../interface/redux/slicers/actionsSlice';
 import store from '../interface/redux/store';
-import {addStepInfo, clearStepsInfo, setPath} from '../interface/redux/slicers/graphSlice';
+import {
+    addStepInfo,
+    clearStepsInfo,
+    setExecutionTime,
+    setPath,
+    setResultFunction
+} from '../interface/redux/slicers/graphSlice';
 import {ActionType} from "../interface/redux/extensions/enums/ActionType";
 import {Config} from "../interface/components/GenAlgWindow/AlgorithmConfigPanel";
-import {genitor} from "./models";
+import {canonical, chcAlgorithm, genitor} from "./models";
+import {AlgorithmType} from "../interface/redux/extensions/enums/AlgorithmType";
 
-function getState<T>(source: T, type: "initial" | "infinite") : T {
+function getState<T>(source: T, type: "initial" | "infinite"): T {
     const castedSource = {...source} as any
     Object.keys(castedSource).forEach((key) => {
         if (typeof castedSource[key] === 'number') {
@@ -50,22 +57,18 @@ function initializeGraph(nodesList: Array<ReduxNodeObject>, linksList: Array<Red
 function fitnessFunction<T>(
     entity: Chromosome<string>,
     onSum: (first: T, second: T) => void,
-    states: {initial: T, infinite: T},
+    states: { initial: T, infinite: T },
     graph: Graph<T>,
-    limits: Array<{name: keyof T, limit: number}>
-) : number {
+    limits: Array<{ name: string, limit: number }>
+): number {
     const totalParamSum = graph.getTotalDistance(
         entity.gens, onSum, {initial: {...states.initial}, infinite: {...states.infinite}}
     ) as any
     const keys = Object.keys(totalParamSum)
 
     for (let i = 0; i < keys.length; i++) {
-        const limit = limits.find((limit) => limit.name === keys[i])
-        if (!limit) {
-            continue
-        }
-
-        if (totalParamSum[limit.name] > limit.limit) {
+        const constraint = limits.find((limit) => limit.name === keys[i])
+        if (constraint && totalParamSum[constraint.name] > constraint.limit) {
             return Number.MAX_VALUE
         }
     }
@@ -75,9 +78,7 @@ function fitnessFunction<T>(
 
 function appendAction(title: string, type: ActionType = ActionType.DEFAULT) {
     store.dispatch(
-        addAction(
-            [{title, type}],
-        ),
+        addAction([{title, type}],)
     );
 }
 
@@ -90,20 +91,11 @@ async function createNewPopulation<T>(
 
     for (let i = 0; i < populationSize; i++) {
         let path: Array<string> | undefined
-        while (path === undefined) {
-            try {
-                path = await graph.createRandomPath(startNodeId)
-                paths.push(new Chromosome(...path))
-            } catch (e: any) {
-                // if (e instanceof UnreachableEndError) {
-                //     appendAction(
-                //         `Произошла ошибка: ${e.message}`,
-                //         new Date()
-                //     )
-                //     throw e
-                // }
-                // path = undefined
-            }
+        try {
+            path = await graph.createRandomPath(startNodeId)
+            paths.push(new Chromosome(...path))
+        } catch (e: any) {
+            // just ignore it
         }
     }
 
@@ -118,26 +110,6 @@ async function createNewPopulation<T>(
     return new Population(...paths);
 }
 
-async function convertDataToPlotData(
-    res: { result: Population<string>; progress: any[] },
-    onDistance: (chromosome: Chromosome<string>) => any,
-    onFitness: (chromosome: Chromosome<string>) => number
-) : Promise<void> {
-    res.progress.forEach((step) => {
-        store.dispatch(
-            addStepInfo({
-                generationNumber: step.generationNumber,
-                distance: onDistance(
-                    step.generation
-                        .sort((a: Chromosome<string>, b: Chromosome<string>) =>
-                            onFitness(b) - onFitness(a)
-                        )[0]
-                ).distance
-            })
-        )
-    })
-}
-
 /**
  * Runs a pre-configured genetic algorithm to solve the
  * traveling salesman problem
@@ -148,14 +120,17 @@ async function convertDataToPlotData(
  * links in the column
  * @param limits
  * @param {NodeEntity|undefined} startNode
+ * @param algorithm
  */
 export async function startAlgorithm(
     config: Config,
     nodesList: Array<ReduxNodeObject>,
     linksList: Array<ReduxLinkObject>,
-    limits: Array<{name: string, limit: number}>,
-    startNode?: NodeEntity,
+    limits: Array<{ name: string, limit: number }>,
+    algorithm: AlgorithmType = AlgorithmType.CANONICAL,
+    startNode?: NodeEntity
 ) {
+    console.log(limits)
     store.dispatch(clearStepsInfo())
     appendAction('Запускаем алгоритм')
 
@@ -189,22 +164,58 @@ export async function startAlgorithm(
         graph.getTotalDistance(
             chromosome.gens,
             onSum,
-    {initial: {...initialState}, infinite: {...infiniteState}}
+            {initial: {...initialState}, infinite: {...infiniteState}}
         )
 
     appendAction('Конвертируем элементы графа');
     const graph = initializeGraph(nodesList, linksList);
-    const startNodeId = startNode ? startNode.id : graph.nodes.random().id
+    const startNodeId = startNode ? startNode.id : graph.nodes[0].id
 
     appendAction('Создаём начальную популяцию')
     const initialPopulation = await createNewPopulation(graph, startNodeId, config.populationSize);
 
-    await genitor(
-        config.mutationRate,
-        initialPopulation,
-        calculateFitnessFor,
-        config.generationsCount,
-    ).then(async (res) => {
+    const chooseAlgorithm = async (type: AlgorithmType) => {
+        // @ts-ignore
+        switch (AlgorithmType[type]) {
+            case AlgorithmType.CANONICAL:
+                console.log('Канонический')
+                return canonical(
+                    config.mutationRate,
+                    config.crossoverRate,
+                    initialPopulation,
+                    calculateFitnessFor,
+                    config.generationsCount
+                )
+            case AlgorithmType.GENITOR:
+                console.log('Генитор')
+                return genitor(
+                    config.mutationRate,
+                    initialPopulation,
+                    calculateFitnessFor,
+                    config.generationsCount,
+                )
+            case AlgorithmType.CHC:
+                console.log('CHC')
+                return chcAlgorithm(
+                    config.mutationRate,
+                    config.crossoverRate,
+                    initialPopulation,
+                    calculateFitnessFor,
+                    config.generationsCount
+                )
+        }
+    }
+
+    const startTime = performance.now()
+    await chooseAlgorithm(algorithm).then((res) => {
+        if (!res) {
+            appendAction('Не удалось получить результат', ActionType.ERROR)
+            return
+        }
+
+        console.log(
+            calculateFitnessFor(res.result.entities[0])
+        )
         const firstSuitable = res.result.entities
             .sort((a, b) =>
                 calculateFitnessFor(b) - calculateFitnessFor(a)
@@ -218,9 +229,6 @@ export async function startAlgorithm(
             return
         }
 
-        appendAction("Рисуем график")
-        Promise.all([convertDataToPlotData(res, calculateDistanceFor, calculateFitnessFor)])
-            .then(() => console.log('plot - finished'))
 
         appendAction('Алгоритм успешно завершил работу')
         store.dispatch(
@@ -229,6 +237,23 @@ export async function startAlgorithm(
                 totalLength: calculateDistanceFor(firstSuitable)
             })
         );
+        res.progress.forEach((pop) => {
+            store.dispatch(addStepInfo(pop))
+        })
+        store.dispatch(addStepInfo(res.result))
+        store.dispatch(
+            setResultFunction(
+                (population) => {
+                    return calculateDistanceFor(
+                        population.entities
+                            .sort((a: Chromosome<string>, b: Chromosome<string>) =>
+                                calculateFitnessFor(b) - calculateFitnessFor(a)
+                            )[0]
+                    ).distance
+                }
+            )
+        )
+        store.dispatch(setExecutionTime(performance.now() - startTime))
     }).catch((err) => {
         appendAction('Произошла ошибка во время работы алгоритма', ActionType.ERROR)
         console.error(err);

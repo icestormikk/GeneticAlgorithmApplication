@@ -24,6 +24,7 @@ function Limiter({source, limitations, setLimitations}: LimiterProps) {
                                 const limitationsIndex = limitations.findIndex((limit) =>
                                     limit.name === key
                                 )
+                                console.log(limitations, key)
 
                                 setLimitations((prevState) => {
                                     if (limitationsIndex === -1) {

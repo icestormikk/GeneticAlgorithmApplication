@@ -1,26 +1,40 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {PathInfo} from "../extensions/PathInfo";
-import {AlgorithmStepInfo} from "../extensions/AlgorithmStepInfo";
+import {Population} from "../../../geneticAlgorithm/domain/Population";
 
 interface GraphState<T> {
-    algorithmStepsInfo: Array<AlgorithmStepInfo<T>>,
-    foundPath: PathInfo<number> | undefined
+    algorithmStepsInfo: {
+        items: Array<Population<string>>,
+        onResult?: (population: Population<string>) => number
+    },
+    foundPath: PathInfo<number> | undefined,
+    executionTimeInMS: number
 }
 
 const initialState: GraphState<any> = {
-    algorithmStepsInfo: [],
+    algorithmStepsInfo: {
+        items: [],
+        onResult: undefined
+    },
     foundPath: undefined,
+    executionTimeInMS: 0
 };
 
 const graphSlice = createSlice({
     name: 'graphSlice',
     initialState,
     reducers: {
-        addStepInfo: (state, action: PayloadAction<AlgorithmStepInfo<any>>) => {
-            state.algorithmStepsInfo.push(action.payload)
+        addStepInfo: (state, action: PayloadAction<Population<string>>) => {
+            state.algorithmStepsInfo.items.push(action.payload)
         },
         clearStepsInfo: (state) => {
-            state.algorithmStepsInfo.splice(0, state.algorithmStepsInfo.length)
+            state.algorithmStepsInfo.items.splice(0, state.algorithmStepsInfo.items.length)
+        },
+        setResultFunction: (
+            state,
+            action: PayloadAction<(population: Population<string>) => number>
+        ) => {
+            state.algorithmStepsInfo.onResult = action.payload
         },
         setPath: (state, action: PayloadAction<PathInfo<number> | undefined>) => {
             if (!action.payload) {
@@ -38,13 +52,18 @@ const graphSlice = createSlice({
         dropState: (state) => {
             state.foundPath = undefined;
         },
+        setExecutionTime: (state, action: PayloadAction<number>) => {
+            state.executionTimeInMS = action.payload
+        }
     },
 });
 
 export const graphReducer = graphSlice.reducer;
 export const {
     addStepInfo,
+    setResultFunction,
     clearStepsInfo,
     dropState,
     setPath,
+    setExecutionTime
 } = graphSlice.actions;

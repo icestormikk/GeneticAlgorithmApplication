@@ -31,8 +31,8 @@ export class Graph<T> {
                             nodes[i].id,
                             nodes[j].id,
                             {
-                                distance: Math.round(Math.random() * 100),
-                                cost: Math.round(Math.random() * 100),
+                                distance: 1,
+                                cost: 1,
                             } as T
                         )
                     )

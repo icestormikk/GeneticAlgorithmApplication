@@ -91,7 +91,7 @@ function ActionsMenu({setIsFullInfoOpen}: ActionsMenuProps): JSX.Element {
                 setIsOpen={setIsWindowShown}
             />
             <AnimatePresence>
-                <div className="absolute left-0 bottom-0 z-10 text-white flex
+                <div className="absolute left-0 bottom-0 z-10 text-black flex
                 flex-row gap-2 p-2 text-xl">
                     <button
                         type="button"

@@ -20,17 +20,14 @@ interface GraphProps {
 }
 
 export const createNewLink = (
-    fromNode: ReduxNodeObject, toNode: ReduxNodeObject,
+    fromNode: ReduxNodeObject, toNode: ReduxNodeObject, distance: number, cost: number
 ): ReduxLinkObject => {
     return {
         id: generateUUID(),
         source: fromNode.id,
         target: toNode.id,
         label: `${fromNode.label} -> ${toNode.label}`,
-        value: {
-            distance: getRandomNumber(0, 100),
-            cost: getRandomNumber(0, 100)
-        },
+        value: {distance, cost},
     };
 };
 
@@ -84,13 +81,15 @@ function Graph(props: GraphProps) {
 
     const handleNodeRightClick = async (node: ReduxNodeObject) => {
         const uuid = generateUUID();
+        const distance = 1
+        const cost = 1
         const newNode = {
             id: uuid,
             label: `node-${buildNameFromUUID(uuid)}`,
         };
         const newLinks = [
-            createNewLink(node, newNode),
-            createNewLink(newNode, node),
+            createNewLink(node, newNode, distance, cost),
+            createNewLink(newNode, node, distance, cost),
         ];
 
         await Promise.all(
@@ -114,6 +113,7 @@ function Graph(props: GraphProps) {
     }, []);
 
     return <ForceGraph
+        backgroundColor="#efefef"
         controlType="trackball"
         width={width}
         height={height}
@@ -129,7 +129,6 @@ function Graph(props: GraphProps) {
         }
         // @ts-ignore
         onNodeClick={(node: ExtendedNodeObject) => handleNodeLeftClick(node)}
-        linkDirectionalParticles={1}
         linkDirectionalArrowLength={3.5}
         linkDirectionalArrowRelPos={1}
         linkCurvature={0.2}
@@ -145,7 +144,7 @@ function Graph(props: GraphProps) {
             );
 
             return props.linksViewMode === LinksViewMode.ONLY_PATH ? (
-                isSuitable ? 'lime' : 'black'
+                isSuitable ? 'green' : 'white'
             ) : 'red'
         }}
     />;

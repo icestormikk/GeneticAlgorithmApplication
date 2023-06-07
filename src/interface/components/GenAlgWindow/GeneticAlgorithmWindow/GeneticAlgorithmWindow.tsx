@@ -10,6 +10,8 @@ import PathInfoPanel from "../PathInfoPanel/PathInfoPanel.lazy";
 import Limiter from "../Limiter/Limiter.lazy";
 import StatisticsChart from "../../StatisticsChart/StatisticsChart.lazy";
 import AlgorithmConfigPanel from "../AlgorithmConfigPanel/AlgorithmConfigPanel.lazy";
+import ChooseAlgorithmPanel from "../ChooseAlgorithmPanel/ChooseAlgorithmPanel.lazy";
+import {AlgorithmType} from "../../../redux/extensions/enums/AlgorithmType";
 
 interface GeneticAlgorithmWindowProps {
     isOpen: boolean,
@@ -30,7 +32,7 @@ function GeneticAlgorithmWindow(
 ) {
     const nodes = useAppSelector((state) => state.nodes.items);
     const links = useAppSelector((state) => state.links.items);
-    const path = useAppSelector((state) => state.graph.foundPath)
+    const {foundPath, executionTimeInMS} = useAppSelector((state) => state.graph)
     const selectedNodes = useAppSelector((state) => state.nodes.pickedPathfinderNodes)
     const algorithmStepsInfo = useAppSelector((state) => state.graph.algorithmStepsInfo)
     const [limitations, setLimitations] = React.useState<Array<{name: string, limit: number}>>(
@@ -41,6 +43,7 @@ function GeneticAlgorithmWindow(
     const [config, setConfig] = React.useState({
         crossoverRate: 1, mutationRate: 0.1, generationsCount: 500, populationSize: 200
     })
+    const [mode, setMode] = React.useState(AlgorithmType.CANONICAL)
 
     const isSuitable = React.useCallback(
         () => {
@@ -50,7 +53,7 @@ function GeneticAlgorithmWindow(
     );
 
     const start = () => {
-        startAlgorithm(config, nodes, links, limitations, selectedNodes[0])
+        startAlgorithm(config, nodes, links, limitations, mode, selectedNodes[0])
             .then(() => console.log('finished'))
     };
 
@@ -64,8 +67,8 @@ function GeneticAlgorithmWindow(
             content={(
                 <div className="flex flex-col gap-2">
                     {
-                        algorithmStepsInfo.length > 0 && (
-                            <StatisticsChart data={algorithmStepsInfo}/>
+                        algorithmStepsInfo.items.length > 0 && (
+                            <StatisticsChart/>
                         )
                     }
                     <div className="flex flex-row gap-2">
@@ -101,6 +104,7 @@ function GeneticAlgorithmWindow(
                                         <AlgorithmConfigPanel
                                             config={config} setConfig={setConfig}
                                         />
+                                        <ChooseAlgorithmPanel setMode={setMode}/>
                                         <button
                                             type="button"
                                             className="submit-button"
@@ -112,8 +116,14 @@ function GeneticAlgorithmWindow(
                                 )
                             }
                             {
-                                path ? (
-                                    <PathInfoPanel pathInfo={path}/>
+                                foundPath ? (
+                                    <div className="flex flex-col gap-2 bg-white rounded-md bordered my-4 p-2">
+                                        <div className="flex gap-2">
+                                            <b>Время выполнения алгоритма (в миллисекундах): </b>
+                                            <span>{executionTimeInMS}</span>
+                                        </div>
+                                        <PathInfoPanel pathInfo={foundPath}/>
+                                    </div>
                                 ) : (
                                     <div className="centered text-center w-full p-2">
                                         <span className="text-gray-400">

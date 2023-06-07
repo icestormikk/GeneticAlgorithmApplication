@@ -13,16 +13,7 @@ const store = configureStore({
     },
     middleware: (getDefaultMiddleware) => [
         ...getDefaultMiddleware({
-            serializableCheck: {
-                ignoredActions: [
-                    'linksSlice/addLink',
-                    'linksSlice/setLinks',
-                    'nodesSlice/select',
-                    'nodesSlice/setNodes',
-                    'nodesSlice/updateNode',
-                    'actionsSlice/addAction',
-                ],
-            },
+            serializableCheck: false
         }),
     ],
 });

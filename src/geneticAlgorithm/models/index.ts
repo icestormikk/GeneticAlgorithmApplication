@@ -10,6 +10,7 @@ export async function canonical<T>(
     fitnessFunction: (chromosome: Chromosome<T>) => number,
     maxPopulationCount: number
 ) {
+    const steps: Array<Population<T>> = []
     for (let i = 0; i < maxPopulationCount; i++) {
         const parentsPopulation = await population.rouletteWheelSelection(
             fitnessFunction
@@ -29,16 +30,20 @@ export async function canonical<T>(
         population.entities.splice(
             index, 1, offspring
         )
+
+        steps.push(new Population(...population.entities))
     }
+
+    return {result: population, progress: steps}
 }
 
 export async function genitor<T>(
     mutationProbability: number,
     population: Population<T>,
     fitnessFunction: (chromosome: Chromosome<T>) => number,
-    maxPopulationCount: number
+    maxPopulationCount: number,
 ) {
-    const steps = []
+    const steps: Array<Population<T>> = []
     for (let i = 0; i < maxPopulationCount; i++) {
         population.entities
             .sort((a, b) =>
@@ -58,10 +63,7 @@ export async function genitor<T>(
             population.entities.length - 1, 1, offspring
         )
 
-        steps.push({
-            generationNumber: i,
-            generation: [...population.entities]
-        })
+        steps.push(new Population(...population.entities))
     }
 
     return {progress: steps, result: population}
@@ -74,17 +76,27 @@ export async function chcAlgorithm<T>(
     fitnessFunction: (chromosome: Chromosome<T>) => number,
     maxPopulationCount: number
 ) {
+    const steps: Array<Population<T>> = []
     for (let i = 0; i < maxPopulationCount; i++) {
         const parents = population.outcrossing(pathDistance)
 
         const offspring = await modifiedCrossover(
             parents.first.gens, parents.second.gens
         )
+
+        if (mutationProbability > Math.random()) {
+            await offspring.swappingMutation()
+        }
+
         population.entities.push(offspring)
         population.entities.sort((a, b) =>
             fitnessFunction(b) - fitnessFunction(a)
         )
 
         population.entities.slice(0, population.entities.length - 1)
+
+        steps.push(new Population(...population.entities))
     }
+
+    return {progress: steps, result: population}
 }

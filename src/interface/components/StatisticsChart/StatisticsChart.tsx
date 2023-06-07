@@ -28,7 +28,8 @@ ChartJS.register(
  */
 function StatisticsChart() {
     const stepsInfo = useAppSelector((state) => state.graph.algorithmStepsInfo)
-    const [isShown, setIsShown] = React.useState(false)
+    const [isShown, setIsShown] = React.useState(false);
+    const [data, setData] = React.useState<any|undefined>(undefined)
 
     const options = React.useMemo(
         () => {
@@ -63,22 +64,21 @@ function StatisticsChart() {
         },
         []
     )
-    const refactoredData = React.useMemo(
-        () => {
-            return {
-                labels: stepsInfo.map((info) => info.generationNumber),
-                datasets: [
-                    {
-                        label: 'Минимальное расстояние',
-                        data: stepsInfo.map((info) => info.distance),
-                        borderColor: 'rgb(255, 99, 132)',
-                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                    },
-                ],
-            }
-        },
-        [stepsInfo]
-    )
+
+    const render = async () => {
+        setIsShown(true)
+        setData({
+            labels: stepsInfo.items.map((_, index) => index),
+            datasets: [
+                {
+                    label: 'Минимальное расстояние',
+                    data: stepsInfo.items.map((info) => stepsInfo.onResult!(info)),
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                },
+            ],
+        })
+    }
 
     return (
         <div
@@ -86,10 +86,10 @@ function StatisticsChart() {
             data-testid="StatisticsChart"
         >
             {
-                (stepsInfo.length > 0 && isShown) ? (
+                isShown ? (
                     <Line
                         options={options}
-                        data={refactoredData}
+                        data={data}
                         style={{
                             height: '40rem'
                         }}
@@ -98,7 +98,7 @@ function StatisticsChart() {
                     <button
                         type="button"
                         className="submit-button w-2/3 bg-green-600/60"
-                        onClick={() => setIsShown(true)}
+                        onClick={() => render()}
                     >
                         Нарисовать график
                     </button>

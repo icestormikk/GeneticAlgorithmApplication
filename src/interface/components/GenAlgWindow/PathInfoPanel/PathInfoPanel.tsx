@@ -18,15 +18,11 @@ function PathInfoPanel({pathInfo}: PathInfoPanelProps) {
 
     return (
         <>
+            <b>Результаты вычислений</b>
             <table
                 className="found-path-table"
                 data-testid="PathInfoPanel"
             >
-                <thead>
-                    <tr>
-                        <th>Результаты вычислений</th>
-                    </tr>
-                </thead>
                 <tbody>
                     <tr>
                         <th>Id</th>

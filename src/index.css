@@ -89,7 +89,7 @@
 
     .found-path-table {
         @apply
-        flex flex-col gap-1 my-4
+        flex flex-col gap-1 my-2
     }
     .found-path-table th {
         @apply text-left

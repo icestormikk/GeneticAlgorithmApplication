@@ -53,7 +53,7 @@ function AlgorithmConfigPanel({config, setConfig}: AlgorithmConfigPanelProps) {
 
     return (
         <div>
-            <b>Конфигурация алгоритма</b>
+            <b>Конфигурация алгоритма:</b>
             <div
                 className="p-2 flex flex-col gap-2 bg-white rounded-md bordered"
                 data-testid="AlgorithmConfigPanel"
