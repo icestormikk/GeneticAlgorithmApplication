@@ -12,6 +12,7 @@ import {ExtendedLinkObject} from '../redux/extensions/ExtendedLinkObject';
 import {addNode, select} from '../redux/slicers/nodeSlice';
 import {addLink} from '../redux/slicers/linkSlice';
 import {LinksViewMode} from "../redux/extensions/enums/LinksViewMode";
+import {getRandomNumber} from "../../geneticAlgorithm/functions/arrayhelper";
 
 interface GraphProps {
     linksViewMode: LinksViewMode
@@ -78,8 +79,8 @@ function Graph(props: GraphProps) {
     }, [nodes, links]);
 
     const handleNodeRightClick = async (node: ReduxNodeObject) => {
-        const distance = 1
-        const cost = 1
+        const distance = getRandomNumber(0, 100)
+        const cost = getRandomNumber(0, 100)
         const newNode = {
             id: nodes.length,
             label: `node-${nodes.length}`,

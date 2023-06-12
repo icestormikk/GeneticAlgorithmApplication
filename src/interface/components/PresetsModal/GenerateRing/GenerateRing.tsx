@@ -15,14 +15,13 @@ function GenerateRing() {
 
     const generateRingGraph = async (size: number) => {
         const nodes = [...Array(size).keys()].map((i) =>
-            new NodeEntity(`Node-${i}`)
+            new NodeEntity()
         )
         const links: Array<LinkEntity<any>> = []
-        const addToLinks = (from: string, to: string) => {
+        const addToLinks = (from: number, to: number) => {
             links.push(
                 new LinkEntity(
-                    from,
-                    to,
+                    from, to,
                     {distance: Math.round(Math.random() * 100), cost: Math.round(Math.random() * 100)}
                 )
             )

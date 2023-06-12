@@ -45,7 +45,7 @@ function getState<T>(source: T, type: "initial" | "infinite"): T {
 
 function initializeGraph(nodesList: Array<ReduxNodeObject>, linksList: Array<ReduxLinkObject>) {
     const nodes = nodesList.map((el) =>
-        new NodeEntity(el.label, el.id),
+        new NodeEntity(el.id),
     );
     const links = linksList.map((el) =>
         new LinkEntity(el.source, el.target, el.value, el.id),
@@ -184,12 +184,13 @@ export async function startAlgorithm(
                     config.crossoverRate,
                     initialPopulation,
                     calculateFitnessFor,
-                    config.generationsCount
+                    config.generationsCount,
+                    graph,
+                    startNodeId
                 )
             case AlgorithmType.GENITOR:
                 console.log('Генитор')
                 return genitor(
-                    config.mutationRate,
                     initialPopulation,
                     calculateFitnessFor,
                     config.generationsCount,
@@ -203,7 +204,9 @@ export async function startAlgorithm(
                     config.crossoverRate,
                     initialPopulation,
                     calculateFitnessFor,
-                    config.generationsCount
+                    config.generationsCount,
+                    graph,
+                    startNodeId
                 )
         }
     }

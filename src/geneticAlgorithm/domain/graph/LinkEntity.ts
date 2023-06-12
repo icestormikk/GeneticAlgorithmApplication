@@ -18,6 +18,5 @@ export class LinkEntity<T> {
         public readonly target: number,
         public value: T,
         readonly id = generateUUID(),
-    ) {
-    }
+    ) {}
 }

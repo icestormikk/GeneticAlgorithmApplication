@@ -1,15 +1,28 @@
 import {Population} from "../domain/Population";
 import {Chromosome} from "../domain/Chromosome";
-import {modifiedCrossover} from "../algorithm";
-import {pathDistance} from "../functions/distance";
 import {Graph} from "../domain/graph/Graph";
+
+async function getOffspringFromGraph<T>(graph: Graph<T>, startNodeId: number) {
+    let offspring: Chromosome<any> | undefined = undefined
+    while (offspring === undefined) {
+        try {
+            const path = await graph.createRandomPath(startNodeId)
+            offspring = new Chromosome(...path)
+        } catch (e: any) {
+            // ignore
+        }
+    }
+    return offspring;
+}
 
 export async function canonical<T>(
     mutationProbability: number,
     crossoverProbability: number,
     population: Population<T>,
     fitnessFunction: (chromosome: Chromosome<T>) => number,
-    maxPopulationCount: number
+    maxPopulationCount: number,
+    graph: Graph<T>,
+    startNodeId: number
 ) {
     const steps: Array<Population<T>> = []
     for (let i = 0; i < maxPopulationCount; i++) {
@@ -17,14 +30,15 @@ export async function canonical<T>(
             fitnessFunction
         )
         const parents = await parentsPopulation.panmixia()
-        const offspring = await modifiedCrossover(
-            parents.first.gens, parents.second.gens
-        )
+        // const offspring = await modifiedCrossover(
+        //     parents.first.gens, parents.second.gens
+        // )
+        //
+        // if (mutationProbability > Math.random()) {
+        //     await offspring.swappingMutation()
+        // }
 
-        if (mutationProbability > Math.random()) {
-            await offspring.swappingMutation()
-        }
-
+        const offspring = await getOffspringFromGraph(graph, startNodeId)
         const index = population.entities.findIndex((el) =>
             el.id === parents.first.id
         )
@@ -39,7 +53,6 @@ export async function canonical<T>(
 }
 
 export async function genitor<T>(
-    mutationProbability: number,
     population: Population<T>,
     fitnessFunction: (chromosome: Chromosome<T>) => number,
     maxPopulationCount: number,
@@ -52,17 +65,7 @@ export async function genitor<T>(
             .sort((a, b) =>
                 fitnessFunction(b) - fitnessFunction(a)
             )
-
-        let offspring: Chromosome<any>|undefined = undefined
-        while (offspring === undefined) {
-            try {
-                const path = await graph.createRandomPath(startNodeId)
-                offspring = new Chromosome(...path)
-            } catch (e: any) {
-                // ignore
-            }
-        }
-
+        const offspring = await getOffspringFromGraph(graph, startNodeId);
         // const parents = await population.panmixia()
         // const offspring = await modifiedCrossover(
         //     parents.first.gens, parents.second.gens
@@ -87,19 +90,20 @@ export async function chcAlgorithm<T>(
     crossoverProbability: number,
     population: Population<T>,
     fitnessFunction: (chromosome: Chromosome<T>) => number,
-    maxPopulationCount: number
+    maxPopulationCount: number,
+    graph: Graph<T>,
+    startNodeId: number
 ) {
     const steps: Array<Population<T>> = []
     for (let i = 0; i < maxPopulationCount; i++) {
-        const parents = population.outcrossing(pathDistance)
-
-        const offspring = await modifiedCrossover(
-            parents.first.gens, parents.second.gens
-        )
-
-        if (mutationProbability > Math.random()) {
-            await offspring.swappingMutation()
-        }
+        const offspring = await getOffspringFromGraph(graph, startNodeId)
+        // const offspring = await modifiedCrossover(
+        //     parents.first.gens, parents.second.gens
+        // )
+        //
+        // if (mutationProbability > Math.random()) {
+        //     await offspring.swappingMutation()
+        // }
 
         population.entities.push(offspring)
         population.entities.sort((a, b) =>

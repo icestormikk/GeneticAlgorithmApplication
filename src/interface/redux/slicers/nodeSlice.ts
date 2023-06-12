@@ -1,5 +1,6 @@
 import {ReduxNodeObject} from '../extensions/ReduxNodeObject';
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {NodeEntity} from "../../../geneticAlgorithm/domain/graph/NodeEntity";
 
 interface NodesState {
     pickedPathfinderNodes: Array<ReduxNodeObject>
@@ -44,7 +45,9 @@ const graphSlice = createSlice({
             });
         },
         setNodes: (state, action: PayloadAction<Array<ReduxNodeObject>>) => {
-            state.items.splice(0, state.items.length);
+            NodeEntity.counter = state.items.length
+            state.items.splice(0, state.items.length)
+
             action.payload.forEach((node) => {
                 const {id, label} = node;
                 if (!state.items.find((el) => el.id === id)) {
@@ -85,6 +88,7 @@ const graphSlice = createSlice({
             state.pickedPathfinderNodes = [...action.payload]
         },
         dropNodes: (state) => {
+            NodeEntity.counter = 0
             state.pickedPathfinderNodes.splice(0, state.pickedPathfinderNodes.length)
             state.selectedItems.splice(0, state.selectedItems.length);
             state.items.splice(0, state.items.length, {id: 0, label: 'node-0'});

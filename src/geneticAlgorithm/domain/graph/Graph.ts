@@ -2,6 +2,7 @@ import {NodeEntity} from './NodeEntity';
 import {LinkEntity} from './LinkEntity';
 import {generateUUID} from 'three/src/math/MathUtils';
 import {UnreachableEndError} from "../exception/UnreachableEndError";
+import {getRandomNumber} from "../../functions/arrayhelper";
 
 /**
  * A class representing a graph that stores nodes and connections between them
@@ -20,7 +21,7 @@ export class Graph<T> {
     ) {}
 
     static async createRandomGraph<T>(size: number) {
-        const nodes = [...Array(size).keys()].map((el) => new NodeEntity(`Node-${el}`))
+        const nodes = [...Array(size).keys()].map(() => new NodeEntity())
         const links: Array<LinkEntity<T>> = []
 
         for (let i = 0; i < nodes.length; i++) {
@@ -31,8 +32,8 @@ export class Graph<T> {
                             nodes[i].id,
                             nodes[j].id,
                             {
-                                distance: 1,
-                                cost: 1,
+                                distance: getRandomNumber(0, 100),
+                                cost: getRandomNumber(0, 100),
                             } as T
                         )
                     )
